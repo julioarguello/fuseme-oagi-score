@@ -5,6 +5,10 @@ import org.jooq.Record;
 import org.oagi.score.gateway.http.api.account_management.model.UserId;
 import org.oagi.score.gateway.http.api.account_management.model.UserSummaryRecord;
 import org.oagi.score.gateway.http.api.bie_management.model.*;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageDetailsRecord;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageId;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageListEntryRecord;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageSummaryRecord;
 import org.oagi.score.gateway.http.api.bie_management.repository.BiePackageQueryRepository;
 import org.oagi.score.gateway.http.api.bie_management.repository.criteria.BiePackageListFilterCriteria;
 import org.oagi.score.gateway.http.api.library_management.model.LibraryId;
@@ -71,7 +75,8 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
                             BIE_PACKAGE.DESCRIPTION,
                             groupConcatDistinct(RELEASE.RELEASE_ID).as("release_id_list"),
                             groupConcatDistinct(RELEASE.RELEASE_NUM).as("release_num_list"),
-                            BIE_PACKAGE.STATE
+                            BIE_PACKAGE.STATE,
+                            BIE_PACKAGE.PREV_BIE_PACKAGE_ID
                     ), ownerFields()))
                     .from(BIE_PACKAGE)
                     .join(libraryTable()).on(libraryTablePk().eq(BIE_PACKAGE.LIBRARY_ID))
@@ -115,7 +120,9 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
                         record.get(BIE_PACKAGE.DESCRIPTION),
                         releases,
                         state,
-                        owner
+                        owner,
+                        (record.get(BIE_PACKAGE.PREV_BIE_PACKAGE_ID) != null) ?
+                                new BiePackageId(record.get(BIE_PACKAGE.PREV_BIE_PACKAGE_ID).toBigInteger()) : null
                 );
             };
         }
@@ -367,6 +374,7 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
                             groupConcatDistinct(RELEASE.RELEASE_ID).as("release_id_list"),
                             groupConcatDistinct(RELEASE.RELEASE_NUM).as("release_num_list"),
                             BIE_PACKAGE.STATE,
+                            BIE_PACKAGE.PREV_BIE_PACKAGE_ID,
                             BIE_PACKAGE.CREATION_TIMESTAMP,
                             BIE_PACKAGE.LAST_UPDATE_TIMESTAMP,
                             BIE_PACKAGE.SOURCE_BIE_PACKAGE_ID
@@ -407,6 +415,8 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
                     }
                 }
 
+                BiePackageId prevBiePackageId = (record.get(BIE_PACKAGE.PREV_BIE_PACKAGE_ID) != null) ?
+                        new BiePackageId(record.get(BIE_PACKAGE.PREV_BIE_PACKAGE_ID).toBigInteger()) : null;
                 BiePackageId sourceBiePackageId = (record.get(BIE_PACKAGE.SOURCE_BIE_PACKAGE_ID) != null) ?
                         new BiePackageId(record.get(BIE_PACKAGE.SOURCE_BIE_PACKAGE_ID).toBigInteger()) : null;
 
@@ -423,6 +433,8 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
                         releases,
                         state,
                         toAccessPrivilege(owner.userId(), state),
+
+                        getBiePackageSummary(prevBiePackageId),
                         getBiePackageSummary(sourceBiePackageId),
                         owner,
                         new WhoAndWhen(

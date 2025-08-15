@@ -8,6 +8,9 @@ import org.oagi.score.gateway.http.api.bie_management.controller.payload.CreateB
 import org.oagi.score.gateway.http.api.bie_management.controller.payload.DiscardBiePackageRequest;
 import org.oagi.score.gateway.http.api.bie_management.controller.payload.UpdateBiePackageRequest;
 import org.oagi.score.gateway.http.api.bie_management.model.*;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageDetailsRecord;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageId;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageSummaryRecord;
 import org.oagi.score.gateway.http.api.bie_management.repository.BiePackageCommandRepository;
 import org.oagi.score.gateway.http.api.bie_management.repository.BiePackageQueryRepository;
 import org.oagi.score.gateway.http.common.model.ScoreRole;

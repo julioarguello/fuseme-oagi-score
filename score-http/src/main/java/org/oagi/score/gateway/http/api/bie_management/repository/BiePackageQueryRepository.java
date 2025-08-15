@@ -1,6 +1,10 @@
 package org.oagi.score.gateway.http.api.bie_management.repository;
 
 import org.oagi.score.gateway.http.api.bie_management.model.*;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageDetailsRecord;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageId;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageListEntryRecord;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageSummaryRecord;
 import org.oagi.score.gateway.http.api.bie_management.repository.criteria.BiePackageListFilterCriteria;
 import org.oagi.score.gateway.http.common.model.PageRequest;
 import org.oagi.score.gateway.http.common.model.ResultAndCount;

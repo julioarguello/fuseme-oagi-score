@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {PageResponse} from '../../../basis/basis';
-import {BieListInBiePackageRequest, BiePackageDetails, BiePackageListEntry, BiePackageListRequest} from './bie-package';
+import {BieListInBiePackageRequest, BiePackageDetails, BiePackageListEntry, BiePackageListRequest, BiePackageManifest} from './bie-package';
 import {map} from 'rxjs/operators';
 import {BieListEntry} from '../../bie-list/domain/bie-list';
 import {zip} from '../../../common/utility';
@@ -165,6 +165,10 @@ export class BiePackageService {
           }))
         }))
     );
+  }
+
+  getManifest(biePackageId: number): Observable<BiePackageManifest> {
+    return this.http.get<BiePackageManifest>('/api/bie-packages/' + biePackageId + '/manifest');
   }
 
   create(libraryId: number): Observable<number> {

@@ -145,12 +145,30 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
     }
 
     /**
+     * Setter for <code>oagi.bie_package.prev_bie_package_id</code>. A foreign
+     * key referring to the previous version of this BIE package, if any. Used
+     * to track package version history.
+     */
+    public void setPrevBiePackageId(ULong value) {
+        set(7, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bie_package.prev_bie_package_id</code>. A foreign
+     * key referring to the previous version of this BIE package, if any. Used
+     * to track package version history.
+     */
+    public ULong getPrevBiePackageId() {
+        return (ULong) get(7);
+    }
+
+    /**
      * Setter for <code>oagi.bie_package.owner_user_id</code>. Foreign key to
      * the BIE package. This is the user who owns the entity, is allowed to edit
      * the entity, and who can transfer the ownership to another user.
      */
     public void setOwnerUserId(ULong value) {
-        set(7, value);
+        set(8, value);
     }
 
     /**
@@ -159,7 +177,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * the entity, and who can transfer the ownership to another user.
      */
     public ULong getOwnerUserId() {
-        return (ULong) get(7);
+        return (ULong) get(8);
     }
 
     /**
@@ -168,7 +186,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * package is also its owner by default.
      */
     public void setCreatedBy(ULong value) {
-        set(8, value);
+        set(9, value);
     }
 
     /**
@@ -177,7 +195,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * package is also its owner by default.
      */
     public ULong getCreatedBy() {
-        return (ULong) get(8);
+        return (ULong) get(9);
     }
 
     /**
@@ -186,7 +204,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * may be the user who is in the same group as the creator.
      */
     public void setLastUpdatedBy(ULong value) {
-        set(9, value);
+        set(10, value);
     }
 
     /**
@@ -195,7 +213,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * may be the user who is in the same group as the creator.
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(9);
+        return (ULong) get(10);
     }
 
     /**
@@ -203,7 +221,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * when the BIE package record was first created.
      */
     public void setCreationTimestamp(LocalDateTime value) {
-        set(10, value);
+        set(11, value);
     }
 
     /**
@@ -211,7 +229,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * when the BIE package record was first created.
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(10);
+        return (LocalDateTime) get(11);
     }
 
     /**
@@ -219,7 +237,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * timestamp when the BIE package was last updated.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(11, value);
+        set(12, value);
     }
 
     /**
@@ -227,7 +245,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * timestamp when the BIE package was last updated.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(11);
+        return (LocalDateTime) get(12);
     }
 
     /**
@@ -236,7 +254,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * record.
      */
     public void setSourceBiePackageId(ULong value) {
-        set(12, value);
+        set(13, value);
     }
 
     /**
@@ -245,7 +263,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * record.
      */
     public ULong getSourceBiePackageId() {
-        return (ULong) get(12);
+        return (ULong) get(13);
     }
 
     /**
@@ -254,7 +272,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * 'Uplift'.)
      */
     public void setSourceAction(String value) {
-        set(13, value);
+        set(14, value);
     }
 
     /**
@@ -263,7 +281,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * 'Uplift'.)
      */
     public String getSourceAction() {
-        return (String) get(13);
+        return (String) get(14);
     }
 
     /**
@@ -271,7 +289,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * when a source reference had been made.
      */
     public void setSourceTimestamp(LocalDateTime value) {
-        set(14, value);
+        set(15, value);
     }
 
     /**
@@ -279,7 +297,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
      * when a source reference had been made.
      */
     public LocalDateTime getSourceTimestamp() {
-        return (LocalDateTime) get(14);
+        return (LocalDateTime) get(15);
     }
 
     // -------------------------------------------------------------------------
@@ -305,7 +323,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
     /**
      * Create a detached, initialised BiePackageRecord
      */
-    public BiePackageRecord(ULong biePackageId, ULong libraryId, String name, String versionId, String versionName, String description, String state, ULong ownerUserId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong sourceBiePackageId, String sourceAction, LocalDateTime sourceTimestamp) {
+    public BiePackageRecord(ULong biePackageId, ULong libraryId, String name, String versionId, String versionName, String description, String state, ULong prevBiePackageId, ULong ownerUserId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong sourceBiePackageId, String sourceAction, LocalDateTime sourceTimestamp) {
         super(BiePackage.BIE_PACKAGE);
 
         setBiePackageId(biePackageId);
@@ -315,6 +333,7 @@ public class BiePackageRecord extends UpdatableRecordImpl<BiePackageRecord> {
         setVersionName(versionName);
         setDescription(description);
         setState(state);
+        setPrevBiePackageId(prevBiePackageId);
         setOwnerUserId(ownerUserId);
         setCreatedBy(createdBy);
         setLastUpdatedBy(lastUpdatedBy);

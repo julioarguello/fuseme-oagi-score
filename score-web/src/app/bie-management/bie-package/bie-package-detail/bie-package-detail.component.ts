@@ -433,6 +433,14 @@ export class BiePackageDetailComponent implements OnInit {
     return (matches[1] || 'untitled').replace(/\"/gi, '').trim();
   }
 
+  getManifest(): any {
+    this.loading = true;
+    this.biePackageService.getManifest(this.biePackage.biePackageId).subscribe(resp => {
+      this.loading = false;
+      console.log(resp);
+    });
+  }
+
   isChanged(): boolean {
     if (!this.biePackage) {
       return false;

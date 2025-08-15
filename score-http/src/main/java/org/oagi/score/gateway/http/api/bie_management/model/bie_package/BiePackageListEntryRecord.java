@@ -1,6 +1,7 @@
-package org.oagi.score.gateway.http.api.bie_management.model;
+package org.oagi.score.gateway.http.api.bie_management.model.bie_package;
 
 import org.oagi.score.gateway.http.api.account_management.model.UserSummaryRecord;
+import org.oagi.score.gateway.http.api.bie_management.model.BieState;
 import org.oagi.score.gateway.http.api.library_management.model.LibraryId;
 import org.oagi.score.gateway.http.api.release_management.model.ReleaseSummaryRecord;
 import org.oagi.score.gateway.http.common.model.AccessPrivilege;
@@ -8,7 +9,7 @@ import org.oagi.score.gateway.http.common.model.WhoAndWhen;
 
 import java.util.List;
 
-public record BiePackageDetailsRecord(
+public record BiePackageListEntryRecord(
         BiePackageId biePackageId,
         LibraryId libraryId,
         String name,
@@ -18,8 +19,6 @@ public record BiePackageDetailsRecord(
         List<ReleaseSummaryRecord> releases,
         BieState state,
         AccessPrivilege access,
-
-        BiePackageSummaryRecord source,
 
         UserSummaryRecord owner,
         WhoAndWhen created,
