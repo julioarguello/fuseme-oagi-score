@@ -7,7 +7,7 @@ import org.oagi.score.gateway.http.api.bie_management.model.*;
 import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageDetailsRecord;
 import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageId;
 import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageListEntryRecord;
-import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageManifest;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageManifestResponse;
 import org.oagi.score.gateway.http.api.bie_management.model.expression.BieGenerateExpressionResult;
 import org.oagi.score.gateway.http.api.bie_management.repository.criteria.BieListInBiePackageFilterCriteria;
 import org.oagi.score.gateway.http.api.bie_management.repository.criteria.BiePackageListFilterCriteria;
@@ -231,7 +231,7 @@ public class BiePackageQueryController {
      * Issue #1678
      */
     @GetMapping(value = "/{biePackageId:[\\d]+}/manifest")
-    public BiePackageManifest getBiePackageManifest(
+    public BiePackageManifestResponse getBiePackageManifest(
             @AuthenticationPrincipal AuthenticatedPrincipal user,
             @PathVariable("biePackageId") BiePackageId biePackageId) {
 

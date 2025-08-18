@@ -13,12 +13,26 @@ import org.oagi.score.gateway.http.api.bie_management.model.bbiep.Bbiep;
 import org.oagi.score.gateway.http.api.bie_management.model.bie_package.*;
 import org.oagi.score.gateway.http.api.bie_management.repository.BiePackageQueryRepository;
 import org.oagi.score.gateway.http.api.bie_management.repository.TopLevelAsbiepQueryRepository;
+import org.oagi.score.gateway.http.api.cc_management.model.acc.AccSummaryRecord;
 import org.oagi.score.gateway.http.api.cc_management.model.ascc.AsccSummaryRecord;
 import org.oagi.score.gateway.http.api.cc_management.model.asccp.AsccpSummaryRecord;
 import org.oagi.score.gateway.http.api.cc_management.model.bcc.BccSummaryRecord;
 import org.oagi.score.gateway.http.api.cc_management.model.bccp.BccpSummaryRecord;
+import org.oagi.score.gateway.http.api.cc_management.model.dt.DtSummaryRecord;
+import org.oagi.score.gateway.http.api.cc_management.model.dt_sc.DtScSummaryRecord;
+import org.oagi.score.gateway.http.api.cc_management.repository.AccQueryRepository;
+import org.oagi.score.gateway.http.api.cc_management.repository.AsccpQueryRepository;
+import org.oagi.score.gateway.http.api.cc_management.repository.BccpQueryRepository;
+import org.oagi.score.gateway.http.api.cc_management.repository.DtQueryRepository;
 import org.oagi.score.gateway.http.api.code_list_management.model.CodeListManifestId;
 import org.oagi.score.gateway.http.api.code_list_management.model.CodeListSummaryRecord;
+import org.oagi.score.gateway.http.api.library_management.model.LibraryDetailsRecord;
+import org.oagi.score.gateway.http.api.library_management.model.LibraryId;
+import org.oagi.score.gateway.http.api.library_management.repository.LibraryQueryRepository;
+import org.oagi.score.gateway.http.api.release_management.model.ReleaseDetailsRecord;
+import org.oagi.score.gateway.http.api.release_management.model.ReleaseId;
+import org.oagi.score.gateway.http.api.release_management.model.ReleaseSummaryRecord;
+import org.oagi.score.gateway.http.api.release_management.repository.ReleaseQueryRepository;
 import org.oagi.score.gateway.http.api.xbt_management.model.XbtManifestId;
 import org.oagi.score.gateway.http.api.xbt_management.model.XbtSummaryRecord;
 import org.oagi.score.gateway.http.common.model.Guid;
@@ -28,10 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -46,23 +57,25 @@ public class BiePackageManifestService {
     @Autowired
     private BieReadService bieReadService;
 
-    public BiePackageManifest getBiePackageManifest(ScoreUser requester,
-                                                    BiePackageId biePackageId) {
+    public BiePackageManifestResponse getBiePackageManifest(ScoreUser requester,
+                                                            BiePackageId biePackageId) {
 
         BiePackageQueryRepository biePackageQueryRepository = repositoryFactory.biePackageQueryRepository(requester);
         BiePackageSummaryRecord currentPackage = biePackageQueryRepository.getBiePackageSummary(biePackageId);
 
         TopLevelAsbiepQueryRepository topLevelAsbiepQueryRepository = repositoryFactory.topLevelAsbiepQueryRepository(requester);
 
-        boolean newBiesFromPriorPackageVersion = false;
-        boolean removedBiesFromPriorPackageVersion = false;
-        boolean changedBiesFromPriorPackageVersion = false;
+        Collection<BieManifestSummary> newBiesFromPriorPackageVersion = new ArrayList<>();
+        Collection<BieManifestSummary> removedBiesFromPriorPackageVersion = new ArrayList<>();
+        Collection<BieManifestSummary> changedBiesFromPriorPackageVersion = new ArrayList<>();
+        Collection<BieManifestSummary> deprecatedBiesFromPriorPackageVersion = new ArrayList<>();
+        Map<LibraryId, Collection<ReleaseSummaryRecord>> releaseMapByLibraryId = new HashMap<>();
 
         BiePackageSummaryRecord prevPackage =
                 (currentPackage.prevBiePackageId() != null) ?
                         biePackageQueryRepository.getBiePackageSummary(currentPackage.prevBiePackageId()) : null;
 
-        List<BieMetadata> bieMetadataList = new ArrayList<>();
+        List<BieManifestEntry> bieManifestEntryList = new ArrayList<>();
         List<TopLevelAsbiepSummaryRecord> currentTopLevelAsbiepList =
                 biePackageQueryRepository.getTopLevelAsbiepIdListInBiePackage(currentPackage.biePackageId())
                         .stream().map(e -> topLevelAsbiepQueryRepository.getTopLevelAsbiepSummary(e))
@@ -73,50 +86,68 @@ public class BiePackageManifestService {
                         .collect(Collectors.toList()) : Collections.emptyList();
 
         for (TopLevelAsbiepSummaryRecord currentTopLevelAsbiep : currentTopLevelAsbiepList) {
-            BieMetadata bieMetadata = null;
+
+            releaseMapByLibraryId.putIfAbsent(currentTopLevelAsbiep.library().libraryId(), new ArrayList<>());
+            releaseMapByLibraryId.get(currentTopLevelAsbiep.library().libraryId()).add(currentTopLevelAsbiep.release());
+
+            BieManifestEntry bieManifestEntry = null;
             for (TopLevelAsbiepSummaryRecord prevTopLevelAsbiep : prevTopLevelAsbiepList) {
                 BieTrackContext context = diff(requester, currentTopLevelAsbiep, prevTopLevelAsbiep);
                 if (context != null) {
-                    bieMetadata = new BieMetadata(
-                            currentTopLevelAsbiep.guid().value(),
-                            currentTopLevelAsbiep.version(),
-                            prevTopLevelAsbiep.guid().value(),
-                            currentTopLevelAsbiep.den(),
-                            currentTopLevelAsbiep.propertyTerm(),
-                            false,
-                            context.added > 0,
-                            context.removed > 0,
-                            context.changed > 0,
-                            false
+                    bieManifestEntry = new BieManifestEntry(
+                            new BieManifest(
+                                    currentTopLevelAsbiep.guid(),
+                                    currentTopLevelAsbiep.version(),
+                                    currentTopLevelAsbiep.den(),
+                                    currentTopLevelAsbiep.displayName()
+                            ),
+                            prevTopLevelAsbiep.guid(),
+                            prevTopLevelAsbiep.version(),
+                            true,
+                            context.added,
+                            context.removed,
+                            context.valueDomainChanged,
+                            context.deprecated
                     );
                     break;
                 }
             }
 
-            if (bieMetadata != null) {
-                if (bieMetadata.addedElementsFromPriorPackageVersion() ||
-                        bieMetadata.removedElementsFromPriorPackageVersion() ||
-                        bieMetadata.valueDomainChangeFromPriorPackageVersion() ||
-                        bieMetadata.addedElementsReplaceExtensionFromPriorPackageVersion()) {
-                    changedBiesFromPriorPackageVersion = true;
+            if (bieManifestEntry != null) {
+                if (!bieManifestEntry.addedElementsFromPriorPackageVersion().isEmpty() ||
+                        !bieManifestEntry.removedElementsFromPriorPackageVersion().isEmpty() ||
+                        !bieManifestEntry.valueDomainChangeFromPriorPackageVersion().isEmpty() ||
+                        !bieManifestEntry.deprecatedElementsFromPriorPackageVersion().isEmpty()) {
+                    changedBiesFromPriorPackageVersion.add(new BieManifestSummary(
+                            currentTopLevelAsbiep.guid(),
+                            currentTopLevelAsbiep.den(),
+                            currentTopLevelAsbiep.displayName()
+                    ));
                 }
             } else {
-                newBiesFromPriorPackageVersion = true;
-                bieMetadata = new BieMetadata(
-                        currentTopLevelAsbiep.guid().value(),
-                        currentTopLevelAsbiep.version(),
-                        null,
+                newBiesFromPriorPackageVersion.add(new BieManifestSummary(
+                        currentTopLevelAsbiep.guid(),
                         currentTopLevelAsbiep.den(),
-                        currentTopLevelAsbiep.propertyTerm(),
-                        true,
+                        currentTopLevelAsbiep.displayName()
+                ));
+                bieManifestEntry = new BieManifestEntry(
+                        new BieManifest(
+                                currentTopLevelAsbiep.guid(),
+                                currentTopLevelAsbiep.version(),
+                                currentTopLevelAsbiep.den(),
+                                currentTopLevelAsbiep.displayName()
+                        ),
+                        null,
+                        null,
                         false,
-                        false,
-                        false,
-                        false
+                        Collections.emptyList(),
+                        Collections.emptyList(),
+                        Collections.emptyList(),
+                        Collections.emptyList()
                 );
             }
 
-            bieMetadataList.add(bieMetadata);
+            bieManifestEntryList.add(bieManifestEntry);
         }
 
         for (TopLevelAsbiepSummaryRecord prevTopLevelAsbiep : prevTopLevelAsbiepList) {
@@ -137,11 +168,27 @@ public class BiePackageManifestService {
                 }
             }
             if (!matched) {
-                removedBiesFromPriorPackageVersion = true;
+                removedBiesFromPriorPackageVersion.add(new BieManifestSummary(
+                        prevTopLevelAsbiep.guid(),
+                        prevTopLevelAsbiep.den(),
+                        prevTopLevelAsbiep.displayName()
+                ));
             }
         }
 
-        BiePackageMetadata biePackageMetadata = new BiePackageMetadata(
+        LibraryQueryRepository libraryQueryRepository = repositoryFactory.libraryQueryRepository(requester);
+        Collection<LibraryCompatibility> libraryCompatibilityCollection = new ArrayList<>();
+        for (LibraryId libraryId : releaseMapByLibraryId.keySet()) {
+            LibraryDetailsRecord libraryDetailsRecord = libraryQueryRepository.getLibraryDetails(libraryId);
+            Collection<ReleaseSummaryRecord> releases = releaseMapByLibraryId.get(libraryId);
+            ReleaseSummaryRecord latestReleasesInCollection = findLatestReleasesIn(requester, libraryId, releases);
+            libraryCompatibilityCollection.add(new LibraryCompatibility(
+                    libraryDetailsRecord.name(),
+                    latestReleasesInCollection.releaseNum()
+            ));
+        }
+
+        BiePackageManifest biePackageMetadata = new BiePackageManifest(
                 currentPackage.name(),
                 currentPackage.versionId(),
                 currentPackage.versionName(),
@@ -149,23 +196,65 @@ public class BiePackageManifestService {
                 newBiesFromPriorPackageVersion,
                 removedBiesFromPriorPackageVersion,
                 changedBiesFromPriorPackageVersion,
-                "10",
-                new BieManifest(bieMetadataList));
-        BiePackageManifest biePackageManifest = new BiePackageManifest(biePackageMetadata);
+                deprecatedBiesFromPriorPackageVersion,
+                libraryCompatibilityCollection,
+                bieManifestEntryList);
+        BiePackageManifestResponse biePackageManifest = new BiePackageManifestResponse(biePackageMetadata);
 
         return biePackageManifest;
     }
 
+    private ReleaseSummaryRecord findLatestReleasesIn(ScoreUser requester,
+                                                      LibraryId libraryId,
+                                                      Collection<ReleaseSummaryRecord> releases) {
+        if (releases == null || releases.isEmpty()) {
+            return null;
+        }
+
+        ReleaseQueryRepository releaseQueryRepository = repositoryFactory.releaseQueryRepository(requester);
+        List<ReleaseDetailsRecord> releaseDetailsRecords =
+                releaseQueryRepository.getReleaseSummaryList(libraryId).stream()
+                        .map(e -> releaseQueryRepository.getReleaseDetails(e.releaseId()))
+                        .collect(Collectors.toList());
+        Map<ReleaseId, ReleaseDetailsRecord> releaseInDatabaseMap = releaseDetailsRecords.stream()
+                .collect(Collectors.toMap(ReleaseDetailsRecord::releaseId, Function.identity()));
+        ReleaseDetailsRecord currentRelease = releaseDetailsRecords.stream()
+                .filter(e -> e.next() == null).findFirst().orElse(null);
+
+        Map<ReleaseId, ReleaseSummaryRecord> releaseInCollectionMap = releases.stream()
+                .collect(Collectors.toMap(ReleaseSummaryRecord::releaseId, Function.identity()));
+
+        while (currentRelease != null) {
+            if (releaseInCollectionMap.containsKey(currentRelease.releaseId())) {
+                return releaseInCollectionMap.get(currentRelease.releaseId());
+            }
+
+            if (currentRelease.prev() != null) {
+                currentRelease = releaseInDatabaseMap.get(currentRelease.prev().releaseId());
+            } else {
+                break;
+            }
+        }
+
+        throw new IllegalStateException("No latest release in the provided collection.");
+    }
+
     private class BieTrackContext {
+
+        ScoreUser requester;
 
         BieDocument currentBieDocument;
         BieDocument prevBieDocument;
 
-        int added;
-        int removed;
-        int changed;
+        Collection<BieElementChange> added = new ArrayList<>();
+        Collection<BieElementChange> removed = new ArrayList<>();
+        Collection<BieElementChange> valueDomainChanged = new ArrayList<>();
+        Collection<BieElementChange> deprecated = new ArrayList<>();
 
-        public BieTrackContext(BieDocument currentBieDocument, BieDocument prevBieDocument) {
+        public BieTrackContext(ScoreUser requester,
+                               BieDocument currentBieDocument, BieDocument prevBieDocument) {
+            this.requester = requester;
+
             this.currentBieDocument = currentBieDocument;
             this.prevBieDocument = prevBieDocument;
         }
@@ -178,7 +267,7 @@ public class BiePackageManifestService {
         BieDocument current = bieReadService.getBieDocument(requester, currentTopLevelAsbiep.topLevelAsbiepId());
         BieDocument previous = bieReadService.getBieDocument(requester, prevTopLevelAsbiep.topLevelAsbiepId());
 
-        BieTrackContext context = new BieTrackContext(current, previous);
+        BieTrackContext context = new BieTrackContext(requester, current, previous);
 
         Asbiep currentAsbiep = current.getRootAsbiep();
         Asbiep prevAsbiep = previous.getRootAsbiep();
@@ -231,7 +320,12 @@ public class BiePackageManifestService {
 
         if (!hasSameValueDomain(context, currentBbie, prevBbie,
                 Bbie::getXbtManifestId, Bbie::getCodeListManifestId, Bbie::getAgencyIdListManifestId)) {
-            context.changed++;
+
+            context.valueDomainChanged.add(newBieElementChange(context, currentBbie));
+        }
+
+        if (currentBbie.isDeprecated() && !prevBbie.isDeprecated()) {
+            context.deprecated.add(newBieElementChange(context, currentBbie));
         }
 
         List<BbieSc> currentScs = context.currentBieDocument.getBbieScList(currentBbie);
@@ -244,20 +338,26 @@ public class BiePackageManifestService {
                 if (currentSc.getGuid().equals(prevSc.getGuid())) {
                     if (!hasSameValueDomain(context, currentSc, prevSc,
                             BbieSc::getXbtManifestId, BbieSc::getCodeListManifestId, BbieSc::getAgencyIdListManifestId)) {
-                        context.changed++;
+
+                        context.valueDomainChanged.add(newBieElementChange(context, currentSc));
                     }
+
+                    if (currentSc.isDeprecated() && !prevSc.isDeprecated()) {
+                        context.deprecated.add(newBieElementChange(context, currentBbie));
+                    }
+
                     matched = true;
                     break;
                 }
             }
 
-            if (!matched) context.added++;
+            if (!matched) context.added.add(newBieElementChange(context, currentSc));
         }
 
         for (BbieSc prevSc : prevScs) {
             boolean matched = currentScs.stream()
                     .anyMatch(currentSc -> currentSc.getGuid().equals(prevSc.getGuid()));
-            if (!matched) context.removed++;
+            if (!matched) context.removed.add(newBieElementChange(context, prevSc));
         }
 
         return true;
@@ -280,7 +380,13 @@ public class BiePackageManifestService {
                 if (matched) break;
             }
 
-            if (!matched) context.added++;
+            if (!matched) {
+                if (current.isAsbie()) {
+                    context.added.add(newBieElementChange(context, (Asbie) current));
+                } else {
+                    context.added.add(newBieElementChange(context, (Bbie) current));
+                }
+            }
         }
 
         for (BieAssociation prev : prevList) {
@@ -296,7 +402,12 @@ public class BiePackageManifestService {
                 if (matched) break;
             }
 
-            if (!matched) context.removed++;
+            if (!matched)
+                if (prev.isAsbie()) {
+                    context.removed.add(newBieElementChange(context, (Asbie) prev));
+                } else {
+                    context.removed.add(newBieElementChange(context, (Bbie) prev));
+                }
         }
     }
 
@@ -345,6 +456,44 @@ public class BiePackageManifestService {
         BccSummaryRecord currentBcc = context.currentBieDocument.getCcDocument().getBcc(current.getBasedBccManifestId());
         BccSummaryRecord prevBcc = context.prevBieDocument.getCcDocument().getBcc(prev.getBasedBccManifestId());
         return currentBcc.guid().equals(prevBcc.guid());
+    }
+
+    private BieElementChange newBieElementChange(BieTrackContext context, Asbie asbie) {
+        AccQueryRepository accQueryRepository = repositoryFactory.accQueryRepository(context.requester);
+        AsccSummaryRecord basedAscc = accQueryRepository.getAsccSummary(asbie.getBasedAsccManifestId());
+
+        AccSummaryRecord fromAcc = accQueryRepository.getAccSummary(basedAscc.fromAccManifestId());
+
+        AsccpQueryRepository asccpQueryRepository = repositoryFactory.asccpQueryRepository(context.requester);
+        AsccpSummaryRecord toAsccp = asccpQueryRepository.getAsccpSummary(basedAscc.toAsccpManifestId());
+
+        return new BieElementChange(
+                toAsccp.propertyTerm(),
+                fromAcc.objectClassTerm());
+    }
+
+    private BieElementChange newBieElementChange(BieTrackContext context, Bbie bbie) {
+        AccQueryRepository accQueryRepository = repositoryFactory.accQueryRepository(context.requester);
+        BccSummaryRecord basedBcc = accQueryRepository.getBccSummary(bbie.getBasedBccManifestId());
+
+        AccSummaryRecord fromAcc = accQueryRepository.getAccSummary(basedBcc.fromAccManifestId());
+
+        BccpQueryRepository bccpQueryRepository = repositoryFactory.bccpQueryRepository(context.requester);
+        BccpSummaryRecord toBccp = bccpQueryRepository.getBccpSummary(basedBcc.toBccpManifestId());
+
+        return new BieElementChange(
+                toBccp.propertyTerm(),
+                fromAcc.objectClassTerm());
+    }
+
+    private BieElementChange newBieElementChange(BieTrackContext context, BbieSc bbieSc) {
+        DtQueryRepository dtQueryRepository = repositoryFactory.dtQueryRepository(context.requester);
+        DtScSummaryRecord dtSc = dtQueryRepository.getDtScSummary(bbieSc.getBasedDtScManifestId());
+        DtSummaryRecord dt = dtQueryRepository.getDtSummary(dtSc.ownerDtManifestId());
+
+        return new BieElementChange(
+                dtSc.den(),
+                dt.den().replaceAll(". Type", ""));
     }
 
 }
