@@ -1,349 +1,292 @@
-import { Injectable, HttpException, HttpStatus, ServiceUnavailableException } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { map } from 'rxjs/operators';
-import { catchError, firstValueFrom, Observable } from 'rxjs';
+import { catchError, firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
+import { Components, ComponentsWithChildren } from './components.dto';
+import { Releases, Release } from './releases.dto';
+import { plainToInstance } from 'class-transformer';
+import { AxiosHelper } from '../common/gateway_api_helper';
+import { CacheHelper } from '../common/cache_helper';
+import { Libraries } from './libraries.dto';
+
+
 
 
 @Injectable()
 export class ComponentsService {
-    cachePath = "cache";
-    backendServer = this.configService.get<string>('backend_server');
-    metadataUrl = this.backendServer + this.configService.get<string>('components_backend_endpoint');
-    schemaUrlXsd = this.backendServer + this.configService.get<string>('components_xsd_backend_endpoint');
-    localServer = this.configService.get<string>('local_server') + ':' + this.configService.get<string>('api_port');
-    releasesUrl = this.backendServer + this.configService.get<string>('releases_backend_endpoint');
-    latestReleaseUrl = this.backendServer + this.configService.get<string>('latest_release_backend_endpoint');
-    fs = require('fs');
-    path = require('path');
 
     constructor(
-        private readonly httpService: HttpService, private configService: ConfigService
-    ) { }
+        private readonly httpService: HttpService, private readonly configService: ConfigService,
+        private readonly axiosHelper: AxiosHelper, private readonly cacheHelper: CacheHelper
+        ,) { }
 
 
-    async getReleases(): Promise<JSON> {
-        var releasesUrl = this.configService.get<string>('backend_server')
-            + '/ext/releases';
-        const releases = await firstValueFrom(
-            this.httpService.get(releasesUrl)
-                .pipe(map(response => {
-                    let releases = response.data;
-                    return releases;
-                }))
-                .pipe(
-                    catchError((error: AxiosError) => {
-                        console.log(error);
-                        throw new HttpException('Could not get releases from Score', error.response.status);
-                    }),
-                )
+    async getLibraries(): Promise<Libraries> {
+
+        const librariesUrl = this.axiosHelper.getBackendUrl("gateway_external_api.libraries_backend_endpoint");
+        const libraries = await firstValueFrom(this.httpService.get(librariesUrl)
+            .pipe(map(response => {
+                var libraryList = response.data.list;
+                const librariesDto = plainToInstance(Libraries, { "libraries": libraryList },
+                    { excludeExtraneousValues: true, exposeUnsetFields: true, enableImplicitConversion: true });
+                if (librariesDto)
+                    return librariesDto;
+            }))
+            .pipe(
+                catchError((error: AxiosError) => {
+                    this.axiosHelper.handleAxiosError(error);
+                }),
+            )
         );
+        if (!libraries)
+            throw new HttpException("No libraries found", HttpStatus.INTERNAL_SERVER_ERROR);
+        return libraries;
+    }
+
+    async getReleases(libraryName: string): Promise<Releases> {
+
+        const userId = this.configService.get("user_id");
+
+        const releasesUrl = this.axiosHelper.getBackendUrl("gateway_external_api.releases_backend_endpoint");
+        const releases = await firstValueFrom(this.httpService.get(releasesUrl,
+            {
+                params:
+                {
+                    userId: userId,
+                    libraryName: libraryName,
+                    excludeReleaseNums: "Working",
+                    releaseStates: "Published",
+                    orderBy: "releaseNum",
+                    pageIndex: -1,
+                    pageSize: -1
+                }
+            })
+            .pipe(map(response => {
+                response.data.library = libraryName;
+                var releasesList: any[] = response.data.list;
+                releasesList.forEach(release => {
+                    release.lastUpdateTimestamp = release.lastUpdated.when;
+                });
+
+                const releasesDto = plainToInstance(Releases, { "releases": releasesList },
+                    { excludeExtraneousValues: true, exposeUnsetFields: true, enableImplicitConversion: true });
+                if (releasesDto)
+                    return releasesDto;
+            }))
+            .pipe(
+                catchError((error: AxiosError) => {
+                    this.axiosHelper.handleAxiosError(error);
+                }),
+            )
+        );
+        if (!releases)
+            throw new HttpException("No releases found", HttpStatus.INTERNAL_SERVER_ERROR);
         return releases;
     }
 
-    async getReleaseId(releaseVersion?: string): Promise<bigint> {
-        var releaseId;
-        if (!releaseVersion) {
-            releaseId = await firstValueFrom(
-                this.httpService.get(this.latestReleaseUrl)
-                    .pipe(map(response => {
-                        console.log(response.data);
-                        return response.data;
-                    })));
-            console.log(releaseId);
+
+    async getLatestRelease(libraryName: string): Promise<Release> {
+
+        const releases = await this.getReleases(libraryName);
+
+        const releaseList = releases.releases;
+
+        if (!releaseList || releaseList.length == 0) {
+            throw new HttpException('No releases found', HttpStatus.NO_CONTENT);
+        }
+
+        const latestRelease = releaseList.reduce((max, current) => {
+            return (current.lastUpdateTimestamp > max.lastUpdateTimestamp) ? current : max;
+        }, releaseList[0]);
+
+        if (!latestRelease) {
+            throw new HttpException("Could not get latest release", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         else {
-            console.log("looking up " + releaseVersion);
-            releaseId = await firstValueFrom(
-                this.httpService.get(this.localServer + '/api/components/releases')
-
-                    .pipe(map(response => {
-                        let releases = response.data.records;
-                        for (var i = 0; i < releases.length; i++) {
-                            const release = releases[i];
-                            const releaseNum = release[2];
-                            if (releaseNum == releaseVersion) {
-                                const releaseId = release[0];
-                                console.log('mapped ' + releaseVersion + ' ' + releaseId);
-                                return releaseId;
-                            }
-                        }
-                    }))
-
-                    .pipe(
-                        catchError((error: AxiosError) => {
-                            console.log(error);
-                            throw new HttpException('Error getting release id', error.response.status);
-                        }),
-                    )
-
-            );
-
+            return Promise.resolve(latestRelease);
         }
-        if (!releaseId) {
-            throw new HttpException('Release not found', HttpStatus.NOT_FOUND);
-        }
-        return releaseId;
     }
 
 
-    async getLatestRelease(): Promise<bigint> {
-        const releaseId = await firstValueFrom(
-            this.httpService.get(this.localServer + '/api/components/releases')
-                .pipe(map(response => {
-                    let releaseId = response.data.records[0][0];
-                    return releaseId;
-                }))
+    async getStandaloneComponent(libraryName: string, uuid: string, schemaType = 'xsd', releaseVersion?: string) {
 
-                .pipe(
-                    catchError((error: AxiosError) => {
-                        console.log(error);
-                        throw new HttpException('Error getting latest release id', error.response.status);
-                    }),
-                )
-        );
-        return releaseId;
-    }
+        const schemaUrlXsd = this.axiosHelper.getBackendUrl("gateway_external_api.components_schema_backend_endpoint");
 
-
-    async getLatestReleaseVersion(): Promise<string> {
-        const releaseVersion = await firstValueFrom(
-            this.httpService.get(this.localServer + '/api/components/releases')
-                .pipe(map(response => {
-                    let releaseVersion = response.data.records[0][2];
-                    return releaseVersion;
-                }))
-
-                .pipe(
-                    catchError((error: AxiosError) => {
-                        console.log(error);
-                        throw new HttpException('Error getting latest release id', error.response.status);
-                    }),
-                )
-        );
-        return releaseVersion;
-    }
-
-
-    async getManifestId(uuid: string, releaseVersion: string, componentType: string): Promise<bigint> {
-        const manifestId = await firstValueFrom(
-            this.httpService.get(this.localServer + '/api/components?release=' + releaseVersion)
-                .pipe(map(response => {
-                    let components = response.data;
-                    for (var i = 0; i < components.length; i++) {
-                        const component = components[i];
-                        if (component.guid == uuid && component.type == componentType) {
-                            console.log('mapped ' + uuid + ' ' + components[i].manifestId);
-                            return components[i].manifestId;
-                        }
-                    }
-                }))
-                .pipe(
-                    catchError((error: AxiosError) => {
-                        console.log(error);
-                        throw new HttpException('Error getting manifest id', error.response.status);
-                    }),
-                )
-        );
-        return manifestId;
-    }
-
-
-    async getStandaloneComponent(uuid: string, schemaType = 'xsd', releaseVer?: string) {
         if (schemaType != 'xsd') { //&& schemaType!='json') { //TODO:  JSON
             throw new HttpException("Unsupported schema type", HttpStatus.BAD_REQUEST);
         }
 
-        var releaseVersion = releaseVer;
-        if (!releaseVersion) {
-            releaseVersion = await this.getLatestReleaseVersion().then(relVer => { return relVer; });
-        }
+        const releaseNum = releaseVersion ?? (await this.getLatestRelease(libraryName)).releaseNum;
+        console.log(releaseNum);
 
-        var cachedSchema = this.getFromCache(uuid, schemaType, releaseVersion);
+        var cachedSchema = await this.cacheHelper.getFromCache(libraryName, uuid, schemaType, releaseNum);
         if (cachedSchema) {
-            console.log("returning cached schema");
+            console.log("returning cached schema" + cachedSchema);
             return cachedSchema;
         }
         else {
-            const standalone = this.getManifestId(uuid, releaseVersion, 'ASCCP')
-                .then(manifestId => {
-                    if (manifestId) {
-                        const data =
-                            this.httpService
-                                .get
-                                (this.schemaUrlXsd,
-                                    {
-                                        params:
-                                            { asccpManifestIdList: manifestId }
-                                    }
-                                )
-                                .pipe(map(response => {
-                                    let standalone = response.data;
-                                    //console.log(standalone);
-                                    this.writeToCache(uuid, standalone.toString(), schemaType, releaseVersion);
-                                    return standalone;
-                                }))
-                                .pipe(
-                                    catchError((error) => {
-                                        if (error.response) {
-                                            // The request was made and the server responded with a status code
-                                            // that falls out of the range of 2xx
-                                            console.log(error.response.data);
-                                            console.log(error.response.status);
-                                            console.log(error.response.headers);
-                                            throw new HttpException(error.message, error.response.status);
-                                        } else if (error.request) {
-                                            // The request was made but no response was received
-                                            console.log(error.request);
-                                        } else {
-                                            // Something happened in setting up the request that triggered an Error
-                                            console.log('Error', error.message);
-                                        }
-                                        console.log(error.config);
-                                        throw new HttpException('Could not retrieve data from Score', HttpStatus.SERVICE_UNAVAILABLE);
-                                    }),
 
-                                )
+            //const manifestId = await this.getManifestId(uuid, releaseNum, 'ASCCP');
+            const standaloneSchema =
+                this.httpService.get
+                    (schemaUrlXsd,
+                        {
+                            headers:
+                            {
+                                Accept: "application/xml",
+                                "Content-Type": "application/xml"
+                            },
+                            params:
+                            {
+                                libraryName: libraryName,
+                                releaseVersion: releaseNum,
+                                guid: uuid
+                                //asccpManifestIdList: manifestId
+                            }
+                        }
+                    )
+                    .pipe(map(response => {
+                        let standalone = response.data;
+                        this.cacheHelper.writeToCache(libraryName, uuid, standalone.toString(), schemaType, releaseNum);
+                        return standalone.toString();
+                    }))
+                    .pipe(
+                        catchError((error: AxiosError) => {
+                            this.axiosHelper.handleAxiosError(error);
+                        }),
+                    )
+                ;
+            if (!standaloneSchema)
+                throw new HttpException('UUID not found or is not ASCCP', HttpStatus.NOT_FOUND);
+            return standaloneSchema;
 
-                            ;
-
-                        return data;
-                    }
-                    else {
-                        throw new HttpException('UUID not found or is not ASCCP', HttpStatus.NOT_FOUND);
-                    }
-                });
-            return standalone;
         }
-
     }
 
+    async getAsccpComponents(libraryName: string, releaseVersion: string): Promise<Components> {
 
-    async getAllComponentsMetadata(tags?: string, releaseVersion?: string, componentTypes?:string): Promise<string[]> {
-        var pageSize = this.configService.get('component_metadata_page_size');
-        var releaseId;
-
-        if (releaseVersion) {
-            releaseId = await this.getReleaseId(releaseVersion);
+        const asccpRoute = '/components?library=' + libraryName + '&releaseVersion=' + releaseVersion + '&types=asccp';
+        const componentsCache = await this.cacheHelper.getFromInMemoryCache(asccpRoute);
+        if (componentsCache) {
+            try {
+                return JSON.parse(componentsCache) as Components;
+            }
+            catch (error) {
+                console.error("could not parse in memory components " + error);
+                throw error;
+            }
         }
         else {
-            releaseId = await firstValueFrom(
-                this.httpService.get(this.localServer + '/api/components/latest_release')
-                    .pipe(map(response => {
-                        return response.data;
-                    })));
+            const components = await this.getAllComponentsMetadata(libraryName, false, undefined, releaseVersion, undefined, undefined);
+            if (components) {
+                await this.cacheHelper.addToInMemoryCache(asccpRoute, JSON.stringify(components));
+                return components;
+            }
+
+            return new Components();
         }
-        console.log("using releaseid" + releaseId);
+    }
 
-        console.log("retrieving component metadata");
+    async getAllComponentsMetadata(libraryName: string, withChildren: boolean, tags?: string, releaseVersion?: string, componentTypes?: string, componentDen?: string): Promise<Components> {
 
+        const userId = this.configService.get("user_id");
+
+        const metadataUrl = this.axiosHelper.getBackendUrl('gateway_external_api.components_backend_endpoint');
+        const childrenUrl = this.axiosHelper.getBackendUrl('gateway_external_api.components_children_backend_endpoint');
+
+        console.log("retrieving component metadata from " + metadataUrl);
         let axiosConfig = {
             params:
             {
-                releaseId: releaseId,
+                userId: userId,
+                libraryName: libraryName,
+                releaseVersion: releaseVersion ?? (await this.getLatestRelease(libraryName)).releaseNum,
                 types: componentTypes,
                 asccpTypes: "Default",
-                pageSize: pageSize,
-                pageIndex: 0,
-                sortActive: 'den',
-                sortDirection: 'asc'
-            }
-            ,
-            validateStatus: function (status) {
+                pageSize: -1,
+                pageIndex: -1,
+                orderBy: "den",
+                tags: tags,
+                den: componentDen
+            },
+            validateStatus: function (status: number) {
                 return status == 200; // Resolve only if the status code is 200
             }
         };
 
-        if (tags)
-            axiosConfig.params['tags'] = tags;
-
-        const data =
+        var components =
             await firstValueFrom(
-                this.httpService.get
-                    (this.metadataUrl, axiosConfig)
-                    .pipe(map(response => {
-                        let components = response.data.list;
-                        if (components) {
-                            for (var i = 0; i < components.length; i++) {
-                                
-                                //delete components[i].manifestId;
-                                delete components[i].basedManifestId;
-                                delete components[i].module;
-                                delete components[i].definitionSource;
-                                delete components[i].sixDigitId;
-                                let tagList = components[i].tagList;
-                                if (tagList.length > 0) {
-                                    delete components[i].tagList[0].tagId;
-                                    delete components[i].tagList[0].textColor;
-                                    delete components[i].tagList[0].backgroundColor;
+                this.httpService.get(metadataUrl, axiosConfig)
+                    .pipe(map(async response => {
+                        var componentsList: any[] = response.data.list;
+                        componentsList.forEach(component => {
+                            component.owner = component.owner.loginId;
+                            component.definition = component.definition.content;
+                            const tagList: any[] = component.tagList;
+                            tagList.forEach(tag => {
+                                if (tag.name === 'Noun' || tag.name == 'BOD' || tag.name == 'Verb') {
+                                    component.nounBodVerbTag = component.tagList[0].name;
                                 }
+                            })
 
+                        });
+
+                        if (withChildren) {
+                            const componentParentChildren =
+                                await firstValueFrom(
+                                    this.httpService.get(childrenUrl, axiosConfig)
+                                        .pipe(map(response => {
+                                            const parentChildComponents = response.data.list;
+                                            return parentChildComponents;
+                                        }))
+
+                                        .pipe(
+                                            catchError((error: AxiosError) => {
+                                                this.axiosHelper.handleAxiosError(error);
+                                            }),
+                                        )
+                                )
+                                ;
+
+                            const groupedChildren: Record<string, string[]> = {};
+                            for (const rel of componentParentChildren) {
+                                if (!groupedChildren[rel.parentGuid]) {
+                                    groupedChildren[rel.parentGuid] = [];
+                                }
+                                groupedChildren[rel.parentGuid].push(rel);
                             }
-                           return components;
+
+                            const updatedComponentsList = componentsList.map((parent) => ({
+                                ...parent,
+                                children: componentParentChildren.filter((rel: any) => rel.parentGuid === parent.guid),
+                            }));
+                            componentsList = updatedComponentsList;
+
                         }
-                        
-                    }
-                    ))
+
+                        const componentsDto = plainToInstance(withChildren ? ComponentsWithChildren : Components, { "components": componentsList },
+                            { excludeExtraneousValues: true, exposeUnsetFields: true, enableImplicitConversion: true });
+                        return componentsDto;
+                    }))
+
                     .pipe(
-                        catchError((error) => {
-                            if (error.response) {
-                                // The request was made and the server responded with a status code
-                                // that falls out of the range of 2xx
-                                console.log(error.response.data);
-                                console.log(error.response.status);
-                                console.log(error.response.headers);
-                                throw new HttpException(error.message, error.response.status);
-                            } else if (error.request) {
-                                // The request was made but no response was received
-                                console.log(error.request);
-                            } else {
-                                // Something happened in setting up the request that triggered an Error
-                                console.log('Error', error.message);
-                            }
-                            console.log(error.config);
-                            throw new HttpException('Could not retrieve data from Score', HttpStatus.SERVICE_UNAVAILABLE);
+                        catchError((error: AxiosError) => {
+                            this.axiosHelper.handleAxiosError(error);
                         }),
                     )
             )
             ;
 
-        return data;
+        if (!components)
+            return new Components();
+        return components;
+
     }
 
-    getFromCache(uuid: string, schemaType: string, releaseVersion: string): string {
-        var schema;
-        try {
-            const cacheFile = this.path.join(this.cachePath, schemaType, releaseVersion, uuid + '.' + schemaType);
-            schema = this.fs.readFileSync(cacheFile).toString();
-            if (schema) {
-                console.log("cache hit " + cacheFile);
-            }
-        }
-        catch (error) {
-            console.log("cache miss: " + error);
-            return schema;
-        }
-        return schema;
-    }
-
-    writeToCache(uuid: string, schema: string, schemaType: string, releaseVersion: string) {
-        const cachePath = this.path.join(this.cachePath, schemaType, releaseVersion);
-        const cacheFile = this.path.join(cachePath, uuid + '.' + schemaType);
-        if (!this.fs.existsSync(cachePath)) {
-            this.fs.mkdirSync(cachePath, { recursive: true });
-        }
-        this.fs.writeFileSync(cacheFile, schema, (err) => {
-            if (err) {
-                console.log("Schema cache failed " + cacheFile);
-                console.log(err);
-            }
-            else {
-                console.log("Schema written to cache " + cacheFile);
-            }
-        }
-        );
+    getDefaultLibrary() {
+        return this.configService.get<string>('default_library') ?? 'connectSpec';
     }
 
 }
-

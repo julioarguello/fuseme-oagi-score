@@ -1,4 +1,4 @@
-package org.oagi.score.gateway.http.api.external.data;
+package org.oagi.score.gateway.http.api.external.model;
 
 import lombok.Data;
 import org.oagi.score.gateway.http.api.bie_management.model.BieState;
