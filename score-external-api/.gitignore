@@ -10,5 +10,4 @@ package-lock.json
 .DS_Store
 
 # local
-.env
 dist

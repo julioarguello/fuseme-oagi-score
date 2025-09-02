@@ -7,7 +7,7 @@ import org.oagi.score.gateway.http.api.application_management.service.Applicatio
 import org.oagi.score.gateway.http.api.bie_management.model.BieState;
 import org.oagi.score.gateway.http.api.bie_management.model.TopLevelAsbiepId;
 import org.oagi.score.gateway.http.api.cc_management.model.asccp.AsccpManifestId;
-import org.oagi.score.gateway.http.api.external.data.BieList;
+import org.oagi.score.gateway.http.api.external.model.BieList;
 import org.oagi.score.gateway.http.api.library_management.model.LibraryId;
 import org.oagi.score.gateway.http.api.release_management.model.ReleaseId;
 import org.oagi.score.gateway.http.api.tenant_management.model.TenantId;
