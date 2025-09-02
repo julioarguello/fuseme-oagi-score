@@ -88,7 +88,10 @@ public class BiePackageManifestService {
         for (TopLevelAsbiepSummaryRecord currentTopLevelAsbiep : currentTopLevelAsbiepList) {
 
             releaseMapByLibraryId.putIfAbsent(currentTopLevelAsbiep.library().libraryId(), new ArrayList<>());
-            releaseMapByLibraryId.get(currentTopLevelAsbiep.library().libraryId()).add(currentTopLevelAsbiep.release());
+            Collection<ReleaseSummaryRecord> releaseSummaryRecords = releaseMapByLibraryId.get(currentTopLevelAsbiep.library().libraryId());
+            if (releaseSummaryRecords.stream().filter(e -> e.releaseId().equals(currentTopLevelAsbiep.release().releaseId())).count() == 0) {
+                releaseSummaryRecords.add(currentTopLevelAsbiep.release());
+            }
 
             BieManifestEntry bieManifestEntry = null;
             for (TopLevelAsbiepSummaryRecord prevTopLevelAsbiep : prevTopLevelAsbiepList) {
