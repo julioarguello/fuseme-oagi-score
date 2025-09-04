@@ -3,9 +3,13 @@ package org.oagi.score.gateway.http.api.external.repository;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.types.ULong;
+
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.name;
+
 import java.sql.Timestamp;
+
+import org.oagi.score.gateway.http.api.cc_management.model.acc.OagisComponentType;
 import org.oagi.score.gateway.http.api.cc_management.model.asccp.AsccpManifestId;
 import org.oagi.score.gateway.http.api.external.model.AssociatedComponentType;
 import org.oagi.score.gateway.http.api.external.model.ExternalChildComponentRecord;
@@ -14,7 +18,9 @@ import org.oagi.score.gateway.http.api.release_management.model.ReleaseId;
 import org.oagi.score.gateway.http.api.release_management.model.ReleaseState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.oagi.score.gateway.http.common.repository.jooq.entity.Tables.*;
 
@@ -93,7 +99,9 @@ public class ExternalComponentsRepository {
                 + " join asccp_manifest on asccp_manifest.asccp_manifest_id=ascc_manifest.to_asccp_manifest_id "
                 + " join asccp on asccp_manifest.asccp_id=asccp.asccp_id "
                 + " left join acc_manifest as group_acc_manifest on group_acc_manifest.acc_manifest_id=asccp_manifest.role_of_acc_manifest_id "
-                + " left join acc as group_acc on group_acc.acc_id=group_acc_manifest.acc_id and group_acc.oagis_component_type=3 "
+                + " left join acc as group_acc on group_acc.acc_id=group_acc_manifest.acc_id and group_acc.oagis_component_type in (" +
+                Arrays.stream(OagisComponentType.values()).filter(e -> e.isGroup())
+                        .map(e -> Integer.toString(e.getValue())).collect(Collectors.joining(",")) + ") "
                 + " left join ascc_manifest as group_ascc_manifest on group_acc_manifest.acc_manifest_id=group_ascc_manifest.from_acc_manifest_id "
                 + " left join ascc as group_ascc on group_ascc.ascc_id=group_ascc_manifest.ascc_id "
                 + " left join asccp_manifest as group_asccp_manifest on group_asccp_manifest.asccp_manifest_id=group_ascc_manifest.to_asccp_manifest_id "
