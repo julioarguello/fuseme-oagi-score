@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.oagi.score.e2e.impl.api.jooq.entity.Tables.LIBRARY;
 import static org.oagi.score.e2e.impl.api.jooq.entity.Tables.MODULE_SET;
 
 public class DSLContextModuleSetAPIImpl implements ModuleSetAPI {
@@ -48,8 +49,12 @@ public class DSLContextModuleSetAPIImpl implements ModuleSetAPI {
     }
 
     @Override
-    public List<ModuleSetObject> getAllModuleSets() {
-        return dslContext.selectFrom(MODULE_SET).fetch(this::moduleSetMapper);
+    public List<ModuleSetObject> getAllModuleSets(String libraryName) {
+        return dslContext.select(MODULE_SET.fields())
+                .from(MODULE_SET)
+                .join(LIBRARY).on(MODULE_SET.LIBRARY_ID.eq(LIBRARY.LIBRARY_ID))
+                .where(LIBRARY.NAME.eq(libraryName))
+                .fetch(this::moduleSetMapper);
     }
 
     private ModuleSetObject moduleSetMapper(Record record) {

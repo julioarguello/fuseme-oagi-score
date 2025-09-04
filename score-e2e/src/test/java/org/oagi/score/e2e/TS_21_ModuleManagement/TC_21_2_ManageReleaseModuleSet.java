@@ -72,7 +72,7 @@ public class TC_21_2_ManageReleaseModuleSet extends BaseTest {
         createModuleSetReleasePage.setName(moduleSetReleaseName);
         String description = RandomStringUtils.secure().nextPrint(50, 100).trim();
         createModuleSetReleasePage.setDescription(description);
-        List<ModuleSetObject> existingModuleSets = getAPIFactory().getModuleSetAPI().getAllModuleSets();
+        List<ModuleSetObject> existingModuleSets = getAPIFactory().getModuleSetAPI().getAllModuleSets("connectSpec");
         for (ModuleSetObject moduleSet : existingModuleSets.stream().filter(e -> !e.getName().contains("Test")).collect(Collectors.toList())) {
             assertDoesNotThrow(() -> createModuleSetReleasePage.setModuleSet(moduleSet.getName()));
         }
