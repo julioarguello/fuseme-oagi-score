@@ -30,7 +30,6 @@ import org.oagi.score.gateway.http.api.code_list_management.model.CodeListSummar
 import org.oagi.score.gateway.http.api.export.model.*;
 import org.oagi.score.gateway.http.api.namespace_management.model.NamespaceId;
 import org.oagi.score.gateway.http.api.namespace_management.model.NamespaceSummaryRecord;
-import org.oagi.score.gateway.http.api.xbt_management.model.XbtSummaryRecord;
 import org.oagi.score.gateway.http.common.ScoreConstants;
 import org.oagi.score.gateway.http.common.helper.Context;
 import org.oagi.score.gateway.http.common.util.Utility;
@@ -45,7 +44,6 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -276,11 +274,6 @@ public class XMLExportSchemaModuleVisitor {
         Document document = createDocument(schemaDefinition.getBytes());
         for (Element child : document.getRootElement().getChildren()) {
             child = child.clone();
-            if ("restriction".equals(child.getName())) {
-                if (!Arrays.asList("xbt_DayOfWeekType", "xbt_DayOfYearType", "xbt_BooleanType").contains(name)) {
-                    child.removeContent();
-                }
-            }
             simpleTypeElement.addContent(child);
         }
 

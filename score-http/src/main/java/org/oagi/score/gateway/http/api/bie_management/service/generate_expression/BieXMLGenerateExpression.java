@@ -267,31 +267,23 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         if (!appinfoList.isEmpty()) {
-            Element prevAnnotation = node.getChild("annotation", XSD_NAMESPACE);
-            if (prevAnnotation != null) {
-                prevAnnotation.detach();
+            Element annotation = node.getChild("annotation", XSD_NAMESPACE);
+            if (annotation == null) {
+                annotation = newElement("annotation");
+                node.addContent(0, annotation);
             }
 
-            Element annotation = newElement("annotation");
-            node.addContent(0, annotation);
-
+            int index = 0;
             Element documentation = newElement("documentation");
             if (biePackage != null) {
                 documentation.setText("Below are 'appinfo' elements containing BIE package information in beta format.");
             } else {
                 documentation.setText("Below is the 'appinfo' element containing BIE version information in beta format.");
             }
-            annotation.addContent(documentation);
+            annotation.addContent(index++, documentation);
 
             for (Element appinfo : appinfoList) {
-                annotation.addContent(appinfo);
-            }
-
-            if (prevAnnotation != null) {
-                for (Element child : prevAnnotation.getChildren()) {
-                    child.detach();
-                    annotation.addContent(child);
-                }
+                annotation.addContent(index++, appinfo);
             }
         }
     }
@@ -336,8 +328,11 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         AsccpSummaryRecord asccp = generationContext.getAsccp(asbiep.basedAsccpManifestId());
         Namespace namespace = getNamespace(generationContext, asccp.namespaceId());
 
-        Element annotation = newElement("annotation");
-        node.addContent(annotation);
+        Element annotation = node.getChild("annotation", XSD_NAMESPACE);
+        if (annotation == null) {
+            annotation = newElement("annotation");
+            node.addContent(0, annotation);
+        }
 
         Element documentation = newElement("documentation");
         annotation.addContent(documentation);
@@ -473,8 +468,14 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
             return;
         }
 
+        Element annotation = node.getChild("annotation", XSD_NAMESPACE);
+        if (annotation == null) {
+            annotation = newElement("annotation");
+            node.addContent(0, annotation);
+        }
+
         Element documentation = null;
-        for (Element child : node.getChildren("documentation", XSD_NAMESPACE)) {
+        for (Element child : annotation.getChildren("documentation", XSD_NAMESPACE)) {
             if (child.getAttribute("source") == null) {
                 documentation = child;
                 break;
@@ -482,9 +483,6 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         if (documentation == null) {
-            Element annotation = newElement("annotation");
-            node.addContent(annotation);
-
             documentation = newElement("documentation");
             annotation.addContent(documentation);
         }
@@ -592,35 +590,40 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
             if (option.isIncludeWhoColumns()) {
                 String ownerUserName = bieDocumentation.getOwnerUserName();
-                if (StringUtils.hasLength(ownerUserName)) {
+                if (StringUtils.hasLength(ownerUserName) &&
+                        documentation.getChild("srt_OwnerUserName", Namespace.getNamespace(namespace.getURI())) == null) {
                     Element srt_OwnerUserName = new Element("srt_OwnerUserName", namespace.getURI());
                     documentation.addContent(srt_OwnerUserName);
                     srt_OwnerUserName.setText(ownerUserName);
                 }
 
                 String createdUserName = bieDocumentation.getCreatedUserName();
-                if (StringUtils.hasLength(createdUserName)) {
+                if (StringUtils.hasLength(createdUserName) &&
+                        documentation.getChild("srt_CreatedByUserName", Namespace.getNamespace(namespace.getURI())) == null) {
                     Element srt_CreatedByUserName = new Element("srt_CreatedByUserName", namespace.getURI());
                     documentation.addContent(srt_CreatedByUserName);
                     srt_CreatedByUserName.setText(createdUserName);
                 }
 
                 String lastUpdatedUserName = bieDocumentation.getLastUpdatedUserName();
-                if (StringUtils.hasLength(lastUpdatedUserName)) {
+                if (StringUtils.hasLength(lastUpdatedUserName) &&
+                        documentation.getChild("srt_LastUpdatedByUserName", Namespace.getNamespace(namespace.getURI())) == null) {
                     Element srt_LastUpdatedByUserName = new Element("srt_LastUpdatedByUserName", namespace.getURI());
                     documentation.addContent(srt_LastUpdatedByUserName);
                     srt_LastUpdatedByUserName.setText(lastUpdatedUserName);
                 }
 
                 Date creationTimestamp = bieDocumentation.getCreationTimestamp();
-                if (creationTimestamp != null) {
+                if (creationTimestamp != null &&
+                        documentation.getChild("srt_CreationTimestamp", Namespace.getNamespace(namespace.getURI())) == null) {
                     Element srt_CreationTimestamp = new Element("srt_CreationTimestamp", namespace.getURI());
                     documentation.addContent(srt_CreationTimestamp);
                     srt_CreationTimestamp.setText(toZuluTimeString(creationTimestamp));
                 }
 
                 Date lastUpdatedTimestamp = bieDocumentation.getLastUpdatedTimestamp();
-                if (lastUpdatedTimestamp != null) {
+                if (lastUpdatedTimestamp != null &&
+                        documentation.getChild("srt_LastUpdateTimestamp", Namespace.getNamespace(namespace.getURI())) == null) {
                     Element srt_LastUpdateTimestamp = new Element("srt_LastUpdateTimestamp", namespace.getURI());
                     documentation.addContent(srt_LastUpdateTimestamp);
                     srt_LastUpdateTimestamp.setText(toZuluTimeString(lastUpdatedTimestamp));
