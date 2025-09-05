@@ -25,7 +25,7 @@ public class AboutPageImpl extends BasePageImpl implements AboutPage {
     public void openPage() {
         String url = getPageUrl();
         getDriver().get(url);
-        assert "Score".equals(getText(getTitle()));
+        assert "connectCenter".equals(getText(getTitle()));
     }
 
     @Override

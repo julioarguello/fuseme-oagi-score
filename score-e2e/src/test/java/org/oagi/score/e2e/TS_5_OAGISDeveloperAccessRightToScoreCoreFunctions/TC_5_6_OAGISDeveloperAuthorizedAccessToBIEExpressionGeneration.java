@@ -387,8 +387,8 @@ public class TC_5_6_OAGISDeveloperAuthorizedAccessToBIEExpressionGeneration exte
         expressBIEPage.toggleIncludeCCTSDefinitionTag();
         expressBIEPage.toggleBIEGUID();
         expressBIEPage.toggleBusinessContext();
-        expressBIEPage.toggleBIEOAGIScoreMetaData();
-        assertChecked(expressBIEPage.getBIEOAGIScoreMetaDataCheckbox());
+        expressBIEPage.toggleBIEOAGIConnectCenterMetaData();
+        assertChecked(expressBIEPage.getBIEOAGIConnectCenterMetaDataCheckbox());
         assertEnabled(expressBIEPage.getIncludeWHOColumnsCheckbox());
         expressBIEPage.toggleIncludeWHOColumns();
         expressBIEPage.toggleBasedCCMetaData();
@@ -456,8 +456,8 @@ public class TC_5_6_OAGISDeveloperAuthorizedAccessToBIEExpressionGeneration exte
         ExpressBIEPage expressBIEPage = homePage.getBIEMenu().openExpressBIESubMenu();
         expressBIEPage.selectBIEForExpression(topLevelASBIEP);
         expressBIEPage.selectPutAllSchemasInTheSameFile();
-        expressBIEPage.toggleBIEOAGIScoreMetaData();
-        assertChecked(expressBIEPage.getBIEOAGIScoreMetaDataCheckbox());
+        expressBIEPage.toggleBIEOAGIConnectCenterMetaData();
+        assertChecked(expressBIEPage.getBIEOAGIConnectCenterMetaDataCheckbox());
         assertEnabled(expressBIEPage.getIncludeWHOColumnsCheckbox());
         assertNotChecked(expressBIEPage.getIncludeWHOColumnsCheckbox());
 
@@ -522,15 +522,15 @@ public class TC_5_6_OAGISDeveloperAuthorizedAccessToBIEExpressionGeneration exte
         expressBIEPage.selectBIEForExpression(topLevelASBIEP);
         expressBIEPage.selectPutAllSchemasInTheSameFile();
 
-        assertNotChecked(expressBIEPage.getBIEOAGIScoreMetaDataCheckbox());
+        assertNotChecked(expressBIEPage.getBIEOAGIConnectCenterMetaDataCheckbox());
         assertThrows(ElementClickInterceptedException.class, () -> expressBIEPage.toggleIncludeWHOColumns());
         assertNotChecked(expressBIEPage.getIncludeWHOColumnsCheckbox());
 
-        expressBIEPage.toggleBIEOAGIScoreMetaData();
+        expressBIEPage.toggleBIEOAGIConnectCenterMetaData();
         expressBIEPage.toggleIncludeWHOColumns();
         assertChecked(expressBIEPage.getIncludeWHOColumnsCheckbox());
 
-        expressBIEPage.toggleBIEOAGIScoreMetaData();
+        expressBIEPage.toggleBIEOAGIConnectCenterMetaData();
         assertNotChecked(expressBIEPage.getIncludeWHOColumnsCheckbox());
     }
 
@@ -617,7 +617,7 @@ public class TC_5_6_OAGISDeveloperAuthorizedAccessToBIEExpressionGeneration exte
         assertDisabled(expressBIEPage.getIncludeCCTSDefinitionTagCheckbox());
         assertDisabled(expressBIEPage.getBIEGUIDCheckbox());
         assertDisabled(expressBIEPage.getBusinessContextCheckbox());
-        assertDisabled(expressBIEPage.getBIEOAGIScoreMetaDataCheckbox());
+        assertDisabled(expressBIEPage.getBIEOAGIConnectCenterMetaDataCheckbox());
         assertDisabled(expressBIEPage.getIncludeWHOColumnsCheckbox());
         assertDisabled(expressBIEPage.getBasedCCMetaDataCheckbox());
     }
@@ -657,8 +657,8 @@ public class TC_5_6_OAGISDeveloperAuthorizedAccessToBIEExpressionGeneration exte
         expressBIEPage.toggleIncludeCCTSDefinitionTag();
         expressBIEPage.toggleBIEGUID();
         expressBIEPage.toggleBusinessContext();
-        expressBIEPage.toggleBIEOAGIScoreMetaData();
-        assertChecked(expressBIEPage.getBIEOAGIScoreMetaDataCheckbox());
+        expressBIEPage.toggleBIEOAGIConnectCenterMetaData();
+        assertChecked(expressBIEPage.getBIEOAGIConnectCenterMetaDataCheckbox());
         assertEnabled(expressBIEPage.getIncludeWHOColumnsCheckbox());
         expressBIEPage.toggleIncludeWHOColumns();
         expressBIEPage.toggleBasedCCMetaData();
@@ -709,8 +709,8 @@ public class TC_5_6_OAGISDeveloperAuthorizedAccessToBIEExpressionGeneration exte
         expressBIEPage.toggleIncludeCCTSDefinitionTag();
         expressBIEPage.toggleBIEGUID();
         expressBIEPage.toggleBusinessContext();
-        expressBIEPage.toggleBIEOAGIScoreMetaData();
-        assertChecked(expressBIEPage.getBIEOAGIScoreMetaDataCheckbox());
+        expressBIEPage.toggleBIEOAGIConnectCenterMetaData();
+        assertChecked(expressBIEPage.getBIEOAGIConnectCenterMetaDataCheckbox());
         assertEnabled(expressBIEPage.getIncludeWHOColumnsCheckbox());
         expressBIEPage.toggleIncludeWHOColumns();
         expressBIEPage.toggleBasedCCMetaData();

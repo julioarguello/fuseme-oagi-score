@@ -33,7 +33,7 @@ public class LoginPageImpl extends BasePageImpl implements LoginPage {
         String url = getPageUrl();
         getDriver().get(url);
         waitFor(ofSeconds(1L));
-        assert "Sign in to NIST/OAGi Score".equals(getText(getTitle()));
+        assert "Sign in to NIST/OAGi connectCenter".equals(getText(getTitle()));
     }
 
     @Override
@@ -96,7 +96,7 @@ public class LoginPageImpl extends BasePageImpl implements LoginPage {
         AppUserObject user = this.getAPIFactory().getAppUserAPI().getAppUserByLoginID(username);
         HomePage homePage = new HomePageImpl(this, user);
         try {
-            assert homePage.getScoreLogo().isDisplayed();
+            assert homePage.getConnectCenterLogo().isDisplayed();
         } catch (TimeoutException e) {
             try {
                 WebElement redirectedPageTitle = getDriver().findElement(By.cssSelector(".mat-mdc-card-title"));

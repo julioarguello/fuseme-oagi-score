@@ -19,14 +19,14 @@
 
 # -- Project information -----------------------------------------------------
 
-project = u'Score User Guide'
+project = u'connectCenter User Guide'
 copyright = u'2025, NIST'
 author = u'NIST'
 
 # The short X.Y version
-version = u'3.4.0'
+version = u'3.4.1'
 # The full version, including alpha/beta/rc tags
-release = u'3.4.0'
+release = u'3.4.1'
 
 
 # -- General configuration ---------------------------------------------------
@@ -129,7 +129,7 @@ html_sidebars = {'**': [
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Scoreuserdoc'
+htmlhelp_basename = 'connectCenter_User_Guide'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -156,7 +156,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Scoreuser.tex', 'Score user Documentation',
+    (master_doc, 'connectCenter_User_Guide.tex', 'connectCenter user Documentation',
      'National Institute of Standards and Technology', 'manual'),
 ]
 
@@ -166,7 +166,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'score', 'Score user Documentation',
+    (master_doc, 'connectCenter', 'connectCenter user Documentation',
      [author], 1)
 ]
 
@@ -178,8 +178,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Scoreuser', 'Score user Documentation',
-     author, 'Scoreuser', 'One line description of project.',
+    (master_doc, 'connectCenter_User_Guide', 'connectCenter user Documentation',
+     author, 'connectCenter_User_Guide', 'One line description of project.',
      'Miscellaneous'),
 ]
 

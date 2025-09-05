@@ -39,7 +39,7 @@ public class TC_7_4_OAGiTerminologyCopyBIEForSelectBusinessContextsPage extends 
     @DisplayName("TC_7_4_TA_1")
     public void test_copy_bie_page_title_first_page() {
         HomePage homePage = loginPage().signIn(appUser.getLoginId(), appUser.getPassword());
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
         BIEMenu bieMenu = homePage.getBIEMenu();
         assertTrue(bieMenu.getCopyBIESubMenu().isEnabled());
         String pageTitle = getText(homePage.getBIEMenu().openCopyBIESubMenu().getTitle());
@@ -53,7 +53,7 @@ public class TC_7_4_OAGiTerminologyCopyBIEForSelectBusinessContextsPage extends 
         //test assertion in the documentation should be changed because the subtitle of the second page is not “Select BIE (Profiled Component, Noun, BOD)”
 
         HomePage homePage = loginPage().signIn(appUser.getLoginId(), appUser.getPassword());
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
 
         BIEMenu bieMenu = homePage.getBIEMenu();
         assertTrue(bieMenu.getCopyBIESubMenu().isEnabled());

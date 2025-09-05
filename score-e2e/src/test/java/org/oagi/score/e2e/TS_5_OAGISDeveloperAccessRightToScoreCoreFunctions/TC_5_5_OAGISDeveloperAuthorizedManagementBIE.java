@@ -728,7 +728,7 @@ public class TC_5_5_OAGISDeveloperAuthorizedManagementBIE extends BaseTest {
         HomePage homePage = loginPage().signIn(developer.getLoginId(), developer.getPassword());
 
         for (AppUserObject appUser : otherUsers) {
-            click(homePage.getScoreLogo());
+            click(homePage.getConnectCenterLogo());
 
             BusinessContextObject randomBusinessContext =
                     getAPIFactory().getBusinessContextAPI().createRandomBusinessContext(appUser);
@@ -764,7 +764,7 @@ public class TC_5_5_OAGISDeveloperAuthorizedManagementBIE extends BaseTest {
         HomePage homePage = loginPage().signIn(developer.getLoginId(), developer.getPassword());
 
         for (AppUserObject appUser : otherUsers) {
-            click(homePage.getScoreLogo());
+            click(homePage.getConnectCenterLogo());
 
             BusinessContextObject randomBusinessContext =
                     getAPIFactory().getBusinessContextAPI().createRandomBusinessContext(appUser);
@@ -816,7 +816,7 @@ public class TC_5_5_OAGISDeveloperAuthorizedManagementBIE extends BaseTest {
         HomePage homePage = loginPage().signIn(developer.getLoginId(), developer.getPassword());
 
         for (AppUserObject appUser : otherUsers) {
-            click(homePage.getScoreLogo());
+            click(homePage.getConnectCenterLogo());
 
             BusinessContextObject randomBusinessContext =
                     getAPIFactory().getBusinessContextAPI().createRandomBusinessContext(appUser);
@@ -1113,7 +1113,7 @@ public class TC_5_5_OAGISDeveloperAuthorizedManagementBIE extends BaseTest {
         HomePage homePage = loginPage().signIn(developer.getLoginId(), developer.getPassword());
 
         for (AppUserObject appUser : otherUsers) {
-            click(homePage.getScoreLogo());
+            click(homePage.getConnectCenterLogo());
 
             BusinessContextObject randomBusinessContext =
                     getAPIFactory().getBusinessContextAPI().createRandomBusinessContext(appUser);
@@ -1195,7 +1195,7 @@ public class TC_5_5_OAGISDeveloperAuthorizedManagementBIE extends BaseTest {
         ViewEditBIEPage viewEditBIEPage = homePage.getBIEMenu().openViewEditBIESubMenu();
         viewEditBIEPage.discard(topLevelASBIEP);
 
-        click(homePage.getScoreLogo());
+        click(homePage.getConnectCenterLogo());
         ViewEditBIEPage viewEditBIEPageForCheck = homePage.getBIEMenu().openViewEditBIESubMenu();
         viewEditBIEPageForCheck.showAdvancedSearchPanel();
         viewEditBIEPageForCheck.setBranch(topLevelASBIEP.getReleaseNumber());

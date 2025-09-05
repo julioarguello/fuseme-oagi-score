@@ -21,11 +21,11 @@ public interface HomePage extends Page {
     String getLoginID();
 
     /**
-     * Return the UI element of the Score logo.
+     * Return the UI element of the connectCenter logo.
      *
-     * @return the UI element of the Score logo
+     * @return the UI element of the connectCenter logo
      */
-    WebElement getScoreLogo();
+    WebElement getConnectCenterLogo();
 
     /**
      * Return the menu object of the 'BIE' menu.

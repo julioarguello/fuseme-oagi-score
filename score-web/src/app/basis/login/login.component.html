@@ -3,7 +3,8 @@
   <div class="auth-form" *ngIf="(oauth2AppInfos | async) as oAuth2AppInfos; else emptyBlock">
     <form role="form" (submit)="login()" *ngIf="!roles.includes('pending') && !roles.includes('reject')">
       <div class="auth-form-header">
-        <h1>Sign in to NIST/OAGi Score</h1>
+        <h1>Sign in to NIST/OAGi connectCenter</h1>
+        <h4 class="pt-1 pr-3 text-align-end">(formerly "Score")</h4>
       </div>
 
       <div [hidden]="err === undefined" class="alert alert-danger alert-dismissible fade show" role="alert">

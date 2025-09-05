@@ -72,7 +72,7 @@ public class TC_7_6_OAGiTerminologyCoreComponent extends BaseTest {
         TopLevelASBIEPObject topLevelAsbiep = getAPIFactory().getBusinessInformationEntityAPI().generateRandomTopLevelASBIEP(Arrays.asList(context), asccp, endUser, "WIP");
 
         HomePage homePage = loginPage().signIn(endUser.getLoginId(), endUser.getPassword());
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
         CoreComponentMenu coreComponentMenu = homePage.getCoreComponentMenu();
         ViewEditCoreComponentPage viewEditCoreComponentPage = coreComponentMenu.openViewEditCoreComponentSubMenu();
         viewEditCoreComponentPage.showAdvancedSearchPanel();
@@ -121,7 +121,7 @@ public class TC_7_6_OAGiTerminologyCoreComponent extends BaseTest {
 
         viewEditCoreComponentPage.toggleToDevView();
         ACCViewEditPage accViewEditPage = viewEditCoreComponentPage.openACCViewEditPageByDenAndBranch(acc.getDen(), release.getReleaseNumber());
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
 
         String objectClassTermFieldACCPageTitle = accViewEditPage.getObjectClassTermFieldLabel();
         assertEquals("Object Class Term (Space Separated Name)", objectClassTermFieldACCPageTitle);
@@ -136,7 +136,7 @@ public class TC_7_6_OAGiTerminologyCoreComponent extends BaseTest {
         EditBIEPage editBIEPage = viewEditBIEPage.openEditBIEPage(topLevelAsbiep);
         ACCExtensionViewEditPage accExtensionViewEditPage =
                 editBIEPage.extendBIELocallyOnNode("/" + asccp.getPropertyTerm() + "/Extension");
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
 
         String objectClassTermFieldBIEPageTitleLocalExtension = accExtensionViewEditPage.getObjectClassTermFieldLabel();
         assertEquals("Object Class Term (Space Separated Name)", objectClassTermFieldBIEPageTitleLocalExtension);
@@ -151,7 +151,7 @@ public class TC_7_6_OAGiTerminologyCoreComponent extends BaseTest {
         viewEditBIEPage.openPage();
         editBIEPage = viewEditBIEPage.openEditBIEPage(topLevelAsbiepGlobalExtension);
         accExtensionViewEditPage = editBIEPage.extendBIEGloballyOnNode("/" + asccp.getPropertyTerm() + "/Extension");
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
 
         String objectClassTermFieldBIEPageTitleGlobalExtension = accExtensionViewEditPage.getObjectClassTermFieldLabel();
         assertEquals("Object Class Term (Space Separated Name)", objectClassTermFieldBIEPageTitleGlobalExtension);
@@ -204,7 +204,7 @@ public class TC_7_6_OAGiTerminologyCoreComponent extends BaseTest {
         viewEditCoreComponentPage.toggleToDevView();
 
         ASCCPViewEditPage asccpViewEditPage = viewEditCoreComponentPage.openASCCPViewEditPageByDenAndBranch(asccp.getDen(), release.getReleaseNumber());
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
 
         ASCCPViewEditPage.ASCCPPanel asccpPanel = asccpViewEditPage.getASCCPPanel();
         String propertyTermFieldLabel = asccpPanel.getPropertyTermFieldLabel();
@@ -253,7 +253,7 @@ public class TC_7_6_OAGiTerminologyCoreComponent extends BaseTest {
         ViewEditCoreComponentPage viewEditCoreComponentPage = coreComponentMenu.openViewEditCoreComponentSubMenu();
         viewEditCoreComponentPage.toggleToDevView();
         BCCPViewEditPage bccpViewEditPage = viewEditCoreComponentPage.openBCCPViewEditPageByDenAndBranch(bccp.getDen(), branch.getReleaseNumber());
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
 
         BCCPViewEditPage.BCCPPanel bccpPanel = bccpViewEditPage.getBCCPPanelContainer().getBCCPPanel();
         String propertyTermFieldLabel = bccpPanel.getPropertyTermFieldLabel();
@@ -296,7 +296,7 @@ public class TC_7_6_OAGiTerminologyCoreComponent extends BaseTest {
         ViewEditCoreComponentPage viewEditCoreComponentPage = coreComponentMenu.openViewEditCoreComponentSubMenu();
         viewEditCoreComponentPage.toggleToDevView();
         ACCViewEditPage accViewEditPage = viewEditCoreComponentPage.openACCViewEditPageByDenAndBranch(accFrom.getDen(), release.getReleaseNumber());
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
 
         WebElement node = accViewEditPage.getNodeByPath("/" + accFrom.getDen() + "/" + accTo.getObjectClassTerm());
         click(node);
@@ -350,7 +350,7 @@ public class TC_7_6_OAGiTerminologyCoreComponent extends BaseTest {
         ViewEditCoreComponentPage viewEditCoreComponentPage = coreComponentMenu.openViewEditCoreComponentSubMenu();
         viewEditCoreComponentPage.toggleToDevView();
         ACCViewEditPage accViewEditPage = viewEditCoreComponentPage.openACCViewEditPageByDenAndBranch(acc.getDen(), branch.getReleaseNumber());
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
 
         WebElement bccNode = accViewEditPage.getNodeByPath("/" + acc.getDen() + "/" + bccp.getPropertyTerm());
         click(bccNode);
@@ -404,7 +404,7 @@ public class TC_7_6_OAGiTerminologyCoreComponent extends BaseTest {
         ViewEditCoreComponentPage viewEditCoreComponentPage = coreComponentMenu.openViewEditCoreComponentSubMenu();
         viewEditCoreComponentPage.toggleToDevView();
         ACCViewEditPage accViewEditPage = viewEditCoreComponentPage.openACCViewEditPageByDenAndBranch(acc.getDen(), branch.getReleaseNumber());
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
 
         WebElement bdtScNode = accViewEditPage.getNodeByPath("/" + acc.getDen() + "/" + bccp.getPropertyTerm() + "/" + "Identifier. Scheme Version. Identifier");
         click(bdtScNode);

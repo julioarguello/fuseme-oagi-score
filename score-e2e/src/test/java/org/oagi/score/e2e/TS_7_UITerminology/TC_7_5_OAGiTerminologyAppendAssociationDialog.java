@@ -64,7 +64,7 @@ public class TC_7_5_OAGiTerminologyAppendAssociationDialog extends BaseTest {
         TopLevelASBIEPObject topLevelAsbiep = getAPIFactory().getBusinessInformationEntityAPI().generateRandomTopLevelASBIEP(Arrays.asList(context), asccp, endUser, "WIP");
 
         HomePage homePage = loginPage().signIn(endUser.getLoginId(), endUser.getPassword());
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
 
         BIEMenu bieMenu = homePage.getBIEMenu();
         ViewEditBIEPage viewEditBIEPage = bieMenu.openViewEditBIESubMenu();
@@ -107,7 +107,7 @@ public class TC_7_5_OAGiTerminologyAppendAssociationDialog extends BaseTest {
         TopLevelASBIEPObject topLevelAsbiep = getAPIFactory().getBusinessInformationEntityAPI().generateRandomTopLevelASBIEP(Arrays.asList(context), asccp, endUser, "WIP");
 
         HomePage homePage = loginPage().signIn(endUser.getLoginId(), endUser.getPassword());
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
 
         BIEMenu bieMenu = homePage.getBIEMenu();
         ViewEditBIEPage viewEditBIEPage = bieMenu.openViewEditBIESubMenu();

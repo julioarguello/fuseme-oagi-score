@@ -213,7 +213,7 @@ public class TC_28_3_UserExtensionsTabForEndUsers extends BaseTest {
             assertTrue(viewEditCCPageForWIP.getTableRecordByCCNameAndOwner(ccName, ownerName).isDisplayed());
         }
 
-        click(homePage.getScoreLogo()); // to go to the home page again.
+        click(homePage.getConnectCenterLogo()); // to go to the home page again.
         click(homePage.getUserExtensionsTab());
         ViewEditCoreComponentPage viewEditCCPageForQA = homePage.openMyUEsByStatesPanel()
                 .clickStateProgressBar("QA");
@@ -230,7 +230,7 @@ public class TC_28_3_UserExtensionsTabForEndUsers extends BaseTest {
             assertTrue(viewEditCCPageForQA.getTableRecordByCCNameAndOwner(ccName, ownerName).isDisplayed());
         }
 
-        click(homePage.getScoreLogo()); // to go to the home page again.
+        click(homePage.getConnectCenterLogo()); // to go to the home page again.
         click(homePage.getUserExtensionsTab());
         ViewEditCoreComponentPage viewEditCCPageForProduction = homePage.openMyUEsByStatesPanel()
                 .clickStateProgressBar("Production");
@@ -377,7 +377,7 @@ public class TC_28_3_UserExtensionsTabForEndUsers extends BaseTest {
 
         HomePage.UEsByUsersAndStatesPanel uesByUsersAndStatesPanel = homePage.openUEsByUsersAndStatesPanel();
 
-        click(homePage.getScoreLogo()); // to go to the home page again.
+        click(homePage.getConnectCenterLogo()); // to go to the home page again.
         click(homePage.getUserExtensionsTab());
         uesByUsersAndStatesPanel.setUsername(endUser1.getLoginId()); //select endUser1
 
@@ -395,7 +395,7 @@ public class TC_28_3_UserExtensionsTabForEndUsers extends BaseTest {
         assertEquals(0, viewEditCCPageForWIP.getNumberOfOnlyCCsPerStateAreListed("QA"));
         assertEquals(0, viewEditCCPageForWIP.getNumberOfOnlyCCsPerStateAreListed("Production"));
 
-        click(homePage.getScoreLogo()); // to go to the home page again.
+        click(homePage.getConnectCenterLogo()); // to go to the home page again.
         click(homePage.getUserExtensionsTab());
         uesByUsersAndStatesPanel = homePage.openUEsByUsersAndStatesPanel();
         uesByUsersAndStatesPanel.setUsername(endUser1.getLoginId()); //select endUser1
@@ -405,7 +405,7 @@ public class TC_28_3_UserExtensionsTabForEndUsers extends BaseTest {
         assertEquals(container1.numberOfQAUEGs, viewEditCCPageForQA.getNumberOfOnlyCCsPerStateAreListed("QA"));
         assertEquals(0, viewEditCCPageForQA.getNumberOfOnlyCCsPerStateAreListed("Production"));
 
-        click(homePage.getScoreLogo()); // to go to the home page again.
+        click(homePage.getConnectCenterLogo()); // to go to the home page again.
         click(homePage.getUserExtensionsTab());
         uesByUsersAndStatesPanel = homePage.openUEsByUsersAndStatesPanel();
         uesByUsersAndStatesPanel.setUsername(endUser1.getLoginId()); //select endUser1
@@ -415,7 +415,7 @@ public class TC_28_3_UserExtensionsTabForEndUsers extends BaseTest {
         assertEquals(0, viewEditCCPageForProduction.getNumberOfOnlyCCsPerStateAreListed("QA"));
         assertEquals(container1.numberOfProductionUEGs, viewEditCCPageForProduction.getNumberOfOnlyCCsPerStateAreListed("Production"));
 
-        click(homePage.getScoreLogo()); // to go to the home page again.
+        click(homePage.getConnectCenterLogo()); // to go to the home page again.
         click(homePage.getUserExtensionsTab());
         uesByUsersAndStatesPanel = homePage.openUEsByUsersAndStatesPanel();
         uesByUsersAndStatesPanel.setUsername(endUser1.getLoginId()); //select endUser1

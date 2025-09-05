@@ -335,7 +335,7 @@ public class TC_28_2_UserExtensionsTabForDevelopers extends BaseTest {
         assertEquals(0, viewEditCCPageForWIP.getNumberOfOnlyCCsPerStateAreListed("QA"));
         assertEquals(0, viewEditCCPageForWIP.getNumberOfOnlyCCsPerStateAreListed("Production"));
 
-        click(homePage.getScoreLogo()); // to go to the home page again.
+        click(homePage.getConnectCenterLogo()); // to go to the home page again.
         uesByUsersAndStatesPanel = homePage.openUEsByUsersAndStatesPanel();
         uesByUsersAndStatesPanel.setUsername(endUser1.getLoginId()); //select endUser1
         ViewEditCoreComponentPage viewEditCCPageForQA = uesByUsersAndStatesPanel.openViewEditCCPageByUsernameAndColumnName(
@@ -344,7 +344,7 @@ public class TC_28_2_UserExtensionsTabForDevelopers extends BaseTest {
         assertEquals(container1.numberOfQAUEGs, viewEditCCPageForQA.getNumberOfOnlyCCsPerStateAreListed("QA"));
         assertEquals(0, viewEditCCPageForQA.getNumberOfOnlyCCsPerStateAreListed("Production"));
 
-        click(homePage.getScoreLogo()); // to go to the home page again.
+        click(homePage.getConnectCenterLogo()); // to go to the home page again.
         uesByUsersAndStatesPanel = homePage.openUEsByUsersAndStatesPanel();
         uesByUsersAndStatesPanel.setUsername(endUser1.getLoginId()); //select endUser1
         ViewEditCoreComponentPage viewEditCCPageForProduction = uesByUsersAndStatesPanel.openViewEditCCPageByUsernameAndColumnName(
@@ -353,7 +353,7 @@ public class TC_28_2_UserExtensionsTabForDevelopers extends BaseTest {
         assertEquals(0, viewEditCCPageForProduction.getNumberOfOnlyCCsPerStateAreListed("QA"));
         assertEquals(container1.numberOfProductionUEGs, viewEditCCPageForProduction.getNumberOfOnlyCCsPerStateAreListed("Production"));
 
-        click(homePage.getScoreLogo()); // to go to the home page again.
+        click(homePage.getConnectCenterLogo()); // to go to the home page again.
         uesByUsersAndStatesPanel = homePage.openUEsByUsersAndStatesPanel();
         uesByUsersAndStatesPanel.setUsername(endUser1.getLoginId()); //select endUser1
         ViewEditCoreComponentPage viewEditCCPageForTotal = uesByUsersAndStatesPanel.openViewEditCCPageByUsernameAndColumnName(

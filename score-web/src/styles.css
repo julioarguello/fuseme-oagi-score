@@ -106,6 +106,10 @@ b {
   text-align: center;
 }
 
+.text-align-end {
+  text-align: end;
+}
+
 .mat-mdc-table {
   width: 100%;
 }

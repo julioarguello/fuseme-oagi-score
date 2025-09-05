@@ -45,23 +45,23 @@ public interface LoginIDMenu {
     String getSignInLabelText();
 
     /**
-     * Return the UI element of the 'OAGIS Terminology' button.
+     * Return the UI element of the 'connectSpec Terminology' button.
      *
-     * @return the UI element of the 'OAGIS Terminology' button
+     * @return the UI element of the 'connectSpec Terminology' button
      */
-    WebElement getOAGISTerminologyButton();
+    WebElement getConnectSpecTerminologyButton();
 
     /**
-     * Click 'OAGIS Terminology' button if it is not checked.
+     * Click 'connectSpec Terminology' button if it is not checked.
      */
-    void checkOAGISTerminology();
+    void checkConnectSpecTerminology();
 
     /**
-     * Return {@code true} if 'OAGIS Terminology' button is checked, otherwise {@code false}.
+     * Return {@code true} if 'connectSpec Terminology' button is checked, otherwise {@code false}.
      *
-     * @return {@code true} if 'OAGIS Terminology' button is checked, otherwise {@code false}
+     * @return {@code true} if 'connectSpec Terminology' button is checked, otherwise {@code false}
      */
-    boolean isOAGISTerminologyChecked();
+    boolean isConnectSpecTerminologyChecked();
 
     /**
      * Return the UI element of the 'CCTS Terminology' button.

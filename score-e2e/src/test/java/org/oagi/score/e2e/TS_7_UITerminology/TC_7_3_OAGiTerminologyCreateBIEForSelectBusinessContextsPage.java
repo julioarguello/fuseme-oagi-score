@@ -39,7 +39,7 @@ public class TC_7_3_OAGiTerminologyCreateBIEForSelectBusinessContextsPage extend
     @DisplayName("TC_7_3_TA_1")
     public void test_create_bie_page_title_first_page() {
         HomePage homePage = loginPage().signIn(appUser.getLoginId(), appUser.getPassword());
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
         BIEMenu bieMenu = homePage.getBIEMenu();
         assertTrue(bieMenu.getCreateBIESubMenu().isEnabled());
         String createBIEPageTitle = getText(bieMenu.openCreateBIESubMenu().getTitle());
@@ -50,7 +50,7 @@ public class TC_7_3_OAGiTerminologyCreateBIEForSelectBusinessContextsPage extend
     @DisplayName("TC_7_3_TA_2")
     public void test_create_bie_page_title_second_page() {
         HomePage homePage = loginPage().signIn(appUser.getLoginId(), appUser.getPassword());
-        homePage.getLoginIDMenu().checkOAGISTerminology();
+        homePage.getLoginIDMenu().checkConnectSpecTerminology();
 
         BIEMenu bieMenu = homePage.getBIEMenu();
         assertTrue(bieMenu.getCreateBIESubMenu().isEnabled());

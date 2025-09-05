@@ -19,9 +19,9 @@ public class LoginIDMenuImpl extends DelegateBasePageImpl implements LoginIDMenu
 
     private final By SIGN_IN_LABEL_LOCATOR = By.xpath("//button//span[contains(text(), \"Signed in as\")]");
 
-    private final By OAGIS_TERMINOLOGY_BUTTON_LOCATOR = By.xpath("//span[contains(text(), \"OAGIS Terminology\")]//ancestor::button[1]");
+    private final By CONNECTSPEC_TERMINOLOGY_BUTTON_LOCATOR = By.xpath("//span[contains(text(), \"connectSpec Terminology\")]//ancestor::button[1]");
 
-    private final By OAGIS_TERMINOLOGY_CHECKED_LOCATOR = By.xpath("//span[contains(text(), \"OAGIS Terminology\")]//ancestor::button[1]//mat-icon[contains(text(), \"done\")]");
+    private final By CONNECTSPEC_TERMINOLOGY_CHECKED_LOCATOR = By.xpath("//span[contains(text(), \"connectSpec Terminology\")]//ancestor::button[1]//mat-icon[contains(text(), \"done\")]");
 
     private final By CCTS_TERMINOLOGY_BUTTON_LOCATOR = By.xpath("//span[contains(text(), \"CCTS Terminology\")]//ancestor::button[1]");
 
@@ -73,28 +73,28 @@ public class LoginIDMenuImpl extends DelegateBasePageImpl implements LoginIDMenu
     }
 
     @Override
-    public WebElement getOAGISTerminologyButton() {
+    public WebElement getConnectSpecTerminologyButton() {
         if (!isExpanded()) {
             expandLoginIDMenu();
         }
-        return elementToBeClickable(getDriver(), OAGIS_TERMINOLOGY_BUTTON_LOCATOR);
+        return elementToBeClickable(getDriver(), CONNECTSPEC_TERMINOLOGY_BUTTON_LOCATOR);
     }
 
     @Override
-    public void checkOAGISTerminology() {
-        if (isOAGISTerminologyChecked()) {
+    public void checkConnectSpecTerminology() {
+        if (isConnectSpecTerminologyChecked()) {
             return;
         }
-        click(getOAGISTerminologyButton());
+        click(getConnectSpecTerminologyButton());
     }
 
     @Override
-    public boolean isOAGISTerminologyChecked() {
+    public boolean isConnectSpecTerminologyChecked() {
         if (!isExpanded()) {
             expandLoginIDMenu();
         }
 
-        return retry(() -> visibilityOfElementLocated(shortWait(getDriver()), OAGIS_TERMINOLOGY_CHECKED_LOCATOR).isDisplayed(), false);
+        return retry(() -> visibilityOfElementLocated(shortWait(getDriver()), CONNECTSPEC_TERMINOLOGY_CHECKED_LOCATOR).isDisplayed(), false);
     }
 
     @Override

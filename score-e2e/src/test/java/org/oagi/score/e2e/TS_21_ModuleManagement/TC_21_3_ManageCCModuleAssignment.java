@@ -252,7 +252,7 @@ public class TC_21_3_ManageCCModuleAssignment extends BaseTest {
         editModuleSetPage.addModule();
         CopyModuleFromExistingModuleSetDialog copyModuleFromExistingModuleSetDialog =
                 editModuleSetPage.copyFromExistingModuleSet();
-        List<ModuleSetObject> existingModuleSet = getAPIFactory().getModuleSetAPI().getAllModuleSets();
+        List<ModuleSetObject> existingModuleSet = getAPIFactory().getModuleSetAPI().getAllModuleSets("connectSpec");
         ModuleSetObject selectedModuleSet = existingModuleSet.get(0);
         copyModuleFromExistingModuleSetDialog.setModuleSet(selectedModuleSet.getName());
         List<ModuleObject> modules = getAPIFactory().getModuleAPI().getModulesByModuleSet(selectedModuleSet.getModuleSetId());
@@ -378,7 +378,7 @@ public class TC_21_3_ManageCCModuleAssignment extends BaseTest {
         editModuleSetPage.addModule();
         CopyModuleFromExistingModuleSetDialog copyModuleFromExistingModuleSetDialog =
                 editModuleSetPage.copyFromExistingModuleSet();
-        List<ModuleSetObject> existingModuleSet = getAPIFactory().getModuleSetAPI().getAllModuleSets();
+        List<ModuleSetObject> existingModuleSet = getAPIFactory().getModuleSetAPI().getAllModuleSets("connectSpec");
         ModuleSetObject selectedModuleSet = existingModuleSet.get(0);
         copyModuleFromExistingModuleSetDialog.setModuleSet(selectedModuleSet.getName());
         List<ModuleObject> modules = getAPIFactory().getModuleAPI().getModulesByModuleSet(selectedModuleSet.getModuleSetId());

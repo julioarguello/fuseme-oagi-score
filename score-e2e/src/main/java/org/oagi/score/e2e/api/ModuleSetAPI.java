@@ -11,6 +11,6 @@ public interface ModuleSetAPI {
 
     ModuleSetObject getModuleSetByName(String moduleSetName);
 
-    List<ModuleSetObject> getAllModuleSets();
+    List<ModuleSetObject> getAllModuleSets(String libraryName);
 
 }
