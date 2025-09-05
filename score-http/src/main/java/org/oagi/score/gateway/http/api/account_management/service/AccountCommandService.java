@@ -98,6 +98,7 @@ public class AccountCommandService {
 
         var command = repositoryFactory.accountCommandRepository(requester, passwordEncoder);
         boolean updated = command.update(request.userId(),
+                request.loginId(),
                 request.username(),
                 request.organization(),
                 request.admin(),

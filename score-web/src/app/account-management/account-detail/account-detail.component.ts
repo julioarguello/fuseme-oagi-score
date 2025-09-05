@@ -98,6 +98,7 @@ export class AccountDetailComponent implements OnInit {
     }
 
     this.service.update(this.account.userId,
+        this.account.loginId,
         this.account.username, this.account.organization,
         this.account.admin,
         this.newPassword).subscribe(_ => {

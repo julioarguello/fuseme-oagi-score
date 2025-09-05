@@ -56,9 +56,10 @@ public class JooqAccountCommandRepository extends JooqBaseRepository implements 
     }
 
     @Override
-    public boolean update(UserId userId, String username, String organization, boolean admin, String newPassword) {
+    public boolean update(UserId userId, String loginId, String username, String organization, boolean admin, String newPassword) {
 
         UpdateSetMoreStep step = dslContext().update(APP_USER)
+                .set(APP_USER.LOGIN_ID, loginId)
                 .set(APP_USER.NAME, username)
                 .set(APP_USER.ORGANIZATION, organization)
                 .set(APP_USER.IS_ADMIN, (byte) (admin ? 1 : 0));

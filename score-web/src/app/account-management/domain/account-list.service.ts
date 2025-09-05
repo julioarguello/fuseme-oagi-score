@@ -62,12 +62,13 @@ export class AccountListService implements OnInit {
   }
 
   update(userId: number,
+         loginId: string,
          username: string, organization: string,
          admin: boolean,
          newPassword: string): Observable<any> {
 
     return this.http.put('/api/accounts/' + userId, {
-      username, organization, admin, newPassword
+      loginId, username, organization, admin, newPassword
     });
   }
 
