@@ -479,13 +479,7 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent($event: KeyboardEvent) {
-    // Skip if the target is an input, textarea, or contenteditable element
     const target = $event.target as HTMLElement;
-    const isInputField = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
-    if (isInputField) {
-      return;
-    }
-
     const charCode = $event.key?.toLowerCase();
 
     // Handle 'Ctrl/Command+S'
