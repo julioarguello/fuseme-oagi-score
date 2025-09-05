@@ -14,7 +14,7 @@ cd ..
 
 echo "Preparing files..."
 cp target/score-http-3.4.1.war docker
-cp ~/.m2/repository/org/mariadb/jdbc/mariadb-java-client/3.5.4/mariadb-java-client-3.5.4.jar docker
+cp ~/.m2/repository/org/mariadb/jdbc/mariadb-java-client/3.5.5/mariadb-java-client-3.5.5.jar docker
 
 echo "Building docker image..."
 cd docker

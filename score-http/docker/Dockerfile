@@ -13,7 +13,7 @@ ENV REDIS_PORT 6379
 RUN apt-get -y update
 RUN apt-get -y upgrade
 
-COPY mariadb-java-client-3.5.4.jar /usr/local/tomcat/lib/mariadb-java-client-3.5.4.jar
+COPY mariadb-java-client-3.5.5.jar /usr/local/tomcat/lib/mariadb-java-client-3.5.5.jar
 
 RUN rm -rf /usr/local/tomcat/webapps/* && \
     chgrp -R 0 /usr/local/tomcat/ && \
