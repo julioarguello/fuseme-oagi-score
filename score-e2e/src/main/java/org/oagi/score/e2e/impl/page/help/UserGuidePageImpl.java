@@ -24,7 +24,7 @@ public class UserGuidePageImpl extends BasePageImpl implements UserGuidePage {
     public void openPage() {
         String url = getPageUrl();
         getDriver().get(url);
-        assert "Score User Guide".equals(getText(getTitle()));
+        assert "connectCenter User Guide".equals(getText(getTitle()));
     }
 
     @Override

@@ -293,7 +293,7 @@ public class TC_6_3_EndUserAuthorizedAccessToBIEExpressionGeneration extends Bas
             assertDisabled(expressBIEPage.getIncludeCCTSDefinitionTagCheckbox());
             assertNotChecked(expressBIEPage.getBIEGUIDCheckbox());
             assertNotChecked(expressBIEPage.getBusinessContextCheckbox());
-            assertNotChecked(expressBIEPage.getBIEOAGIScoreMetaDataCheckbox());
+            assertNotChecked(expressBIEPage.getBIEOAGIConnectCenterMetaDataCheckbox());
             assertDisabled(expressBIEPage.getIncludeWHOColumnsCheckbox());
             assertNotChecked(expressBIEPage.getBasedCCMetaDataCheckbox());
             File generatedBIEExpression = null;
@@ -350,8 +350,8 @@ public class TC_6_3_EndUserAuthorizedAccessToBIEExpressionGeneration extends Bas
             expressBIEPage.toggleIncludeCCTSDefinitionTag();
             expressBIEPage.toggleBIEGUID();
             expressBIEPage.toggleBusinessContext();
-            expressBIEPage.toggleBIEOAGIScoreMetaData();
-            assertChecked(expressBIEPage.getBIEOAGIScoreMetaDataCheckbox());
+            expressBIEPage.toggleBIEOAGIConnectCenterMetaData();
+            assertChecked(expressBIEPage.getBIEOAGIConnectCenterMetaDataCheckbox());
             assertEnabled(expressBIEPage.getIncludeWHOColumnsCheckbox());
             expressBIEPage.toggleIncludeWHOColumns();
             expressBIEPage.toggleBasedCCMetaData();
@@ -411,7 +411,7 @@ public class TC_6_3_EndUserAuthorizedAccessToBIEExpressionGeneration extends Bas
             assertNotChecked(expressBIEPage.getIncludeCCTSDefinitionTagCheckbox());
             assertNotChecked(expressBIEPage.getBIEGUIDCheckbox());
             assertNotChecked(expressBIEPage.getBusinessContextCheckbox());
-            assertNotChecked(expressBIEPage.getBIEOAGIScoreMetaDataCheckbox());
+            assertNotChecked(expressBIEPage.getBIEOAGIConnectCenterMetaDataCheckbox());
             assertDisabled(expressBIEPage.getIncludeWHOColumnsCheckbox());
             assertNotChecked(expressBIEPage.getBasedCCMetaDataCheckbox());
             File generatedBIEExpression = null;
@@ -467,8 +467,8 @@ public class TC_6_3_EndUserAuthorizedAccessToBIEExpressionGeneration extends Bas
             assertNotChecked(expressBIEPage.getIncludeCCTSDefinitionTagCheckbox());
             assertNotChecked(expressBIEPage.getBIEGUIDCheckbox());
             assertNotChecked(expressBIEPage.getBusinessContextCheckbox());
-            expressBIEPage.toggleBIEOAGIScoreMetaData();
-            assertChecked(expressBIEPage.getBIEOAGIScoreMetaDataCheckbox());
+            expressBIEPage.toggleBIEOAGIConnectCenterMetaData();
+            assertChecked(expressBIEPage.getBIEOAGIConnectCenterMetaDataCheckbox());
             assertEnabled(expressBIEPage.getIncludeWHOColumnsCheckbox());
             assertNotChecked(expressBIEPage.getIncludeWHOColumnsCheckbox());
             assertNotChecked(expressBIEPage.getBasedCCMetaDataCheckbox());
@@ -561,7 +561,7 @@ public class TC_6_3_EndUserAuthorizedAccessToBIEExpressionGeneration extends Bas
             assertChecked(expressBIEPage.getBIEDefinitionCheckbox());
             expressBIEPage.selectXMLSchemaExpression();
             expressBIEPage.selectPutAllSchemasInTheSameFile();
-            assertNotChecked(expressBIEPage.getBIEOAGIScoreMetaDataCheckbox());
+            assertNotChecked(expressBIEPage.getBIEOAGIConnectCenterMetaDataCheckbox());
             assertDisabled(expressBIEPage.getIncludeWHOColumnsCheckbox());
         }
     }
@@ -716,7 +716,7 @@ public class TC_6_3_EndUserAuthorizedAccessToBIEExpressionGeneration extends Bas
             assertDisabled(expressBIEPage.getIncludeCCTSDefinitionTagCheckbox());
             assertDisabled(expressBIEPage.getBIEGUIDCheckbox());
             assertDisabled(expressBIEPage.getBusinessContextCheckbox());
-            assertDisabled(expressBIEPage.getBIEOAGIScoreMetaDataCheckbox());
+            assertDisabled(expressBIEPage.getBIEOAGIConnectCenterMetaDataCheckbox());
             assertDisabled(expressBIEPage.getIncludeWHOColumnsCheckbox());
             assertDisabled(expressBIEPage.getBasedCCMetaDataCheckbox());
 
@@ -782,8 +782,8 @@ public class TC_6_3_EndUserAuthorizedAccessToBIEExpressionGeneration extends Bas
         expressBIEPage.toggleIncludeCCTSDefinitionTag();
         expressBIEPage.toggleBIEGUID();
         expressBIEPage.toggleBusinessContext();
-        expressBIEPage.toggleBIEOAGIScoreMetaData();
-        assertChecked(expressBIEPage.getBIEOAGIScoreMetaDataCheckbox());
+        expressBIEPage.toggleBIEOAGIConnectCenterMetaData();
+        assertChecked(expressBIEPage.getBIEOAGIConnectCenterMetaDataCheckbox());
         assertEnabled(expressBIEPage.getIncludeWHOColumnsCheckbox());
         expressBIEPage.toggleIncludeWHOColumns();
         expressBIEPage.toggleBasedCCMetaData();
@@ -848,8 +848,8 @@ public class TC_6_3_EndUserAuthorizedAccessToBIEExpressionGeneration extends Bas
         expressBIEPage.toggleIncludeCCTSDefinitionTag();
         expressBIEPage.toggleBIEGUID();
         expressBIEPage.toggleBusinessContext();
-        expressBIEPage.toggleBIEOAGIScoreMetaData();
-        assertChecked(expressBIEPage.getBIEOAGIScoreMetaDataCheckbox());
+        expressBIEPage.toggleBIEOAGIConnectCenterMetaData();
+        assertChecked(expressBIEPage.getBIEOAGIConnectCenterMetaDataCheckbox());
         assertEnabled(expressBIEPage.getIncludeWHOColumnsCheckbox());
         expressBIEPage.toggleIncludeWHOColumns();
         expressBIEPage.toggleBasedCCMetaData();

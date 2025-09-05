@@ -3,7 +3,6 @@ package org.oagi.score.e2e.impl.page.bie;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
-import org.oagi.score.e2e.impl.page.BasePageImpl;
 import org.oagi.score.e2e.impl.page.BaseSearchBarPageImpl;
 import org.oagi.score.e2e.obj.BusinessContextObject;
 import org.oagi.score.e2e.obj.ReleaseObject;
@@ -421,13 +420,13 @@ public class ExpressBIEPageImpl extends BaseSearchBarPageImpl implements Express
     }
 
     @Override
-    public void toggleBIEOAGIScoreMetaData() {
-        click(getBIEOAGIScoreMetaDataCheckbox().findElement(By.tagName("input")));
+    public void toggleBIEOAGIConnectCenterMetaData() {
+        click(getBIEOAGIConnectCenterMetaDataCheckbox().findElement(By.tagName("input")));
     }
 
     @Override
-    public WebElement getBIEOAGIScoreMetaDataCheckbox() {
-        return getCheckboxByName("BIE OAGi/Score Meta Data");
+    public WebElement getBIEOAGIConnectCenterMetaDataCheckbox() {
+        return getCheckboxByName("BIE OAGi/connectCenter Meta Data");
     }
 
     @Override

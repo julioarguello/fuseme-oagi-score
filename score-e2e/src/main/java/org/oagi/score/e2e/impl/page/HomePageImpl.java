@@ -63,16 +63,16 @@ public class HomePageImpl extends BasePageImpl implements HomePage {
 
         String loginUrl = getConfig().getBaseUrl().toString();
         getDriver().get(loginUrl);
-        assert getScoreLogo().isDisplayed();
+        assert getConnectCenterLogo().isDisplayed();
     }
 
     @Override
     public WebElement getTitle() {
-        return getScoreLogo();
+        return getConnectCenterLogo();
     }
 
     @Override
-    public WebElement getScoreLogo() {
+    public WebElement getConnectCenterLogo() {
         return visibilityOfElementLocated(defaultWait(getDriver()), By.id("logo"));
     }
 

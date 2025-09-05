@@ -31,7 +31,7 @@ public class TC_7_1_OAGiNavigationMenu extends BaseTest {
     @DisplayName("TC_7_1_TA_1_to_TA_6")
     public void test_TA_1_to_TA_6() {
         HomePage homePage = loginPage().signIn(appUser.getLoginId(), appUser.getPassword());
-        homePage.getLoginIDMenu().getOAGISTerminologyButton().click();
+        homePage.getLoginIDMenu().getConnectSpecTerminologyButton().click();
         BIEMenu bieMenu = homePage.getBIEMenu();
         assertTrue(bieMenu.getCreateBIESubMenu().isEnabled());
 

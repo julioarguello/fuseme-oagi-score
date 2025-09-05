@@ -154,9 +154,9 @@ public interface ExpressBIEPage extends Page, SearchBarPage {
 
     WebElement getBIEGUIDCheckbox();
 
-    void toggleBIEOAGIScoreMetaData();
+    void toggleBIEOAGIConnectCenterMetaData();
 
-    WebElement getBIEOAGIScoreMetaDataCheckbox();
+    WebElement getBIEOAGIConnectCenterMetaDataCheckbox();
 
     void toggleIncludeWHOColumns();
 

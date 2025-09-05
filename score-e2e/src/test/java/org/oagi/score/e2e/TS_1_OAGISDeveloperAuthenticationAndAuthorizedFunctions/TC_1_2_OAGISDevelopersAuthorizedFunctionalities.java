@@ -418,18 +418,18 @@ public class TC_1_2_OAGISDevelopersAuthorizedFunctionalities extends BaseTest {
     }
 
     @Test
-    @DisplayName("TC_1_2_TA_1_1 (Login ID - OAGIS Terminology Button)")
+    @DisplayName("TC_1_2_TA_1_1 (Login ID - connectCenter Terminology Button)")
     public void test_login_id_oagis_terminology_button_developer() {
         HomePage homePage = loginPage().signIn(appUser.getLoginId(), appUser.getPassword());
         LoginIDMenu loginIDMenu = homePage.getLoginIDMenu();
-        assertTrue(loginIDMenu.getOAGISTerminologyButton().isEnabled());
+        assertTrue(loginIDMenu.getConnectSpecTerminologyButton().isEnabled());
 
-        loginIDMenu.checkOAGISTerminology();
-        assertTrue(loginIDMenu.isOAGISTerminologyChecked());
+        loginIDMenu.checkConnectSpecTerminology();
+        assertTrue(loginIDMenu.isConnectSpecTerminologyChecked());
 
         // Check if it's exclusively working with 'CCTS Terminology' button.
         loginIDMenu.checkCCTSTerminology();
-        assertFalse(loginIDMenu.isOAGISTerminologyChecked());
+        assertFalse(loginIDMenu.isConnectSpecTerminologyChecked());
     }
 
     @Test
@@ -442,8 +442,8 @@ public class TC_1_2_OAGISDevelopersAuthorizedFunctionalities extends BaseTest {
         loginIDMenu.checkCCTSTerminology();
         assertTrue(loginIDMenu.isCCTSTerminologyChecked());
 
-        // Check if it's exclusively working with 'OAGIS Terminology' button.
-        loginIDMenu.checkOAGISTerminology();
+        // Check if it's exclusively working with 'connectSpec Terminology' button.
+        loginIDMenu.checkConnectSpecTerminology();
         assertFalse(loginIDMenu.isCCTSTerminologyChecked());
     }
 

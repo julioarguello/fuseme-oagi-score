@@ -432,14 +432,14 @@ public class TC_3_1_EndUsersAuthorizedFunctionalities extends BaseTest {
     public void test_login_id_oagis_terminology_button_end_user() {
         HomePage homePage = loginPage().signIn(appUser.getLoginId(), appUser.getPassword());
         LoginIDMenu loginIDMenu = homePage.getLoginIDMenu();
-        assertTrue(loginIDMenu.getOAGISTerminologyButton().isEnabled());
+        assertTrue(loginIDMenu.getConnectSpecTerminologyButton().isEnabled());
 
-        loginIDMenu.checkOAGISTerminology();
-        assertTrue(loginIDMenu.isOAGISTerminologyChecked());
+        loginIDMenu.checkConnectSpecTerminology();
+        assertTrue(loginIDMenu.isConnectSpecTerminologyChecked());
 
         // Check if it's exclusively working with 'CCTS Terminology' button.
         loginIDMenu.checkCCTSTerminology();
-        assertFalse(loginIDMenu.isOAGISTerminologyChecked());
+        assertFalse(loginIDMenu.isConnectSpecTerminologyChecked());
     }
 
     @Test
@@ -453,7 +453,7 @@ public class TC_3_1_EndUsersAuthorizedFunctionalities extends BaseTest {
         assertTrue(loginIDMenu.isCCTSTerminologyChecked());
 
         // Check if it's exclusively working with 'OAGIS Terminology' button.
-        loginIDMenu.checkOAGISTerminology();
+        loginIDMenu.checkConnectSpecTerminology();
         assertFalse(loginIDMenu.isCCTSTerminologyChecked());
     }
 
