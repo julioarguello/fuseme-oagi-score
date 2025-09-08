@@ -94,9 +94,12 @@
             <mat-icon>delete</mat-icon>
             Remove
           </button>
-          <button mat-raised-button color="primary" (click)="generate()"
+          <button mat-raised-button class="mr-2" color="primary" (click)="generate()"
                   [hidden]="table.dataSource.data.length == 0">
             Generate
+          </button>
+          <button mat-raised-button color="primary" (click)="getManifest()">
+            Manifest
           </button>
         </div>
       </mat-toolbar>

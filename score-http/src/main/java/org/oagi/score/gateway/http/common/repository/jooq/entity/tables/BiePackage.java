@@ -110,6 +110,13 @@ public class BiePackage extends TableImpl<BiePackageRecord> {
     public final TableField<BiePackageRecord, String> STATE = createField(DSL.name("state"), SQLDataType.VARCHAR(20).defaultValue(DSL.field(DSL.raw("'WIP'"), SQLDataType.VARCHAR)), this, "WIP, QA, Production. This the revision life cycle state of the BIE package.");
 
     /**
+     * The column <code>oagi.bie_package.prev_bie_package_id</code>. A foreign
+     * key referring to the previous version of this BIE package, if any. Used
+     * to track package version history.
+     */
+    public final TableField<BiePackageRecord, ULong> PREV_BIE_PACKAGE_ID = createField(DSL.name("prev_bie_package_id"), SQLDataType.BIGINTUNSIGNED.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINTUNSIGNED)), this, "A foreign key referring to the previous version of this BIE package, if any. Used to track package version history.");
+
+    /**
      * The column <code>oagi.bie_package.owner_user_id</code>. Foreign key to
      * the BIE package. This is the user who owns the entity, is allowed to edit
      * the entity, and who can transfer the ownership to another user.
@@ -246,7 +253,7 @@ public class BiePackage extends TableImpl<BiePackageRecord> {
 
     @Override
     public List<ForeignKey<BiePackageRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.BIE_PACKAGE_CREATED_BY_FK, Keys.BIE_PACKAGE_LAST_UPDATED_BY_FK, Keys.BIE_PACKAGE_LIBRARY_ID_FK, Keys.BIE_PACKAGE_OWNER_USER_ID_FK, Keys.BIE_PACKAGE_SOURCE_BIE_PACKAGE_ID_FK);
+        return Arrays.asList(Keys.BIE_PACKAGE_CREATED_BY_FK, Keys.BIE_PACKAGE_LAST_UPDATED_BY_FK, Keys.BIE_PACKAGE_LIBRARY_ID_FK, Keys.BIE_PACKAGE_OWNER_USER_ID_FK, Keys.BIE_PACKAGE_PREV_BIE_PACKAGE_ID_FK, Keys.BIE_PACKAGE_SOURCE_BIE_PACKAGE_ID_FK);
     }
 
     private transient AppUserPath _biePackageCreatedByFk;
@@ -300,16 +307,30 @@ public class BiePackage extends TableImpl<BiePackageRecord> {
         return _biePackageOwnerUserIdFk;
     }
 
-    private transient BiePackagePath _biePackage;
+    private transient BiePackagePath _biePackagePrevBiePackageIdFk;
 
     /**
-     * Get the implicit join path to the <code>oagi.bie_package</code> table.
+     * Get the implicit join path to the <code>oagi.bie_package</code> table,
+     * via the <code>bie_package_prev_bie_package_id_fk</code> key.
      */
-    public BiePackagePath biePackage() {
-        if (_biePackage == null)
-            _biePackage = new BiePackagePath(this, Keys.BIE_PACKAGE_SOURCE_BIE_PACKAGE_ID_FK, null);
+    public BiePackagePath biePackagePrevBiePackageIdFk() {
+        if (_biePackagePrevBiePackageIdFk == null)
+            _biePackagePrevBiePackageIdFk = new BiePackagePath(this, Keys.BIE_PACKAGE_PREV_BIE_PACKAGE_ID_FK, null);
 
-        return _biePackage;
+        return _biePackagePrevBiePackageIdFk;
+    }
+
+    private transient BiePackagePath _biePackageSourceBiePackageIdFk;
+
+    /**
+     * Get the implicit join path to the <code>oagi.bie_package</code> table,
+     * via the <code>bie_package_source_bie_package_id_fk</code> key.
+     */
+    public BiePackagePath biePackageSourceBiePackageIdFk() {
+        if (_biePackageSourceBiePackageIdFk == null)
+            _biePackageSourceBiePackageIdFk = new BiePackagePath(this, Keys.BIE_PACKAGE_SOURCE_BIE_PACKAGE_ID_FK, null);
+
+        return _biePackageSourceBiePackageIdFk;
     }
 
     private transient BiePackageTopLevelAsbiepPath _biePackageTopLevelAsbiep;

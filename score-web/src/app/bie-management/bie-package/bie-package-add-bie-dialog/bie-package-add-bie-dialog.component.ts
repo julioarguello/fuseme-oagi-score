@@ -235,7 +235,7 @@ export class BiePackageAddBieDialogComponent implements OnInit {
 
     this.request = new BieListRequest(this.route.snapshot.queryParamMap,
       new PageRequest(['lastUpdateTimestamp'], ['desc'], 0, 10));
-    this.request.states = ['Production'];
+    this.request.states = ['WIP', 'QA', 'Production'];
 
     this.libraryService.getLibrarySummaryList().subscribe(libraries => {
       this.initLibraries(libraries);

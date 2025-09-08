@@ -4,9 +4,14 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.oagi.score.gateway.http.api.bie_management.model.*;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageDetailsRecord;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageId;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageListEntryRecord;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageManifestResponse;
 import org.oagi.score.gateway.http.api.bie_management.model.expression.BieGenerateExpressionResult;
 import org.oagi.score.gateway.http.api.bie_management.repository.criteria.BieListInBiePackageFilterCriteria;
 import org.oagi.score.gateway.http.api.bie_management.repository.criteria.BiePackageListFilterCriteria;
+import org.oagi.score.gateway.http.api.bie_management.service.BiePackageManifestService;
 import org.oagi.score.gateway.http.api.bie_management.service.BiePackageQueryService;
 import org.oagi.score.gateway.http.api.bie_management.service.BieQueryService;
 import org.oagi.score.gateway.http.api.library_management.model.LibraryId;
@@ -43,8 +48,12 @@ public class BiePackageQueryController {
 
     @Autowired
     private SessionService sessionService;
+
     @Autowired
     private BieQueryService bieQueryService;
+
+    @Autowired
+    private BiePackageManifestService biePackageManifestService;
 
     @GetMapping()
     public PageResponse<BiePackageListEntryRecord> getBiePackageList(
@@ -216,6 +225,17 @@ public class BiePackageQueryController {
         response.setSize(pageRequest.pageSize());
         response.setLength(resultAndCount.count());
         return response;
+    }
+
+    /*
+     * Issue #1678
+     */
+    @GetMapping(value = "/{biePackageId:[\\d]+}/manifest")
+    public BiePackageManifestResponse getBiePackageManifest(
+            @AuthenticationPrincipal AuthenticatedPrincipal user,
+            @PathVariable("biePackageId") BiePackageId biePackageId) {
+
+        return biePackageManifestService.getBiePackageManifest(sessionService.asScoreUser(user), biePackageId);
     }
 
 }

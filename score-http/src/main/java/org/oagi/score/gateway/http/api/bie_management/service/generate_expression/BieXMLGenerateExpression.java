@@ -8,7 +8,7 @@ import org.jdom2.output.XMLOutputter;
 import org.oagi.score.gateway.http.api.agency_id_management.model.AgencyIdListSummaryRecord;
 import org.oagi.score.gateway.http.api.agency_id_management.model.AgencyIdListValueSummaryRecord;
 import org.oagi.score.gateway.http.api.bie_management.model.BIE;
-import org.oagi.score.gateway.http.api.bie_management.model.BiePackageSummaryRecord;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageSummaryRecord;
 import org.oagi.score.gateway.http.api.bie_management.model.Facet;
 import org.oagi.score.gateway.http.api.bie_management.model.TopLevelAsbiepSummaryRecord;
 import org.oagi.score.gateway.http.api.bie_management.model.abie.AbieSummaryRecord;

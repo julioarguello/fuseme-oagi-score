@@ -1,7 +1,7 @@
 package org.oagi.score.gateway.http.api.bie_management.repository;
 
 import org.oagi.score.gateway.http.api.account_management.model.UserId;
-import org.oagi.score.gateway.http.api.bie_management.model.BiePackageId;
+import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageId;
 import org.oagi.score.gateway.http.api.bie_management.model.BieState;
 import org.oagi.score.gateway.http.api.bie_management.model.TopLevelAsbiepId;
 import org.oagi.score.gateway.http.api.library_management.model.LibraryId;
