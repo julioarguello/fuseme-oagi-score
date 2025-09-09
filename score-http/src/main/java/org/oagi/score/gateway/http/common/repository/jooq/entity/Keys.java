@@ -23,6 +23,7 @@ import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.AppUser;
 import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.Asbie;
 import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.AsbieBizterm;
 import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.Asbiep;
+import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.AsbiepSupportDoc;
 import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.Ascc;
 import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.AsccBizterm;
 import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.AsccManifest;
@@ -131,6 +132,7 @@ import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.records.
 import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.records.AsbieBiztermRecord;
 import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.records.AsbieRecord;
 import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.records.AsbiepRecord;
+import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.records.AsbiepSupportDocRecord;
 import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.records.AsccBiztermRecord;
 import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.records.AsccManifestRecord;
 import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.records.AsccRecord;
@@ -254,6 +256,7 @@ public class Keys {
     public static final UniqueKey<AsbieRecord> KEY_ASBIE_PRIMARY = Internal.createUniqueKey(Asbie.ASBIE, DSL.name("KEY_asbie_PRIMARY"), new TableField[] { Asbie.ASBIE.ASBIE_ID }, true);
     public static final UniqueKey<AsbieBiztermRecord> KEY_ASBIE_BIZTERM_PRIMARY = Internal.createUniqueKey(AsbieBizterm.ASBIE_BIZTERM, DSL.name("KEY_asbie_bizterm_PRIMARY"), new TableField[] { AsbieBizterm.ASBIE_BIZTERM.ASBIE_BIZTERM_ID }, true);
     public static final UniqueKey<AsbiepRecord> KEY_ASBIEP_PRIMARY = Internal.createUniqueKey(Asbiep.ASBIEP, DSL.name("KEY_asbiep_PRIMARY"), new TableField[] { Asbiep.ASBIEP.ASBIEP_ID }, true);
+    public static final UniqueKey<AsbiepSupportDocRecord> KEY_ASBIEP_SUPPORT_DOC_PRIMARY = Internal.createUniqueKey(AsbiepSupportDoc.ASBIEP_SUPPORT_DOC, DSL.name("KEY_asbiep_support_doc_PRIMARY"), new TableField[] { AsbiepSupportDoc.ASBIEP_SUPPORT_DOC.ASBIEP_SUPPORT_DOC_ID }, true);
     public static final UniqueKey<AsccRecord> KEY_ASCC_PRIMARY = Internal.createUniqueKey(Ascc.ASCC, DSL.name("KEY_ascc_PRIMARY"), new TableField[] { Ascc.ASCC.ASCC_ID }, true);
     public static final UniqueKey<AsccBiztermRecord> KEY_ASCC_BIZTERM_PRIMARY = Internal.createUniqueKey(AsccBizterm.ASCC_BIZTERM, DSL.name("KEY_ascc_bizterm_PRIMARY"), new TableField[] { AsccBizterm.ASCC_BIZTERM.ASCC_BIZTERM_ID }, true);
     public static final UniqueKey<AsccManifestRecord> KEY_ASCC_MANIFEST_PRIMARY = Internal.createUniqueKey(AsccManifest.ASCC_MANIFEST, DSL.name("KEY_ascc_manifest_PRIMARY"), new TableField[] { AsccManifest.ASCC_MANIFEST.ASCC_MANIFEST_ID }, true);
@@ -435,6 +438,7 @@ public class Keys {
     public static final ForeignKey<AsbiepRecord, AppUserRecord> ASBIEP_LAST_UPDATED_BY_FK = Internal.createForeignKey(Asbiep.ASBIEP, DSL.name("asbiep_last_updated_by_fk"), new TableField[] { Asbiep.ASBIEP.LAST_UPDATED_BY }, Keys.KEY_APP_USER_PRIMARY, new TableField[] { AppUser.APP_USER.APP_USER_ID }, true, ForeignKeyRule.RESTRICT, ForeignKeyRule.RESTRICT);
     public static final ForeignKey<AsbiepRecord, TopLevelAsbiepRecord> ASBIEP_OWNER_TOP_LEVEL_ASBIEP_ID_FK = Internal.createForeignKey(Asbiep.ASBIEP, DSL.name("asbiep_owner_top_level_asbiep_id_fk"), new TableField[] { Asbiep.ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID }, Keys.KEY_TOP_LEVEL_ASBIEP_PRIMARY, new TableField[] { TopLevelAsbiep.TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID }, true, ForeignKeyRule.RESTRICT, ForeignKeyRule.RESTRICT);
     public static final ForeignKey<AsbiepRecord, AbieRecord> ASBIEP_ROLE_OF_ABIE_ID_FK = Internal.createForeignKey(Asbiep.ASBIEP, DSL.name("asbiep_role_of_abie_id_fk"), new TableField[] { Asbiep.ASBIEP.ROLE_OF_ABIE_ID }, Keys.KEY_ABIE_PRIMARY, new TableField[] { Abie.ABIE.ABIE_ID }, true, ForeignKeyRule.RESTRICT, ForeignKeyRule.RESTRICT);
+    public static final ForeignKey<AsbiepSupportDocRecord, AsbiepRecord> ASBIEP_SUPPORT_DOC_ASBIEP_ID_FK = Internal.createForeignKey(AsbiepSupportDoc.ASBIEP_SUPPORT_DOC, DSL.name("asbiep_support_doc_asbiep_id_fk"), new TableField[] { AsbiepSupportDoc.ASBIEP_SUPPORT_DOC.ASBIEP_ID }, Keys.KEY_ASBIEP_PRIMARY, new TableField[] { Asbiep.ASBIEP.ASBIEP_ID }, true, ForeignKeyRule.RESTRICT, ForeignKeyRule.RESTRICT);
     public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_CREATED_BY_FK = Internal.createForeignKey(Ascc.ASCC, DSL.name("ascc_created_by_fk"), new TableField[] { Ascc.ASCC.CREATED_BY }, Keys.KEY_APP_USER_PRIMARY, new TableField[] { AppUser.APP_USER.APP_USER_ID }, true, ForeignKeyRule.RESTRICT, ForeignKeyRule.RESTRICT);
     public static final ForeignKey<AsccRecord, AccRecord> ASCC_FROM_ACC_ID_FK = Internal.createForeignKey(Ascc.ASCC, DSL.name("ascc_from_acc_id_fk"), new TableField[] { Ascc.ASCC.FROM_ACC_ID }, Keys.KEY_ACC_PRIMARY, new TableField[] { Acc.ACC.ACC_ID }, true, ForeignKeyRule.RESTRICT, ForeignKeyRule.RESTRICT);
     public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_LAST_UPDATED_BY_FK = Internal.createForeignKey(Ascc.ASCC, DSL.name("ascc_last_updated_by_fk"), new TableField[] { Ascc.ASCC.LAST_UPDATED_BY }, Keys.KEY_APP_USER_PRIMARY, new TableField[] { AppUser.APP_USER.APP_USER_ID }, true, ForeignKeyRule.RESTRICT, ForeignKeyRule.RESTRICT);
