@@ -17,7 +17,7 @@ import {
 } from '../bie-edit/domain/bie-edit-node';
 import {
   AbieFlatNode, AsbieDetail, AsbiepDetail, AsbiepDetails,
-  AsbiepFlatNode,
+  AsbiepFlatNode, AsbiepSupportDoc,
   BbieDetail,
   BbiepFlatNode,
   BbieScDetail,
@@ -815,6 +815,20 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
     this.snackBar.open('Copied to clipboard', '', {
       duration: 3000
     });
+  }
+
+  addAsbiepSupportDoc(asbiepDetail: AsbiepDetail) {
+    asbiepDetail.supportDocList.push(new AsbiepSupportDoc());
+  }
+
+  removeAsbiepSupportDoc(asbiepDetail: AsbiepDetail, supportDoc: AsbiepSupportDoc) {
+    const index = asbiepDetail.supportDocList.indexOf(supportDoc);
+    if (index !== -1) {
+      asbiepDetail.supportDocList.splice(index, 1);
+    }
+    if (asbiepDetail.supportDocList?.length === 0) {
+      this.addAsbiepSupportDoc(asbiepDetail);
+    }
   }
 
   reloadTree(node: BieFlatNode) {
