@@ -466,23 +466,29 @@
                                 <div style="flex: 1;">
                                   <mat-form-field class="w-100">
                                     <mat-label>URI</mat-label>
-                                    <input matInput placeholder="URI" [(ngModel)]="supportDoc.content">
+                                    <input matInput placeholder="URI"
+                                           [(ngModel)]="supportDoc.content"
+                                           [disabled]="!isEditable(selectedNode)">
                                   </mat-form-field>
                                 </div>
                                 <div style="flex: 2;">
                                   <mat-form-field class="w-100">
                                     <mat-label>Description</mat-label>
-                                    <input matInput placeholder="Description" [(ngModel)]="supportDoc.description">
+                                    <input matInput placeholder="Description"
+                                           [(ngModel)]="supportDoc.description"
+                                           [disabled]="!isEditable(selectedNode)">
                                   </mat-form-field>
                                 </div>
                                 <div style="flex: 0 0 40px; text-align: center;">
-                                  <button mat-icon-button (click)="removeAsbiepSupportDoc(asAbieDetail().asbiep, supportDoc)">
+                                  <button mat-icon-button *ngIf="isEditable(selectedNode)"
+                                          (click)="removeAsbiepSupportDoc(asAbieDetail().asbiep, supportDoc)">
                                     <mat-icon>remove</mat-icon>
                                   </button>
                                 </div>
                                 <div style="flex: 0 0 40px; text-align: center;"
                                      [style.visibility]="i == (asAbieDetail().asbiep.supportDocList.length - 1) ? 'visible' : 'hidden'">
-                                  <button mat-icon-button (click)="addAsbiepSupportDoc(asAbieDetail().asbiep)">
+                                  <button mat-icon-button *ngIf="isEditable(selectedNode)"
+                                          (click)="addAsbiepSupportDoc(asAbieDetail().asbiep)">
                                     <mat-icon>add</mat-icon>
                                   </button>
                                 </div>
