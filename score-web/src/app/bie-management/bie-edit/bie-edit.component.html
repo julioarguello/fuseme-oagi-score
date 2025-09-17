@@ -462,19 +462,27 @@
                               </mat-panel-description>
                             </mat-expansion-panel-header>
                             <div class="container p-0">
-                              <div class="d-flex align-items-center" style="gap: 10px;" *ngFor="let supportDoc of asAbieDetail().asbiep.supportDocList; index as i;">
+                              <div class="d-flex align-items-center pb-2" style="gap: 10px;" *ngFor="let supportDoc of asAbieDetail().asbiep.supportDocList; index as i;">
                                 <div style="flex: 1;">
-                                  <mat-form-field class="w-100">
+                                  <mat-form-field class="w-100 no-subscript">
                                     <mat-label>URI</mat-label>
-                                    <input matInput placeholder="URI"
+                                    <input matInput placeholder="Enter a valid URI (e.g., https://... or file://...)."
                                            [(ngModel)]="supportDoc.content"
                                            [disabled]="!isEditable(selectedNode)">
+
+                                    <!-- Clickable link icon -->
+                                    <button mat-icon-button matSuffix
+                                            *ngIf="isClickableUrl(supportDoc.content)"
+                                            (click)="openLink(supportDoc.content)"
+                                            type="button">
+                                      <mat-icon>open_in_new</mat-icon>
+                                    </button>
                                   </mat-form-field>
                                 </div>
                                 <div style="flex: 2;">
-                                  <mat-form-field class="w-100">
+                                  <mat-form-field class="w-100 no-subscript">
                                     <mat-label>Description</mat-label>
-                                    <input matInput placeholder="Description"
+                                    <input matInput placeholder="Enter description for the supporting documentation."
                                            [(ngModel)]="supportDoc.description"
                                            [disabled]="!isEditable(selectedNode)">
                                   </mat-form-field>

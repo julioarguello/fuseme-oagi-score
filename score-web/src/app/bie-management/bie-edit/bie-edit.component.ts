@@ -71,6 +71,9 @@ import {CcNodeService} from '../../cc-management/domain/core-component-node.serv
 })
 export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
 
+  BROWSER_SCHEMES = ['http:', 'https:', 'ftp:', 'file:', 'data:'];
+  EXTERNAL_SCHEMES = ['mailto:', 'tel:', 'sms:', 'geo:', 'magnet:'];
+
   faRecycle = faRecycle;
   faSitemap = faSitemap;
   loading = false;
@@ -587,6 +590,31 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
 
   get access(): string {
     return this.rootNode && this.rootNode.access || 'Unprepared';
+  }
+
+  isClickableUrl(url: string): boolean {
+    if (!url) {
+      return false;
+    }
+    try {
+      const scheme = new URL(url).protocol;
+      return [...this.BROWSER_SCHEMES, ...this.EXTERNAL_SCHEMES].includes(scheme);
+    } catch {
+      return false;
+    }
+  }
+
+  openLink(url: string) {
+    if (!this.isClickableUrl(url)) {
+      return;
+    }
+
+    const scheme = new URL(url).protocol;
+    if (this.BROWSER_SCHEMES.includes(scheme)) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else if (this.EXTERNAL_SCHEMES.includes(scheme)) {
+      window.location.href = url;
+    }
   }
 
   get canEdit(): boolean {
