@@ -1230,8 +1230,8 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
         List<BbieScSummaryRecord> bbieScList = generationContext.queryBBIESCs(bbie)
                 .stream().filter(e -> e.cardinality().max() != 0).collect(Collectors.toList());
         if (bbieScList.isEmpty()) {
-            if (ref == null && isFriendly()) {
-                Map<String, Object> content = toProperties(xbt);
+            if (ref == null) {
+                Map<String, Object> content = applyFacet(toProperties(xbt), bbie.facet());
                 properties.putAll(content);
             } else {
                 properties.put("$ref", ref);
@@ -1244,13 +1244,13 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
             properties.put("properties", new LinkedHashMap<String, Object>());
 
             Map<String, Object> contentProperties = new LinkedHashMap();
-            if (ref == null && isFriendly()) {
-                Map<String, Object> content = toProperties(xbt);
+            if (ref == null) {
+                Map<String, Object> content = applyFacet(toProperties(xbt), bbie.facet());
                 contentProperties.putAll(content);
             } else {
                 contentProperties.put("$ref", ref);
             }
-            for (String key : Arrays.asList("enum", "default", "example")) {
+            for (String key : Arrays.asList("description", "enum", "default", "example")) {
                 if (properties.containsKey(key)) {
                     contentProperties.put(key, properties.remove(key));
                 }
@@ -1338,6 +1338,27 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
         }
     }
 
+    private Map<String, Object> applyFacet(Map<String, Object> content, Facet facet) {
+        if (facet != null) {
+            String type = (String) content.get("type");
+            boolean isTypeString = "string".equals(type);
+
+            if (isTypeString && facet.minLength() != null) {
+                content.put("minLength", facet.minLength().longValue());
+            }
+            if (isTypeString && facet.maxLength() != null) {
+                content.put("maxLength", facet.maxLength().longValue());
+            }
+            if (isTypeString && StringUtils.hasLength(facet.pattern())) {
+                // Override 'pattern' and 'format' properties
+                content.remove("pattern");
+                content.remove("format");
+                content.put("pattern", facet.pattern());
+            }
+        }
+        return content;
+    }
+
     private class SchemaReference {
 
         private String schemaName;
@@ -1420,15 +1441,9 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
             if (agencyIdList != null) {
                 ref = fillSchemas(schemas, agencyIdList);
             } else {
-                if (bbie.facet() != null) {
-                    XbtSummaryRecord xbt = getXbt(bbie, bdt);
-                    ref = fillSchemas(schemas, xbt, bbie.guid(), bbie.facet());
-                } else if (!isFriendly()) {
-                    XbtSummaryRecord xbt = getXbt(bbie, bdt);
-                    ref = fillSchemas(schemas, xbt);
-                } else {
-                    ref = null;
-                }
+                // Issue #1633
+                // Primitive types shouldn't be expressed in the 'schema' content.
+                return null;
             }
         }
 
@@ -1502,18 +1517,14 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
             if (agencyIdList != null) {
                 ref = fillSchemas(schemas, agencyIdList);
             } else {
-                if (bbieSc.facet() != null) {
-                    ref = fillSchemas(schemas, xbt, bbieSc.guid(), bbieSc.facet());
-                } else if (!isFriendly()) {
-                    ref = fillSchemas(schemas, xbt);
-                } else {
-                    ref = null;
-                }
+                // Issue #1633
+                // Primitive types shouldn't be expressed in the 'schema' content.
+                ref = null;
             }
         }
 
-        if (ref == null && isFriendly()) {
-            Map<String, Object> content = toProperties(xbt);
+        if (ref == null) {
+            Map<String, Object> content = applyFacet(toProperties(xbt), bbieSc.facet());
             properties.putAll(content);
         } else {
             properties.put("$ref", ref);
