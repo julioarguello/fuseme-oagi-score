@@ -454,8 +454,8 @@
                           <mat-expansion-panel #supportDoc
                                                [expanded]="asAbieDetail().asbiep.supportDocList?.length > 0">
                             <mat-expansion-panel-header>
-                              <mat-panel-title>Supporting Documentation</mat-panel-title>
-                              <mat-panel-description>
+                              <mat-panel-title style="flex-grow: 0.5;">Supporting Documentation</mat-panel-title>
+                              <mat-panel-description class="d-block text-truncate align-content-center" style="flex-grow: 1.5;">
                                 <span *ngIf="!supportDoc.expanded && asAbieDetail().asbiep.supportDocList?.length > 0">
                                   {{ asAbieDetail().asbiep.supportDocList[0].description }}
                                 </span>
