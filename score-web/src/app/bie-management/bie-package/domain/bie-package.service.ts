@@ -2,7 +2,10 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {PageResponse} from '../../../basis/basis';
-import {BieListInBiePackageRequest, BiePackageDetails, BiePackageListEntry, BiePackageListRequest, BiePackageManifest} from './bie-package';
+import {
+  AmendBiePackageResponse,
+  BieListInBiePackageRequest, BiePackageDetails, BiePackageListEntry, BiePackageListRequest, BiePackageManifest
+} from './bie-package';
 import {map} from 'rxjs/operators';
 import {BieListEntry} from '../../bie-list/domain/bie-list';
 import {zip} from '../../../common/utility';
@@ -224,6 +227,10 @@ export class BiePackageService {
     });
   }
 
+  replaceBieInBiePackage(biePackageId: number, prevTopLevelAsbiepId: number, topLevelAsbiepId: number): Observable<any> {
+    return this.http.patch('/api/bie-packages/' + biePackageId + '/bies/' + prevTopLevelAsbiepId + '/amend/' + topLevelAsbiepId, {});
+  }
+
   deleteBieInBiePackage(biePackageId: number, ...topLevelAsbiepIdList: number[]): Observable<any> {
     if (topLevelAsbiepIdList.length === 1) {
       return this.http.delete('/api/bie-packages/' + biePackageId + '/bies/' + topLevelAsbiepIdList[0]);
@@ -257,4 +264,9 @@ export class BiePackageService {
       targetReleaseId
     });
   }
+
+  makeNewRevision(biePackageId: number): Observable<AmendBiePackageResponse> {
+    return this.http.patch<AmendBiePackageResponse>('/api/bie-packages/' + biePackageId + '/amend', {});
+  }
+
 }

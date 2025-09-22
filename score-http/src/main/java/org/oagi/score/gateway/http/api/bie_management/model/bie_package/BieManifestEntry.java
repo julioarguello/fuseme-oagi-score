@@ -8,8 +8,8 @@ public record BieManifestEntry(BieManifest bie,
                                Guid priorVersionUuidInPackage,
                                String priorVersionIdInPackage,
                                boolean includedInPriorPackageVersion,
-                               Collection<BieElementChange> addedElementsFromPriorPackageVersion,
-                               Collection<BieElementChange> removedElementsFromPriorPackageVersion,
-                               Collection<BieElementChange> valueDomainChangeFromPriorPackageVersion,
-                               Collection<BieElementChange> deprecatedElementsFromPriorPackageVersion) {
+                               Collection<BieComponentChange> addedComponentsFromPriorPackageVersion,
+                               Collection<BieComponentChange> removedComponentsFromPriorPackageVersion,
+                               Collection<BieComponentChange> changedComponentsFromPriorPackageVersion,
+                               Collection<BieComponentChange> deprecatedComponentsFromPriorPackageVersion) {
 }

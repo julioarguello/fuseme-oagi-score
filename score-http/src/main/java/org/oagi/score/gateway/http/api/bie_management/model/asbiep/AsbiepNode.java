@@ -5,7 +5,6 @@ import org.oagi.score.gateway.http.api.bie_management.model.TopLevelAsbiepId;
 import org.oagi.score.gateway.http.api.bie_management.model.abie.AbieId;
 import org.oagi.score.gateway.http.api.cc_management.model.CcState;
 import org.oagi.score.gateway.http.api.cc_management.model.asccp.AsccpManifestId;
-import org.oagi.score.gateway.http.common.repository.jooq.entity.tables.AsbiepSupportDoc;
 
 import java.util.List;
 

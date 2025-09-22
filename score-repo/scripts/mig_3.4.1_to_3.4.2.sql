@@ -16,7 +16,7 @@ ALTER TABLE `bie_package_top_level_asbiep`
     ADD CONSTRAINT `bie_package_top_level_asbiep_prev_top_level_asbiep_id_fk` FOREIGN KEY (`prev_top_level_asbiep_id`) REFERENCES `top_level_asbiep` (`top_level_asbiep_id`);
 
 -- Issue #1659
-DROP TABLE `asbiep_support_doc`;
+DROP TABLE IF EXISTS `asbiep_support_doc`;
 CREATE TABLE `asbiep_support_doc`
 (
     `asbiep_support_doc_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key. Unique identifier for each supporting documentation.',

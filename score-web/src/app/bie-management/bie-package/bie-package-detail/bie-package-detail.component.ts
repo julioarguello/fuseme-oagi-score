@@ -13,10 +13,10 @@ import {AuthService} from '../../../authentication/auth.service';
 import {ConfirmDialogService} from '../../../common/confirm-dialog/confirm-dialog.service';
 import {WebPageInfoService} from '../../../basis/basis.service';
 import {PageRequest} from '../../../basis/basis';
-import {BieListInBiePackageRequest, BiePackage, BiePackageDetails} from '../domain/bie-package';
+import {BieListInBiePackageRequest, BiePackageDetails} from '../domain/bie-package';
 import {BieListEntry} from '../../bie-list/domain/bie-list';
 import {BiePackageService} from '../domain/bie-package.service';
-import {BiePackageAddBieDialogComponent} from '../bie-package-add-bie-dialog/bie-package-add-bie-dialog.component';
+import {BiePackageBieDialogComponent} from '../bie-package-add-bie-dialog/bie-package-bie-dialog.component';
 import {
   PreferencesInfo,
   TableColumnsInfo,
@@ -332,13 +332,14 @@ export class BiePackageDetailComponent implements OnInit {
     }
   }
 
-  openDialog($event: any) {
+  openAddDialog($event: any) {
     $event.preventDefault();
     $event.stopPropagation();
 
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.data = this.table.dataSource.data;
+    dialogConfig.data.action = 'Add';
     dialogConfig.data.biePackage = this.biePackage;
     dialogConfig.data.webPageInfo = this.webPageInfo;
     dialogConfig.width = '100%';
@@ -348,7 +349,7 @@ export class BiePackageDetailComponent implements OnInit {
     dialogConfig.autoFocus = false;
 
     this.loading = true;
-    const dialogRef = this.dialog.open(BiePackageAddBieDialogComponent, dialogConfig);
+    const dialogRef = this.dialog.open(BiePackageBieDialogComponent, dialogConfig);
     dialogRef.afterClosed().subscribe(topLevelAsbiepIdList => {
       if (!topLevelAsbiepIdList) {
         this.loading = false;
@@ -357,6 +358,52 @@ export class BiePackageDetailComponent implements OnInit {
 
       this.biePackageService.addBieToBiePackage(this.biePackage.biePackageId, ...topLevelAsbiepIdList).subscribe(_ => {
         this.snackBar.open('Added', '', {
+          duration: 3000,
+        });
+
+        this.selection.clear();
+        this.loadBieListInBiePackage();
+
+        this.loading = false;
+      }, err => {
+        this.loading = false;
+        throw err;
+      });
+    }, err => {
+      this.loading = false;
+      throw err;
+    });
+  }
+
+  openReplaceDialog($event: any, selected: BieListEntry) {
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.data = this.table.dataSource.data;
+    dialogConfig.data.action = 'Replace';
+    dialogConfig.data.den = selected.den;
+    dialogConfig.data.excludeTopLevelAsbiepIds = [selected.topLevelAsbiepId];
+    dialogConfig.data.biePackage = this.biePackage;
+    dialogConfig.data.webPageInfo = this.webPageInfo;
+    dialogConfig.width = '100%';
+    dialogConfig.maxWidth = '100%';
+    dialogConfig.height = '100%';
+    dialogConfig.maxHeight = '100%';
+    dialogConfig.autoFocus = false;
+
+    this.loading = true;
+    const dialogRef = this.dialog.open(BiePackageBieDialogComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(topLevelAsbiepIdList => {
+      if (!topLevelAsbiepIdList) {
+        this.loading = false;
+        return;
+      }
+
+      this.biePackageService.replaceBieInBiePackage(this.biePackage.biePackageId,
+          selected.topLevelAsbiepId, topLevelAsbiepIdList[0]).subscribe(_ => {
+        this.snackBar.open('Replaced', '', {
           duration: 3000,
         });
 
@@ -448,7 +495,7 @@ export class BiePackageDetailComponent implements OnInit {
     return this.hashCode !== hashCode(this.biePackage);
   }
 
-  isDisabled(biePackage: BiePackage) {
+  isDisabled(biePackage: BiePackageDetails) {
     return (this.disabled) ||
       (biePackage.name === undefined || biePackage.name === '') ||
       (biePackage.versionId === undefined || biePackage.versionId === '') ||
@@ -518,6 +565,34 @@ export class BiePackageDetailComponent implements OnInit {
           });
         }
       });
+  }
+
+  makeNewRevision() {
+    const dialogConfig = this.confirmDialogService.newConfig();
+    dialogConfig.data.header = 'Amend this BIE Package?';
+    dialogConfig.data.content = ['Are you sure you want to amend this BIE Package?'];
+    dialogConfig.data.action = 'Amend';
+
+    this.confirmDialogService.open(dialogConfig).afterClosed()
+        .subscribe(result => {
+          if (!result) {
+            this.loading = false;
+            return;
+          }
+
+          this.loading = true;
+          this.biePackageService.makeNewRevision(this.biePackage.biePackageId).subscribe(resp => {
+            this.snackBar.open('Amended', '', {
+              duration: 3000,
+            });
+
+            this.router.navigateByUrl('/bie_package/' + resp.biePackageId);
+            this.loading = false;
+          }, err => {
+            this.loading = false;
+            throw err;
+          });
+        });
   }
 
 }

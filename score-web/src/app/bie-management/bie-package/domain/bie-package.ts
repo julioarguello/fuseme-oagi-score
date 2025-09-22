@@ -73,6 +73,11 @@ export class BiePackage {
   sourceTimestamp: Date;
 }
 
+export class AmendBiePackageResponse {
+  biePackageId: number;
+  prevBiePackageId: number;
+}
+
 export class BiePackageManifest {
   biePackage: BiePackageMetadata;
 }

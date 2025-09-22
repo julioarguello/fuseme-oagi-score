@@ -296,7 +296,7 @@ public class ExternalBieController {
                                         StringUtils.hasLength(lastUpdatedOn) ? DateRangeCriteria.create(lastUpdatedOn)
                                                         : null);
 
-                        var resultAndCount = bieQueryService.getBieList(
+                        var resultAndCount = biePackageQueryService.getBieListInBiePackage(
                                         sessionService.getScoreSystemUser(), filterCriteria, pageRequest);
 
                         response.setList(resultAndCount.result());

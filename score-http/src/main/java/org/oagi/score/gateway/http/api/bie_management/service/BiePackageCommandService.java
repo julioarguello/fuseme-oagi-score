@@ -7,7 +7,8 @@ import org.oagi.score.gateway.http.api.account_management.model.UserId;
 import org.oagi.score.gateway.http.api.bie_management.controller.payload.CreateBiePackageRequest;
 import org.oagi.score.gateway.http.api.bie_management.controller.payload.DiscardBiePackageRequest;
 import org.oagi.score.gateway.http.api.bie_management.controller.payload.UpdateBiePackageRequest;
-import org.oagi.score.gateway.http.api.bie_management.model.*;
+import org.oagi.score.gateway.http.api.bie_management.model.BieState;
+import org.oagi.score.gateway.http.api.bie_management.model.TopLevelAsbiepId;
 import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageDetailsRecord;
 import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageId;
 import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageSummaryRecord;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.List;
 
+import static org.oagi.score.gateway.http.api.bie_management.model.BieState.Production;
 import static org.oagi.score.gateway.http.api.bie_management.model.BieState.WIP;
 import static org.oagi.score.gateway.http.common.util.StringUtils.hasLength;
 
@@ -46,17 +48,21 @@ public class BiePackageCommandService {
     @Autowired
     private SessionService sessionService;
 
+    private String newVersionName() {
+        return RandomStringGenerator.builder()
+                .withinRange('0', 'z')
+                .filteredBy(CharacterPredicates.LETTERS, CharacterPredicates.DIGITS)
+                .build()
+                .generate(8);
+    }
+
     public BiePackageId create(ScoreUser requester, CreateBiePackageRequest request) {
 
         return command(requester).create(
                 request.libraryId(),
                 hasLength(request.name()) ? request.name() : "New BIE Package",
                 hasLength(request.versionId()) ? request.versionId() : "v1.0",
-                hasLength(request.versionName()) ? request.versionName() : RandomStringGenerator.builder()
-                        .withinRange('0', 'z')
-                        .filteredBy(CharacterPredicates.LETTERS, CharacterPredicates.DIGITS)
-                        .build()
-                        .generate(8),
+                hasLength(request.versionName()) ? request.versionName() : newVersionName(),
                 request.description());
     }
 
@@ -163,12 +169,34 @@ public class BiePackageCommandService {
                 biePackage.biePackageId(), targetUser.userId());
     }
 
+    public BiePackageId amend(ScoreUser requester, BiePackageId biePackageId) {
+
+        BiePackageSummaryRecord biePackage = query(requester).getBiePackageSummary(biePackageId);
+        if (biePackage == null) {
+            throw new IllegalArgumentException("No BIE Package with ID " + biePackageId);
+        }
+        if (Production != biePackage.state()) {
+            throw new IllegalArgumentException("Only the BIE package in 'Production' state can be amended.");
+        }
+
+        return command(requester).amend(biePackageId, newVersionName());
+    }
+
     public void addBieToBiePackage(
             ScoreUser requester, BiePackageId biePackageId, Collection<TopLevelAsbiepId> topLevelAsbiepIdList) {
 
         BiePackageDetailsRecord biePackage = ensureBiePackageIsUpdatable(requester, biePackageId, true);
 
         command(requester).addBieToBiePackage(biePackage.biePackageId(), topLevelAsbiepIdList);
+    }
+
+    public void replaceBieInBiePackage(
+            ScoreUser requester, BiePackageId biePackageId,
+            TopLevelAsbiepId prevTopLevelAsbiepId, TopLevelAsbiepId topLevelAsbiepId) {
+
+        BiePackageDetailsRecord biePackage = ensureBiePackageIsUpdatable(requester, biePackageId, true);
+
+        command(requester).replaceBieInBiePackage(biePackage.biePackageId(), prevTopLevelAsbiepId, topLevelAsbiepId);
     }
 
     public void deleteBieInBiePackage(
@@ -178,4 +206,5 @@ public class BiePackageCommandService {
 
         command(requester).deleteBieInBiePackage(biePackage.biePackageId(), topLevelAsbiepIdList);
     }
+
 }

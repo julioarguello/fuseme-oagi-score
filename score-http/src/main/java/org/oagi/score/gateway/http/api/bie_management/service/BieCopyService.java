@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.bie_management.service;
 
 import lombok.Data;
 import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.account_management.model.UserId;
 import org.oagi.score.gateway.http.api.agency_id_management.model.AgencyIdListManifestId;
@@ -56,7 +55,6 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.inline;
 import static org.oagi.score.gateway.http.api.bie_management.model.BieState.Initiating;
 import static org.oagi.score.gateway.http.common.repository.jooq.entity.Tables.*;
 

@@ -3,7 +3,9 @@ package org.oagi.score.gateway.http.api.bie_management.controller;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import org.oagi.score.gateway.http.api.bie_management.model.*;
+import org.oagi.score.gateway.http.api.bie_management.model.BieListEntryRecord;
+import org.oagi.score.gateway.http.api.bie_management.model.BieState;
+import org.oagi.score.gateway.http.api.bie_management.model.TopLevelAsbiepId;
 import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageDetailsRecord;
 import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageId;
 import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageListEntryRecord;
@@ -19,6 +21,7 @@ import org.oagi.score.gateway.http.api.release_management.model.ReleaseId;
 import org.oagi.score.gateway.http.common.model.DateRangeCriteria;
 import org.oagi.score.gateway.http.common.model.PageRequest;
 import org.oagi.score.gateway.http.common.model.PageResponse;
+import org.oagi.score.gateway.http.common.model.ScoreUser;
 import org.oagi.score.gateway.http.common.model.base.ScoreDataAccessException;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,11 +149,14 @@ public class BiePackageQueryController {
             @PathVariable("biePackageId") BiePackageId biePackageId,
             @RequestParam(name = "topLevelAsbiepIdList", required = false) String topLevelAsbiepIdList,
             @RequestParam(name = "schemaExpression", required = false) String schemaExpression,
+            @RequestParam(name = "pathDelimiter", required = false, defaultValue = ".") String pathDelimiter,
             HttpServletRequest httpServletRequest) throws IOException {
 
-        BieGenerateExpressionResult response = biePackageQueryService.generate(sessionService.asScoreUser(user), biePackageId,
+        ScoreUser requester = sessionService.asScoreUser(user);
+
+        BieGenerateExpressionResult response = biePackageQueryService.generate(requester, biePackageId,
                 separate(topLevelAsbiepIdList).map(e -> TopLevelAsbiepId.from(e)).collect(toSet()),
-                schemaExpression);
+                schemaExpression, pathDelimiter);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + response.filename() + "\"")
@@ -216,7 +222,7 @@ public class BiePackageQueryController {
                 (StringUtils.hasLength(orderBy)) ? pageRequest(pageIndex, pageSize, orderBy) :
                         pageRequest(pageIndex, pageSize, sortActive, sortDirection);
 
-        var resultAndCount = bieQueryService.getBieList(
+        var resultAndCount = biePackageQueryService.getBieListInBiePackage(
                 sessionService.asScoreUser(user), filterCriteria, pageRequest);
 
         PageResponse<BieListEntryRecord> response = new PageResponse<>();
@@ -233,9 +239,11 @@ public class BiePackageQueryController {
     @GetMapping(value = "/{biePackageId:[\\d]+}/manifest")
     public BiePackageManifestResponse getBiePackageManifest(
             @AuthenticationPrincipal AuthenticatedPrincipal user,
-            @PathVariable("biePackageId") BiePackageId biePackageId) {
+            @PathVariable("biePackageId") BiePackageId biePackageId,
+            @RequestParam(value = "pathDelimiter", required = false, defaultValue = ".") String pathDelimiter) {
 
-        return biePackageManifestService.getBiePackageManifest(sessionService.asScoreUser(user), biePackageId);
+        return biePackageManifestService.getBiePackageManifest(
+                sessionService.asScoreUser(user), biePackageId, pathDelimiter);
     }
 
 }

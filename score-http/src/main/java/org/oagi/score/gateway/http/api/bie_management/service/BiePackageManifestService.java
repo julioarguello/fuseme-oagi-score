@@ -1,5 +1,6 @@
 package org.oagi.score.gateway.http.api.bie_management.service;
 
+import jakarta.annotation.Nullable;
 import org.oagi.score.gateway.http.api.agency_id_management.model.AgencyIdListManifestId;
 import org.oagi.score.gateway.http.api.agency_id_management.model.AgencyIdListSummaryRecord;
 import org.oagi.score.gateway.http.api.bie_management.model.BieAssociation;
@@ -47,6 +48,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static org.oagi.score.gateway.http.api.bie_management.model.bie_package.BieManifest.newBieManifest;
+import static org.oagi.score.gateway.http.api.bie_management.model.bie_package.BieManifestSummary.newBieManifestSummary;
+import static org.oagi.score.gateway.http.common.util.StringUtils.hasLength;
+
 @Service
 @Transactional(readOnly = true)
 public class BiePackageManifestService {
@@ -58,7 +63,7 @@ public class BiePackageManifestService {
     private BieReadService bieReadService;
 
     public BiePackageManifestResponse getBiePackageManifest(ScoreUser requester,
-                                                            BiePackageId biePackageId) {
+                                                            BiePackageId biePackageId, String pathDelimiter) {
 
         BiePackageQueryRepository biePackageQueryRepository = repositoryFactory.biePackageQueryRepository(requester);
         BiePackageSummaryRecord currentPackage = biePackageQueryRepository.getBiePackageSummary(biePackageId);
@@ -95,21 +100,16 @@ public class BiePackageManifestService {
 
             BieManifestEntry bieManifestEntry = null;
             for (TopLevelAsbiepSummaryRecord prevTopLevelAsbiep : prevTopLevelAsbiepList) {
-                BieTrackContext context = diff(requester, currentTopLevelAsbiep, prevTopLevelAsbiep);
+                BieTrackContext context = diff(requester, currentTopLevelAsbiep, prevTopLevelAsbiep, pathDelimiter);
                 if (context != null) {
                     bieManifestEntry = new BieManifestEntry(
-                            new BieManifest(
-                                    currentTopLevelAsbiep.guid(),
-                                    currentTopLevelAsbiep.version(),
-                                    currentTopLevelAsbiep.den(),
-                                    currentTopLevelAsbiep.displayName()
-                            ),
+                            newBieManifest(currentTopLevelAsbiep),
                             prevTopLevelAsbiep.guid(),
                             prevTopLevelAsbiep.version(),
                             true,
                             context.added,
                             context.removed,
-                            context.valueDomainChanged,
+                            context.changed,
                             context.deprecated
                     );
                     break;
@@ -117,29 +117,16 @@ public class BiePackageManifestService {
             }
 
             if (bieManifestEntry != null) {
-                if (!bieManifestEntry.addedElementsFromPriorPackageVersion().isEmpty() ||
-                        !bieManifestEntry.removedElementsFromPriorPackageVersion().isEmpty() ||
-                        !bieManifestEntry.valueDomainChangeFromPriorPackageVersion().isEmpty() ||
-                        !bieManifestEntry.deprecatedElementsFromPriorPackageVersion().isEmpty()) {
-                    changedBiesFromPriorPackageVersion.add(new BieManifestSummary(
-                            currentTopLevelAsbiep.guid(),
-                            currentTopLevelAsbiep.den(),
-                            currentTopLevelAsbiep.displayName()
-                    ));
+                if (!bieManifestEntry.addedComponentsFromPriorPackageVersion().isEmpty() ||
+                        !bieManifestEntry.removedComponentsFromPriorPackageVersion().isEmpty() ||
+                        !bieManifestEntry.changedComponentsFromPriorPackageVersion().isEmpty() ||
+                        !bieManifestEntry.deprecatedComponentsFromPriorPackageVersion().isEmpty()) {
+                    changedBiesFromPriorPackageVersion.add(newBieManifestSummary(currentTopLevelAsbiep));
                 }
             } else {
-                newBiesFromPriorPackageVersion.add(new BieManifestSummary(
-                        currentTopLevelAsbiep.guid(),
-                        currentTopLevelAsbiep.den(),
-                        currentTopLevelAsbiep.displayName()
-                ));
+                newBiesFromPriorPackageVersion.add(newBieManifestSummary(currentTopLevelAsbiep));
                 bieManifestEntry = new BieManifestEntry(
-                        new BieManifest(
-                                currentTopLevelAsbiep.guid(),
-                                currentTopLevelAsbiep.version(),
-                                currentTopLevelAsbiep.den(),
-                                currentTopLevelAsbiep.displayName()
-                        ),
+                        newBieManifest(currentTopLevelAsbiep),
                         null,
                         null,
                         false,
@@ -171,11 +158,7 @@ public class BiePackageManifestService {
                 }
             }
             if (!matched) {
-                removedBiesFromPriorPackageVersion.add(new BieManifestSummary(
-                        prevTopLevelAsbiep.guid(),
-                        prevTopLevelAsbiep.den(),
-                        prevTopLevelAsbiep.displayName()
-                ));
+                removedBiesFromPriorPackageVersion.add(newBieManifestSummary(prevTopLevelAsbiep));
             }
         }
 
@@ -245,14 +228,15 @@ public class BiePackageManifestService {
     private class BieTrackContext {
 
         ScoreUser requester;
+        String delimiter;
 
         BieDocument currentBieDocument;
         BieDocument prevBieDocument;
 
-        Collection<BieElementChange> added = new ArrayList<>();
-        Collection<BieElementChange> removed = new ArrayList<>();
-        Collection<BieElementChange> valueDomainChanged = new ArrayList<>();
-        Collection<BieElementChange> deprecated = new ArrayList<>();
+        Collection<BieComponentChange> added = new ArrayList<>();
+        Collection<BieComponentChange> removed = new ArrayList<>();
+        Collection<BieComponentChange> changed = new ArrayList<>();
+        Collection<BieComponentChange> deprecated = new ArrayList<>();
 
         public BieTrackContext(ScoreUser requester,
                                BieDocument currentBieDocument, BieDocument prevBieDocument) {
@@ -261,16 +245,22 @@ public class BiePackageManifestService {
             this.currentBieDocument = currentBieDocument;
             this.prevBieDocument = prevBieDocument;
         }
+
+        public void setPathDelimiter(String delimiter) {
+            this.delimiter = delimiter;
+        }
     }
 
     public BieTrackContext diff(ScoreUser requester,
                                 TopLevelAsbiepSummaryRecord currentTopLevelAsbiep,
-                                TopLevelAsbiepSummaryRecord prevTopLevelAsbiep) {
+                                TopLevelAsbiepSummaryRecord prevTopLevelAsbiep,
+                                String pathDelimiter) {
 
         BieDocument current = bieReadService.getBieDocument(requester, currentTopLevelAsbiep.topLevelAsbiepId());
         BieDocument previous = bieReadService.getBieDocument(requester, prevTopLevelAsbiep.topLevelAsbiepId());
 
         BieTrackContext context = new BieTrackContext(requester, current, previous);
+        context.setPathDelimiter(pathDelimiter);
 
         Asbiep currentAsbiep = current.getRootAsbiep();
         Asbiep prevAsbiep = previous.getRootAsbiep();
@@ -279,138 +269,349 @@ public class BiePackageManifestService {
         AsccpSummaryRecord prevAsccp = previous.getCcDocument().getAsccp(prevAsbiep.getBasedAsccpManifestId());
 
         if (currentAsccp.guid().equals(prevAsccp.guid())) {
-            traverse(context, current.getAbie(currentAsbiep), previous.getAbie(prevAsbiep));
+            traverse(context, current.getAbie(currentAsbiep), previous.getAbie(prevAsbiep),
+                    currentAsccp.propertyTerm());
             return context;
         }
 
         return null;
     }
 
-    private boolean traverse(BieTrackContext context, Asbie currentAsbie, Asbie prevAsbie) {
-        AsccSummaryRecord currentAscc = context.currentBieDocument.getCcDocument().getAscc(currentAsbie.getBasedAsccManifestId());
-        AsccSummaryRecord prevAscc = context.prevBieDocument.getCcDocument().getAscc(prevAsbie.getBasedAsccManifestId());
+    private void traverse(BieTrackContext context, @Nullable Asbie currentAsbie, @Nullable Asbie prevAsbie, String parentPath) {
+        Asbiep currentAsbiep = null;
+        AsccpSummaryRecord currentAsccp = null;
+        if (currentAsbie != null) {
+            currentAsbiep = context.currentBieDocument.getAsbiep(currentAsbie);
+            currentAsccp = context.currentBieDocument.getCcDocument().getAsccp(currentAsbiep.getBasedAsccpManifestId());
+        }
 
-        if (currentAscc.guid().equals(prevAscc.guid())) {
-            Asbiep currentAsbiep = context.currentBieDocument.getAsbiep(currentAsbie);
-            Asbiep prevAsbiep = context.prevBieDocument.getAsbiep(prevAsbie);
+        Asbiep prevAsbiep = null;
+        AsccpSummaryRecord prevAsccp = null;
+        if (prevAsbie != null) {
+            prevAsbiep = context.prevBieDocument.getAsbiep(prevAsbie);
+            prevAsccp = context.prevBieDocument.getCcDocument().getAsccp(prevAsbiep.getBasedAsccpManifestId());
+        }
 
-            AsccpSummaryRecord currentAsccp = context.currentBieDocument.getCcDocument().getAsccp(currentAsbiep.getBasedAsccpManifestId());
-            AsccpSummaryRecord prevAsccp = context.prevBieDocument.getCcDocument().getAsccp(prevAsbiep.getBasedAsccpManifestId());
+        if (currentAsccp == null && prevAsccp == null) {
+            return;
+        }
 
-            if (currentAsccp.guid().equals(prevAsccp.guid())) {
-                traverse(context,
-                        context.currentBieDocument.getAbie(currentAsbiep),
-                        context.prevBieDocument.getAbie(prevAsbiep));
-                return true;
+        if (currentAsbie != null && prevAsbie != null) {
+            List<String> changes = changes(context, currentAsbie, currentAsbiep, prevAsbie, prevAsbiep);
+
+            if (!changes.isEmpty()) {
+                context.changed.add(newBieElementChange(context, currentAsbie, parentPath, changes));
+            }
+
+            if (currentAsbie.isDeprecated() && !prevAsbie.isDeprecated()) {
+                context.deprecated.add(newBieElementChange(context, currentAsbie, parentPath, Collections.emptyList()));
             }
         }
-        return false;
+
+        traverse(context,
+                context.currentBieDocument.getAbie(currentAsbiep),
+                context.prevBieDocument.getAbie(prevAsbiep),
+                path(context, parentPath, (currentAsccp != null) ? currentAsccp.propertyTerm() : prevAsccp.propertyTerm()));
     }
 
-    private boolean traverse(BieTrackContext context, Bbie currentBbie, Bbie prevBbie) {
-        BccSummaryRecord currentBcc = context.currentBieDocument.getCcDocument().getBcc(currentBbie.getBasedBccManifestId());
-        BccSummaryRecord prevBcc = context.prevBieDocument.getCcDocument().getBcc(prevBbie.getBasedBccManifestId());
+    private String path(BieTrackContext context, String parentPath, String term) {
+        return String.join(context.delimiter, parentPath, term.replaceAll("\\s+", ""));
+    }
 
-        if (!currentBcc.guid().equals(prevBcc.guid())) return false;
+    private void traverse(BieTrackContext context, @Nullable Bbie currentBbie, @Nullable Bbie prevBbie, String parentPath) {
 
-        Bbiep currentBbiep = context.currentBieDocument.getBbiep(currentBbie);
-        Bbiep prevBbiep = context.prevBieDocument.getBbiep(prevBbie);
+        Bbiep currentBbiep = null;
+        BccpSummaryRecord currentBccp = null;
 
-        BccpSummaryRecord currentBccp = context.currentBieDocument.getCcDocument().getBccp(currentBbiep.getBasedBccpManifestId());
-        BccpSummaryRecord prevBccp = context.prevBieDocument.getCcDocument().getBccp(prevBbiep.getBasedBccpManifestId());
-
-        if (!currentBccp.guid().equals(prevBccp.guid())) return false;
-
-        if (!hasSameValueDomain(context, currentBbie, prevBbie,
-                Bbie::getXbtManifestId, Bbie::getCodeListManifestId, Bbie::getAgencyIdListManifestId)) {
-
-            context.valueDomainChanged.add(newBieElementChange(context, currentBbie));
+        if (currentBbie != null) {
+            currentBbiep = context.currentBieDocument.getBbiep(currentBbie);
+            currentBccp = context.currentBieDocument.getCcDocument().getBccp(currentBbiep.getBasedBccpManifestId());
         }
 
-        if (currentBbie.isDeprecated() && !prevBbie.isDeprecated()) {
-            context.deprecated.add(newBieElementChange(context, currentBbie));
+        Bbiep prevBbiep = null;
+        BccpSummaryRecord prevBccp = null;
+        if (prevBbie != null) {
+            prevBbiep = context.prevBieDocument.getBbiep(prevBbie);
+            prevBccp = context.prevBieDocument.getCcDocument().getBccp(prevBbiep.getBasedBccpManifestId());
         }
 
-        List<BbieSc> currentScs = context.currentBieDocument.getBbieScList(currentBbie);
-        List<BbieSc> prevScs = context.prevBieDocument.getBbieScList(prevBbie);
+        if (currentBccp == null && prevBccp == null) {
+            return;
+        }
 
-        for (BbieSc currentSc : currentScs) {
-            boolean matched = false;
+        if (currentBbie != null && prevBbie != null) {
+            List<String> changes = changes(context, currentBbie, currentBbiep, prevBbie, prevBbiep);
 
-            for (BbieSc prevSc : prevScs) {
-                if (currentSc.getGuid().equals(prevSc.getGuid())) {
-                    if (!hasSameValueDomain(context, currentSc, prevSc,
-                            BbieSc::getXbtManifestId, BbieSc::getCodeListManifestId, BbieSc::getAgencyIdListManifestId)) {
+            if (!changes.isEmpty()) {
+                context.changed.add(newBieElementChange(context, currentBbie, parentPath, changes));
+            }
 
-                        context.valueDomainChanged.add(newBieElementChange(context, currentSc));
+            if (currentBbie.isDeprecated() && !prevBbie.isDeprecated()) {
+                context.deprecated.add(newBieElementChange(context, currentBbie, parentPath, Collections.emptyList()));
+            }
+        }
+
+        List<BbieSc> currentBbieScs = context.currentBieDocument.getBbieScList(currentBbie);
+        List<BbieSc> prevBbieScs = context.prevBieDocument.getBbieScList(prevBbie);
+
+        if (currentBccp != null) {
+            String bbiepPath = path(context, parentPath, currentBccp.propertyTerm());
+
+            for (BbieSc currentBbieSc : currentBbieScs) {
+
+                BbieSc prevBbieSc = prevBbieScs.stream()
+                        .filter(e -> matches(currentBbieSc, context.currentBieDocument, e, context.prevBieDocument))
+                        .findFirst().orElse(null);
+                boolean matched = (prevBbieSc != null);
+                if (matched) {
+                    List<String> changes = changes(context, currentBbieSc, prevBbieSc);
+
+                    if (!changes.isEmpty()) {
+                        context.changed.add(newBieElementChange(context, currentBbieSc, bbiepPath, changes));
                     }
 
-                    if (currentSc.isDeprecated() && !prevSc.isDeprecated()) {
-                        context.deprecated.add(newBieElementChange(context, currentBbie));
+                    if (currentBbieSc.isDeprecated() && !prevBbieSc.isDeprecated()) {
+                        context.deprecated.add(newBieElementChange(context, currentBbieSc, bbiepPath, Collections.emptyList()));
                     }
-
-                    matched = true;
-                    break;
+                } else {
+                    context.added.add(newBieElementChange(context, currentBbieSc, bbiepPath, Collections.emptyList()));
                 }
             }
-
-            if (!matched) context.added.add(newBieElementChange(context, currentSc));
         }
 
-        for (BbieSc prevSc : prevScs) {
-            boolean matched = currentScs.stream()
-                    .anyMatch(currentSc -> currentSc.getGuid().equals(prevSc.getGuid()));
-            if (!matched) context.removed.add(newBieElementChange(context, prevSc));
-        }
+        for (BbieSc prevBbieSc : prevBbieScs) {
+            String bbiepPath = path(context, parentPath, prevBccp.propertyTerm());
 
-        return true;
+            BbieSc currentBbieSc = currentBbieScs.stream()
+                    .filter(e -> matches(prevBbieSc, context.prevBieDocument, e, context.currentBieDocument))
+                    .findFirst().orElse(null);
+            boolean matched = (currentBbieSc != null);
+            if (!matched) context.removed.add(newBieElementChange(context, prevBbieSc, bbiepPath, Collections.emptyList()));
+        }
     }
 
-    private void traverse(BieTrackContext context, Abie currentAbie, Abie prevAbie) {
+    private List<String> changes(BieTrackContext context,
+                                 Asbie a, Asbiep aAsbiep,
+                                 Asbie b, Asbiep bAsbiep) {
+        List<String> changes = new ArrayList<>();
+
+        // check 'cardinality'
+        if (a.getCardinalityMin() != b.getCardinalityMin() ||
+            a.getCardinalityMax() != b.getCardinalityMax()) {
+            changes.add("cardinality");
+        }
+
+        // check 'nillable'
+        if (a.isNillable() != b.isNillable()) {
+            changes.add("nillable");
+        }
+
+        // check 'remark'
+        if (!Objects.equals(a.getRemark(), b.getRemark()) ||
+            !Objects.equals(aAsbiep.getRemark(), bAsbiep.getRemark())) {
+            changes.add("remark");
+        }
+
+        // check 'definition'
+        if (!Objects.equals(a.getDefinition(), b.getDefinition()) ||
+            !Objects.equals(aAsbiep.getDefinition(), bAsbiep.getDefinition())) {
+            changes.add("definition");
+        }
+
+        return changes;
+    }
+
+    private List<String> changes(BieTrackContext context,
+                                 Bbie a, Bbiep aBbiep,
+                                 Bbie b, Bbiep bBbiep) {
+        List<String> changes = new ArrayList<>();
+
+        // check 'cardinality'
+        if (a.getCardinalityMin() != b.getCardinalityMin() ||
+            a.getCardinalityMax() != b.getCardinalityMax()) {
+            changes.add("cardinality");
+        }
+
+        // check 'value domain'
+        if (!hasSameValueDomain(context, a, b,
+                Bbie::getXbtManifestId, Bbie::getCodeListManifestId, Bbie::getAgencyIdListManifestId)) {
+            changes.add("value domain");
+        }
+
+        // check 'value constraint'
+        if (hasLength(a.getFixedValue()) && !Objects.equals(a.getFixedValue(), b.getFixedValue())) {
+            changes.add("value constraint");
+        } else if (hasLength(a.getDefaultValue()) && !!Objects.equals(a.getDefaultValue(), b.getDefaultValue())) {
+            changes.add("value constraint");
+        } else if (hasLength(b.getFixedValue()) || hasLength(b.getDefaultValue())) {
+            changes.add("value constraint");
+        }
+
+        // check 'facet'
+        if (a.getFacetMinLength() != null && !Objects.equals(a.getFacetMinLength(), b.getFacetMinLength())) {
+            changes.add("facet");
+        } else if (a.getFacetMaxLength() != null && !Objects.equals(a.getFacetMaxLength(), b.getFacetMaxLength())) {
+            changes.add("facet");
+        } else if (hasLength(a.getFacetPattern()) && !Objects.equals(a.getFacetPattern(), b.getFacetPattern())) {
+            changes.add("facet");
+        } else if (b.getFacetMinLength() != null || b.getFacetMaxLength() != null || hasLength(b.getFacetPattern())) {
+            changes.add("facet");
+        }
+
+        // check 'nillable'
+        if (a.isNillable() != b.isNillable()) {
+            changes.add("nillable");
+        }
+
+        // check 'remark'
+        if (!Objects.equals(a.getRemark(), b.getRemark()) ||
+            !Objects.equals(aBbiep.getRemark(), bBbiep.getRemark())) {
+            changes.add("remark");
+        }
+
+        // check 'definition'
+        if (!Objects.equals(a.getDefinition(), b.getDefinition()) ||
+            !Objects.equals(aBbiep.getDefinition(), bBbiep.getDefinition())) {
+            changes.add("definition");
+        }
+
+        // check 'example'
+        if (!Objects.equals(a.getExample(), b.getExample())) {
+            changes.add("example");
+        }
+
+        return changes;
+    }
+
+    private List<String> changes(BieTrackContext context,
+                                 BbieSc a, BbieSc b) {
+        List<String> changes = new ArrayList<>();
+
+        // check 'cardinality'
+        if (a.getCardinalityMin() != b.getCardinalityMin() ||
+            a.getCardinalityMax() != b.getCardinalityMax()) {
+            changes.add("cardinality");
+        }
+
+        // check 'value domain'
+        if (!hasSameValueDomain(context, a, b,
+                BbieSc::getXbtManifestId, BbieSc::getCodeListManifestId, BbieSc::getAgencyIdListManifestId)) {
+            changes.add("value domain");
+        }
+
+        // check 'value constraint'
+        if (hasLength(a.getFixedValue()) && !Objects.equals(a.getFixedValue(), b.getFixedValue())) {
+            changes.add("value constraint");
+        } else if (hasLength(a.getDefaultValue()) && !!Objects.equals(a.getDefaultValue(), b.getDefaultValue())) {
+            changes.add("value constraint");
+        } else if (hasLength(b.getFixedValue()) || hasLength(b.getDefaultValue())) {
+            changes.add("value constraint");
+        }
+
+        // check 'facet'
+        if (a.getFacetMinLength() != null && !Objects.equals(a.getFacetMinLength(), b.getFacetMinLength())) {
+            changes.add("facet");
+        } else if (a.getFacetMaxLength() != null && !Objects.equals(a.getFacetMaxLength(), b.getFacetMaxLength())) {
+            changes.add("facet");
+        } else if (hasLength(a.getFacetPattern()) && !Objects.equals(a.getFacetPattern(), b.getFacetPattern())) {
+            changes.add("facet");
+        } else if (b.getFacetMinLength() != null || b.getFacetMaxLength() != null || hasLength(b.getFacetPattern())) {
+            changes.add("facet");
+        }
+
+        // check 'nillable'
+        if (a.isNillable() != b.isNillable()) {
+            changes.add("nillable");
+        }
+
+        // check 'remark'
+        if (!Objects.equals(a.getRemark(), b.getRemark())) {
+            changes.add("remark");
+        }
+
+        // check 'definition'
+        if (!Objects.equals(a.getDefinition(), b.getDefinition())) {
+            changes.add("definition");
+        }
+
+        // check 'example'
+        if (!Objects.equals(a.getExample(), b.getExample())) {
+            changes.add("example");
+        }
+
+        return changes;
+    }
+
+    private boolean matches(BbieSc a, BieDocument aDoc,
+                            BbieSc b, BieDocument bDoc) {
+        DtScSummaryRecord aDtSc = aDoc.getCcDocument().getDtSc(a.getBasedDtScManifestId());
+        DtScSummaryRecord bDtSc = bDoc.getCcDocument().getDtSc(b.getBasedDtScManifestId());
+        return aDtSc.guid().equals(bDtSc.guid());
+    }
+
+    private boolean matches(BieAssociation a, BieDocument aDoc,
+                            BieAssociation b, BieDocument bDoc) {
+        if (a.isAsbie() && b.isBbie() ||
+                a.isBbie() && b.isAsbie()) {
+            return false;
+        }
+        if (a.isAsbie()) {
+            AsccSummaryRecord aAscc =
+                    aDoc.getCcDocument().getAscc(((Asbie) a).getBasedAsccManifestId());
+            AsccSummaryRecord bAscc =
+                    bDoc.getCcDocument().getAscc(((Asbie) b).getBasedAsccManifestId());
+
+            return aAscc.guid().equals(bAscc.guid());
+        } else {
+            BccSummaryRecord aBcc =
+                    aDoc.getCcDocument().getBcc(((Bbie) a).getBasedBccManifestId());
+            BccSummaryRecord bBcc =
+                    bDoc.getCcDocument().getBcc(((Bbie) b).getBasedBccManifestId());
+
+            return aBcc.guid().equals(bBcc.guid());
+        }
+    }
+
+    private void traverse(BieTrackContext context, @Nullable Abie currentAbie, @Nullable Abie prevAbie, String parentPath) {
         Collection<BieAssociation> currentList = context.currentBieDocument.getAssociations(currentAbie);
         Collection<BieAssociation> prevList = context.prevBieDocument.getAssociations(prevAbie);
 
         for (BieAssociation current : currentList) {
-            boolean matched = false;
+            BieAssociation matchedPrev = prevList.stream()
+                    .filter(prev -> matches(current, context.currentBieDocument, prev, context.prevBieDocument))
+                    .findFirst().orElse(null);
 
-            for (BieAssociation prev : prevList) {
-                if (current.isAsbie() && prev.isAsbie()) {
-                    matched = traverse(context, (Asbie) current, (Asbie) prev);
-                } else if (current.isBbie() && prev.isBbie()) {
-                    matched = traverse(context, (Bbie) current, (Bbie) prev);
+            boolean matched = (matchedPrev != null);
+            if (current.isAsbie()) {
+                if (!matched) {
+                    context.added.add(newBieElementChange(context, (Asbie) current, parentPath, Collections.emptyList()));
                 }
-
-                if (matched) break;
-            }
-
-            if (!matched) {
-                if (current.isAsbie()) {
-                    context.added.add(newBieElementChange(context, (Asbie) current));
-                } else {
-                    context.added.add(newBieElementChange(context, (Bbie) current));
+                traverse(context, (Asbie) current, (matchedPrev != null) ? ((Asbie) matchedPrev) : null, parentPath);
+            } else {
+                if (!matched) {
+                    context.added.add(newBieElementChange(context, (Bbie) current, parentPath, Collections.emptyList()));
                 }
+                traverse(context, (Bbie) current, (matchedPrev != null) ? ((Bbie) matchedPrev) : null, parentPath);
             }
         }
 
         for (BieAssociation prev : prevList) {
-            boolean matched = false;
+            BieAssociation matchedCurrent = currentList.stream()
+                    .filter(current -> matches(prev, context.prevBieDocument, current, context.currentBieDocument))
+                    .findFirst().orElse(null);
 
-            for (BieAssociation current : currentList) {
-                if (current.isAsbie() && prev.isAsbie()) {
-                    matched = compareAscc(context, (Asbie) current, (Asbie) prev);
-                } else if (current.isBbie() && prev.isBbie()) {
-                    matched = compareBcc(context, (Bbie) current, (Bbie) prev);
+            boolean matched = (matchedCurrent != null);
+            if (prev.isAsbie()) {
+                if (!matched) {
+                    context.removed.add(newBieElementChange(context, (Asbie) prev, parentPath, Collections.emptyList()));
+                    traverse(context, null, (Asbie) prev, parentPath);
                 }
-
-                if (matched) break;
+            } else {
+                if (!matched) {
+                    context.removed.add(newBieElementChange(context, (Bbie) prev, parentPath, Collections.emptyList()));
+                    traverse(context, null, (Bbie) prev, parentPath);
+                }
             }
-
-            if (!matched)
-                if (prev.isAsbie()) {
-                    context.removed.add(newBieElementChange(context, (Asbie) prev));
-                } else {
-                    context.removed.add(newBieElementChange(context, (Bbie) prev));
-                }
         }
     }
 
@@ -461,7 +662,7 @@ public class BiePackageManifestService {
         return currentBcc.guid().equals(prevBcc.guid());
     }
 
-    private BieElementChange newBieElementChange(BieTrackContext context, Asbie asbie) {
+    private BieComponentChange newBieElementChange(BieTrackContext context, Asbie asbie, String parentPath, List<String> changes) {
         AccQueryRepository accQueryRepository = repositoryFactory.accQueryRepository(context.requester);
         AsccSummaryRecord basedAscc = accQueryRepository.getAsccSummary(asbie.getBasedAsccManifestId());
 
@@ -470,12 +671,13 @@ public class BiePackageManifestService {
         AsccpQueryRepository asccpQueryRepository = repositoryFactory.asccpQueryRepository(context.requester);
         AsccpSummaryRecord toAsccp = asccpQueryRepository.getAsccpSummary(basedAscc.toAsccpManifestId());
 
-        return new BieElementChange(
+        return new BieComponentChange(
                 toAsccp.propertyTerm(),
-                fromAcc.objectClassTerm());
+                parentPath,
+                changes);
     }
 
-    private BieElementChange newBieElementChange(BieTrackContext context, Bbie bbie) {
+    private BieComponentChange newBieElementChange(BieTrackContext context, Bbie bbie, String parentPath, List<String> changes) {
         AccQueryRepository accQueryRepository = repositoryFactory.accQueryRepository(context.requester);
         BccSummaryRecord basedBcc = accQueryRepository.getBccSummary(bbie.getBasedBccManifestId());
 
@@ -484,19 +686,25 @@ public class BiePackageManifestService {
         BccpQueryRepository bccpQueryRepository = repositoryFactory.bccpQueryRepository(context.requester);
         BccpSummaryRecord toBccp = bccpQueryRepository.getBccpSummary(basedBcc.toBccpManifestId());
 
-        return new BieElementChange(
+        return new BieComponentChange(
                 toBccp.propertyTerm(),
-                fromAcc.objectClassTerm());
+                parentPath,
+                changes);
     }
 
-    private BieElementChange newBieElementChange(BieTrackContext context, BbieSc bbieSc) {
+    private BieComponentChange newBieElementChange(BieTrackContext context, BbieSc bbieSc, String parentPath, List<String> changes) {
         DtQueryRepository dtQueryRepository = repositoryFactory.dtQueryRepository(context.requester);
         DtScSummaryRecord dtSc = dtQueryRepository.getDtScSummary(bbieSc.getBasedDtScManifestId());
         DtSummaryRecord dt = dtQueryRepository.getDtSummary(dtSc.ownerDtManifestId());
 
-        return new BieElementChange(
-                dtSc.den(),
-                dt.den().replaceAll(". Type", ""));
+        return new BieComponentChange(
+                dtScName(dtSc),
+                parentPath,
+                changes);
+    }
+
+    private String dtScName(DtScSummaryRecord dtSc) {
+        return String.join(" ", Arrays.asList(dtSc.propertyTerm(), dtSc.representationTerm()));
     }
 
 }
