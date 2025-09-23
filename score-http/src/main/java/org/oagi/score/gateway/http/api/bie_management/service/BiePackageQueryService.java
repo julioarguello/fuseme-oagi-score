@@ -25,10 +25,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -124,7 +121,16 @@ public class BiePackageQueryService {
         List<File> files = new ArrayList<>(result.values());
         files.add(manifestFile);
 
-        String filename = biePackage.versionName() + "-" + biePackage.versionId() + "-" + System.currentTimeMillis();
+        String filename = String.join("-", Arrays.asList(
+                        biePackage.name(),
+                        biePackage.versionName(),
+                        biePackage.versionId(),
+                        Long.toString(System.currentTimeMillis()))
+                .stream()
+                .map(e -> e.replaceAll("\\s+", ""))                      // remove whitespace
+                .map(e -> e.replaceAll("[\\\\/:*?\"<>|]", ""))           // remove invalid filename char
+                .collect(Collectors.toList()));
+
         File file = Zip.compression(files, filename);
 
         String contentType = "application/zip";
@@ -136,5 +142,10 @@ public class BiePackageQueryService {
 
         var biePackageQuery = repositoryFactory.biePackageQueryRepository(requester);
         return biePackageQuery.getBieListInBiePackage(filterCriteria, pageRequest);
+    }
+
+    public boolean exists(ScoreUser requester, BiePackageId biePackageId, TopLevelAsbiepId topLevelAsbiepId) {
+        var biePackageQuery = repositoryFactory.biePackageQueryRepository(requester);
+        return biePackageQuery.exists(biePackageId, topLevelAsbiepId);
     }
 }

@@ -100,13 +100,13 @@ public class BiePackageCommandController {
         }
     }
 
-    @PatchMapping(value = "/{biePackageId:[\\d]+}/amend")
-    public AmendBiePackageResponse amendBiePackage(
+    @PatchMapping(value = "/{biePackageId:[\\d]+}/revise")
+    public ReviseBiePackageResponse amendBiePackage(
             @AuthenticationPrincipal AuthenticatedPrincipal user,
             @PathVariable("biePackageId") BiePackageId biePackageId) {
 
-        return new AmendBiePackageResponse(
-                biePackageCommandService.amend(sessionService.asScoreUser(user), biePackageId),
+        return new ReviseBiePackageResponse(
+                biePackageCommandService.revise(sessionService.asScoreUser(user), biePackageId),
                 biePackageId);
     }
 
@@ -163,4 +163,14 @@ public class BiePackageCommandController {
         return ResponseEntity.noContent().build();
     }
 
+//    @RequestMapping(value = "/{biePackageId:\\d+}/uplifting", method = RequestMethod.POST)
+//    public ResponseEntity upliftBiePackage(@AuthenticationPrincipal AuthenticatedPrincipal user,
+//                                           @PathVariable("biePackageId") BiePackageId biePackageId,
+//                                           @RequestBody UpliftBiePackageRequest request) throws ScoreDataAccessException {
+//        request.setRequester(sessionService.asScoreUser(user));
+//        request.setBiePackageId(biePackageId);
+//
+//        biePackageCommandService.upliftBiePackage(request);
+//        return ResponseEntity.noContent().build();
+//    }
 }

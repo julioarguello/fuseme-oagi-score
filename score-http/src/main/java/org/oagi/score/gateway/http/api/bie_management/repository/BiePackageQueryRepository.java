@@ -31,4 +31,7 @@ public interface BiePackageQueryRepository {
     ResultAndCount<BieListEntryRecord> getBieListInBiePackage(
             BieListInBiePackageFilterCriteria filterCriteria, PageRequest pageRequest);
 
+    boolean exists(BiePackageId biePackageId, TopLevelAsbiepId topLevelAsbiepId);
+
+    boolean hasDuplicateVersion(BiePackageId biePackageId, String versionId);
 }

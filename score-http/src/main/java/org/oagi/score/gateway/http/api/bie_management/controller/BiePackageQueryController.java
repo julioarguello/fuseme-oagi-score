@@ -165,6 +165,20 @@ public class BiePackageQueryController {
                 .body(new InputStreamResource(new FileInputStream(response.file())));
     }
 
+    @RequestMapping(value = "/{biePackageId:\\d+}/bies/{topLevelAsbiepId:\\d+}", method = RequestMethod.HEAD)
+    public ResponseEntity exists(
+            @AuthenticationPrincipal AuthenticatedPrincipal user,
+            @PathVariable("biePackageId") BiePackageId biePackageId,
+            @PathVariable("topLevelAsbiepId") TopLevelAsbiepId topLevelAsbiepId) {
+
+        if (biePackageQueryService.exists(sessionService.asScoreUser(user),
+                biePackageId, topLevelAsbiepId)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping(value = "/{biePackageId:\\d+}/bies")
     public PageResponse<BieListEntryRecord> getBieListInBiePackage(
             @AuthenticationPrincipal AuthenticatedPrincipal user,

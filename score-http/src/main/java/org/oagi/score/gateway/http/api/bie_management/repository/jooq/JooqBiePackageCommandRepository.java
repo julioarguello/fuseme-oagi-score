@@ -62,7 +62,7 @@ public class JooqBiePackageCommandRepository extends JooqBaseRepository implemen
     }
 
     @Override
-    public BiePackageId amend(BiePackageId biePackageId, String versionName) {
+    public BiePackageId revise(BiePackageId biePackageId, String versionId) {
 
         var query = repositoryFactory().biePackageQueryRepository(requester());
 
@@ -75,8 +75,8 @@ public class JooqBiePackageCommandRepository extends JooqBaseRepository implemen
 
         biePackageRecord.setLibraryId(valueOf(biePackageDetails.libraryId()));
         biePackageRecord.setName(biePackageDetails.name());
-        biePackageRecord.setVersionId(biePackageDetails.versionId());
-        biePackageRecord.setVersionName(versionName);
+        biePackageRecord.setVersionId(versionId);
+        biePackageRecord.setVersionName(biePackageDetails.versionName());
         biePackageRecord.setDescription(biePackageDetails.description());
         biePackageRecord.setState(BieState.WIP.name());
         biePackageRecord.setPrevBiePackageId(valueOf(biePackageId));
@@ -87,17 +87,17 @@ public class JooqBiePackageCommandRepository extends JooqBaseRepository implemen
         biePackageRecord.setCreationTimestamp(timestamp);
         biePackageRecord.setLastUpdateTimestamp(timestamp);
 
-        BiePackageId amendedBiePackageId = new BiePackageId(
+        BiePackageId revisedBiePackageId = new BiePackageId(
                 dslContext().insertInto(BIE_PACKAGE)
                         .set(biePackageRecord)
                         .returning(BIE_PACKAGE.BIE_PACKAGE_ID)
                         .fetchOne().getBiePackageId().toBigInteger()
         );
 
-        addBieToBiePackage(amendedBiePackageId,
+        addBieToBiePackage(revisedBiePackageId,
                 query.getTopLevelAsbiepIdListInBiePackage(biePackageId));
 
-        return amendedBiePackageId;
+        return revisedBiePackageId;
     }
 
     @Override

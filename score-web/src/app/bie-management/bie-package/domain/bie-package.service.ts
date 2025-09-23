@@ -3,7 +3,7 @@ import {HttpClient, HttpParams, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {PageResponse} from '../../../basis/basis';
 import {
-  AmendBiePackageResponse,
+  ReviseBiePackageResponse,
   BieListInBiePackageRequest, BiePackageDetails, BiePackageListEntry, BiePackageListRequest, BiePackageManifest
 } from './bie-package';
 import {map} from 'rxjs/operators';
@@ -265,8 +265,12 @@ export class BiePackageService {
     });
   }
 
-  makeNewRevision(biePackageId: number): Observable<AmendBiePackageResponse> {
-    return this.http.patch<AmendBiePackageResponse>('/api/bie-packages/' + biePackageId + '/amend', {});
+  makeNewRevision(biePackageId: number): Observable<ReviseBiePackageResponse> {
+    return this.http.patch<ReviseBiePackageResponse>('/api/bie-packages/' + biePackageId + '/revise', {});
+  }
+
+  exists(biePackageId: number, topLevelAsbiepId: number): Observable<any> {
+    return this.http.head('/api/bie-packages/' + biePackageId + '/bies/' + topLevelAsbiepId, {});
   }
 
 }

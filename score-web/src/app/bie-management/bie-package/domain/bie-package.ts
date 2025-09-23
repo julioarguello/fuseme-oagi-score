@@ -43,6 +43,7 @@ export class BiePackageDetails {
   releases: ReleaseSummary[];
   state: string;
   access: string;
+  prev: BiePackageSummary;
   source: BiePackageSummary;
   owner: ScoreUser;
   created: WhoAndWhen;
@@ -73,7 +74,7 @@ export class BiePackage {
   sourceTimestamp: Date;
 }
 
-export class AmendBiePackageResponse {
+export class ReviseBiePackageResponse {
   biePackageId: number;
   prevBiePackageId: number;
 }

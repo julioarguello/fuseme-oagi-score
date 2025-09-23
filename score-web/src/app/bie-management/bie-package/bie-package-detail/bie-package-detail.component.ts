@@ -5,7 +5,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {hashCode} from 'src/app/common/utility';
 import {SelectionModel} from '@angular/cdk/collections';
-import {finalize} from 'rxjs/operators';
+import {catchError, finalize, map} from 'rxjs/operators';
 import {saveAs} from 'file-saver';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatMultiSort, MatMultiSortTableDataSource, TableData} from 'ngx-mat-multi-sort';
@@ -24,7 +24,7 @@ import {
 } from '../../../settings-management/settings-preferences/domain/preferences';
 import {ScoreTableColumnResizeDirective} from '../../../common/score-table-column-resize/score-table-column-resize.directive';
 import {SettingsPreferencesService} from '../../../settings-management/settings-preferences/domain/settings-preferences.service';
-import {forkJoin} from 'rxjs';
+import {forkJoin, of} from 'rxjs';
 
 @Component({
   selector: 'score-bie-package-detail',
@@ -439,15 +439,53 @@ export class BiePackageDetailComponent implements OnInit {
 
   removeBieInBiePackage() {
     const bieLists = this.selection.selected;
-    this.biePackageService.deleteBieInBiePackage(
-        this.biePackage.biePackageId, ...bieLists.map(e => e.topLevelAsbiepId)).subscribe(_ => {
-      this.snackBar.open('Removed', '', {
-        duration: 3000,
-      });
 
-      this.selection.clear();
-      this.loadBieListInBiePackage();
-    });
+    const removeBieAction = () => {
+      this.biePackageService.deleteBieInBiePackage(
+          this.biePackage.biePackageId, ...bieLists.map(e => e.topLevelAsbiepId)).subscribe(_ => {
+        this.snackBar.open('Removed', '', {
+          duration: 3000,
+        });
+
+        this.selection.clear();
+        this.loadBieListInBiePackage();
+      });
+    };
+
+    if (!!this.biePackage.prev) {
+
+      // Create an array of observables for each BIE
+      const observables = bieLists.map(bie =>
+          this.biePackageService.exists(this.biePackage.prev.biePackageId, bie.topLevelAsbiepId).pipe(
+              map(_ => bie), // if exists, keep bie; else null
+              catchError(() => of(null))          // handle errors gracefully
+          )
+      );
+
+      // Run all observables in parallel
+      forkJoin(observables).subscribe(results => {
+        // Filter out nulls (non-existing BIEs)
+        const exists = results.filter(bie => bie !== null);
+
+        if (exists.length > 0) {
+          const dialogConfig = this.confirmDialogService.newConfig();
+          dialogConfig.data.header = 'Remove BIE' + (exists.length > 1 ? 's' : '') + ' in the previous version?';
+          dialogConfig.data.content = [
+            'Are you sure you want to remove BIE' + (exists.length > 1 ? 's' : '') + ' in the previous version?'
+          ];
+          dialogConfig.data.action = 'Remove anyway';
+
+          this.confirmDialogService.open(dialogConfig).afterClosed()
+              .subscribe(result => {
+                if (result) {
+                  removeBieAction();
+                }
+              });
+        } else {
+          removeBieAction();
+        }
+      });
+    }
   }
 
   generate() {
@@ -569,9 +607,9 @@ export class BiePackageDetailComponent implements OnInit {
 
   makeNewRevision() {
     const dialogConfig = this.confirmDialogService.newConfig();
-    dialogConfig.data.header = 'Amend this BIE Package?';
-    dialogConfig.data.content = ['Are you sure you want to amend this BIE Package?'];
-    dialogConfig.data.action = 'Amend';
+    dialogConfig.data.header = 'Revise this BIE Package?';
+    dialogConfig.data.content = ['Are you sure you want to revise this BIE Package?'];
+    dialogConfig.data.action = 'Revise';
 
     this.confirmDialogService.open(dialogConfig).afterClosed()
         .subscribe(result => {
@@ -582,7 +620,7 @@ export class BiePackageDetailComponent implements OnInit {
 
           this.loading = true;
           this.biePackageService.makeNewRevision(this.biePackage.biePackageId).subscribe(resp => {
-            this.snackBar.open('Amended', '', {
+            this.snackBar.open('Revised', '', {
               duration: 3000,
             });
 

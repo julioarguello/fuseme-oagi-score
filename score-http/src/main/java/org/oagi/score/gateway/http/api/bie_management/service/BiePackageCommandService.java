@@ -17,6 +17,7 @@ import org.oagi.score.gateway.http.api.bie_management.repository.BiePackageQuery
 import org.oagi.score.gateway.http.common.model.ScoreRole;
 import org.oagi.score.gateway.http.common.model.ScoreUser;
 import org.oagi.score.gateway.http.common.repository.jooq.RepositoryFactory;
+import org.oagi.score.gateway.http.common.util.SemanticVersion;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -25,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.oagi.score.gateway.http.api.bie_management.model.BieState.Production;
 import static org.oagi.score.gateway.http.api.bie_management.model.BieState.WIP;
@@ -169,17 +172,47 @@ public class BiePackageCommandService {
                 biePackage.biePackageId(), targetUser.userId());
     }
 
-    public BiePackageId amend(ScoreUser requester, BiePackageId biePackageId) {
+    public BiePackageId revise(ScoreUser requester, BiePackageId biePackageId) {
 
-        BiePackageSummaryRecord biePackage = query(requester).getBiePackageSummary(biePackageId);
+        var query = query(requester);
+        BiePackageSummaryRecord biePackage = query.getBiePackageSummary(biePackageId);
         if (biePackage == null) {
             throw new IllegalArgumentException("No BIE Package with ID " + biePackageId);
         }
         if (Production != biePackage.state()) {
-            throw new IllegalArgumentException("Only the BIE package in 'Production' state can be amended.");
+            throw new IllegalArgumentException("Only the BIE package in 'Production' state can be revised.");
         }
 
-        return command(requester).amend(biePackageId, newVersionName());
+        String versionId = biePackage.versionId();
+        while (true) {
+            versionId = newVersionId(versionId);
+            if (!query.hasDuplicateVersion(biePackageId, versionId)) {
+                break;
+            }
+        }
+
+        return command(requester).revise(biePackageId, versionId);
+    }
+
+    private String newVersionId(String versionId) {
+        try {
+            SemanticVersion semver = new SemanticVersion(versionId);
+            return semver.increment(false).toString();
+        } catch (IllegalArgumentException e) {
+            return addNumber(versionId);
+        }
+    }
+
+    private String addNumber(String versionId) {
+        Pattern pattern = Pattern.compile("^(.*?)(?:-(\\d+))?$");
+        Matcher matcher = pattern.matcher(versionId);
+        if (matcher.matches()) {
+            String base = matcher.group(1);
+            String numStr = matcher.group(2);
+            int next = (numStr != null) ? Integer.parseInt(numStr) + 1 : 1;
+            return base + "-" + next;
+        }
+        return versionId + "-1"; // fallback
     }
 
     public void addBieToBiePackage(

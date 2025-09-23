@@ -12,7 +12,7 @@ public interface BiePackageCommandRepository {
 
     BiePackageId create(LibraryId libraryId, String name, String versionId, String versionName, String description);
 
-    BiePackageId amend(BiePackageId biePackageId, String versionName);
+    BiePackageId revise(BiePackageId biePackageId, String versionId);
 
     boolean update(BiePackageId biePackageId, String name, String versionId, String versionName, String description);
 

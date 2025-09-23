@@ -14,12 +14,10 @@ import org.oagi.score.gateway.http.api.bie_management.model.bbiep.Bbiep;
 import org.oagi.score.gateway.http.api.bie_management.model.bie_package.*;
 import org.oagi.score.gateway.http.api.bie_management.repository.BiePackageQueryRepository;
 import org.oagi.score.gateway.http.api.bie_management.repository.TopLevelAsbiepQueryRepository;
-import org.oagi.score.gateway.http.api.cc_management.model.acc.AccSummaryRecord;
 import org.oagi.score.gateway.http.api.cc_management.model.ascc.AsccSummaryRecord;
 import org.oagi.score.gateway.http.api.cc_management.model.asccp.AsccpSummaryRecord;
 import org.oagi.score.gateway.http.api.cc_management.model.bcc.BccSummaryRecord;
 import org.oagi.score.gateway.http.api.cc_management.model.bccp.BccpSummaryRecord;
-import org.oagi.score.gateway.http.api.cc_management.model.dt.DtSummaryRecord;
 import org.oagi.score.gateway.http.api.cc_management.model.dt_sc.DtScSummaryRecord;
 import org.oagi.score.gateway.http.api.cc_management.repository.AccQueryRepository;
 import org.oagi.score.gateway.http.api.cc_management.repository.AsccpQueryRepository;
@@ -623,22 +621,22 @@ public class BiePackageManifestService {
             Function<T, CodeListManifestId> codeListIdGetter,
             Function<T, AgencyIdListManifestId> agencyIdListIdGetter) {
 
-        return compareGuid(
+        return equals(
                 () -> context.currentBieDocument.getCcDocument().getXbt(xbtIdGetter.apply(current)),
                 () -> context.prevBieDocument.getCcDocument().getXbt(xbtIdGetter.apply(previous)),
                 XbtSummaryRecord::guid
-        ) || compareGuid(
+        ) || equals(
                 () -> context.currentBieDocument.getCcDocument().getCodeList(codeListIdGetter.apply(current)),
                 () -> context.prevBieDocument.getCcDocument().getCodeList(codeListIdGetter.apply(previous)),
                 CodeListSummaryRecord::guid
-        ) || compareGuid(
+        ) || equals(
                 () -> context.currentBieDocument.getCcDocument().getAgencyIdList(agencyIdListIdGetter.apply(current)),
                 () -> context.prevBieDocument.getCcDocument().getAgencyIdList(agencyIdListIdGetter.apply(previous)),
                 AgencyIdListSummaryRecord::guid
         );
     }
 
-    private <T> boolean compareGuid(Supplier<T> currentSupplier, Supplier<T> prevSupplier, Function<T, Guid> guidGetter) {
+    private <T> boolean equals(Supplier<T> currentSupplier, Supplier<T> prevSupplier, Function<T, Guid> guidGetter) {
         try {
             T current = currentSupplier.get();
             T prev = prevSupplier.get();
@@ -650,23 +648,9 @@ public class BiePackageManifestService {
         return false;
     }
 
-    private boolean compareAscc(BieTrackContext context, Asbie current, Asbie prev) {
-        AsccSummaryRecord currentAscc = context.currentBieDocument.getCcDocument().getAscc(current.getBasedAsccManifestId());
-        AsccSummaryRecord prevAscc = context.prevBieDocument.getCcDocument().getAscc(prev.getBasedAsccManifestId());
-        return currentAscc.guid().equals(prevAscc.guid());
-    }
-
-    private boolean compareBcc(BieTrackContext context, Bbie current, Bbie prev) {
-        BccSummaryRecord currentBcc = context.currentBieDocument.getCcDocument().getBcc(current.getBasedBccManifestId());
-        BccSummaryRecord prevBcc = context.prevBieDocument.getCcDocument().getBcc(prev.getBasedBccManifestId());
-        return currentBcc.guid().equals(prevBcc.guid());
-    }
-
     private BieComponentChange newBieElementChange(BieTrackContext context, Asbie asbie, String parentPath, List<String> changes) {
         AccQueryRepository accQueryRepository = repositoryFactory.accQueryRepository(context.requester);
         AsccSummaryRecord basedAscc = accQueryRepository.getAsccSummary(asbie.getBasedAsccManifestId());
-
-        AccSummaryRecord fromAcc = accQueryRepository.getAccSummary(basedAscc.fromAccManifestId());
 
         AsccpQueryRepository asccpQueryRepository = repositoryFactory.asccpQueryRepository(context.requester);
         AsccpSummaryRecord toAsccp = asccpQueryRepository.getAsccpSummary(basedAscc.toAsccpManifestId());
@@ -681,8 +665,6 @@ public class BiePackageManifestService {
         AccQueryRepository accQueryRepository = repositoryFactory.accQueryRepository(context.requester);
         BccSummaryRecord basedBcc = accQueryRepository.getBccSummary(bbie.getBasedBccManifestId());
 
-        AccSummaryRecord fromAcc = accQueryRepository.getAccSummary(basedBcc.fromAccManifestId());
-
         BccpQueryRepository bccpQueryRepository = repositoryFactory.bccpQueryRepository(context.requester);
         BccpSummaryRecord toBccp = bccpQueryRepository.getBccpSummary(basedBcc.toBccpManifestId());
 
@@ -695,7 +677,6 @@ public class BiePackageManifestService {
     private BieComponentChange newBieElementChange(BieTrackContext context, BbieSc bbieSc, String parentPath, List<String> changes) {
         DtQueryRepository dtQueryRepository = repositoryFactory.dtQueryRepository(context.requester);
         DtScSummaryRecord dtSc = dtQueryRepository.getDtScSummary(bbieSc.getBasedDtScManifestId());
-        DtSummaryRecord dt = dtQueryRepository.getDtSummary(dtSc.ownerDtManifestId());
 
         return new BieComponentChange(
                 dtScName(dtSc),

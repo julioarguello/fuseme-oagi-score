@@ -856,5 +856,28 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
 
     }
 
+    public boolean exists(BiePackageId biePackageId, TopLevelAsbiepId topLevelAsbiepId) {
+
+        return dslContext().selectCount()
+                .from(BIE_PACKAGE_TOP_LEVEL_ASBIEP)
+                .where(and(
+                        BIE_PACKAGE_TOP_LEVEL_ASBIEP.BIE_PACKAGE_ID.eq(valueOf(biePackageId)),
+                        BIE_PACKAGE_TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(valueOf(topLevelAsbiepId))
+                ))
+                .fetchOptionalInto(Integer.class).orElse(0) > 0;
+    }
+
+    public boolean hasDuplicateVersion(BiePackageId biePackageId, String versionId) {
+
+        BiePackageSummaryRecord biePackage = getBiePackageSummary(biePackageId);
+        return dslContext().selectCount()
+                .from(BIE_PACKAGE)
+                .where(and(
+                        BIE_PACKAGE.NAME.eq(biePackage.name()),
+                        BIE_PACKAGE.VERSION_ID.eq(versionId),
+                        BIE_PACKAGE.VERSION_NAME.eq(biePackage.versionName())
+                ))
+                .fetchOptionalInto(Integer.class).orElse(0) > 0;
+    }
 
 }
