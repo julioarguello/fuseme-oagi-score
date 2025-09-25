@@ -78,8 +78,6 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         return repositoryFactory.bieQueryRepository(requester);
     }
 
-    ;
-
     @Autowired
     private ApplicationContext applicationContext;
 

@@ -523,6 +523,8 @@ export class BiePackageDetailComponent implements OnInit {
     this.biePackageService.getManifest(this.biePackage.biePackageId).subscribe(resp => {
       this.loading = false;
       console.log(resp);
+    }, err => {
+      this.loading = false;
     });
   }
 

@@ -78,6 +78,19 @@ public class JooqReleaseQueryRepository extends JooqBaseRepository implements Re
     }
 
     @Override
+    public List<ReleaseSummaryRecord> getReleaseSummaryList(Collection<ReleaseId> releaseIdSet) {
+        if (releaseIdSet == null || releaseIdSet.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        var queryBuilder = new GetReleaseSummaryListQueryBuilder();
+        return queryBuilder.select()
+                .where(RELEASE.RELEASE_ID.in(valueOf(releaseIdSet)))
+                .orderBy(RELEASE.RELEASE_ID.desc())
+                .fetch(queryBuilder.mapper());
+    }
+
+    @Override
     public List<ReleaseSummaryRecord> getReleaseSummaryList(LibraryId libraryId, Collection<ReleaseState> releaseStateSet) {
         List<Condition> conditions = new ArrayList();
         conditions.add(RELEASE.LIBRARY_ID.eq(valueOf(libraryId)));

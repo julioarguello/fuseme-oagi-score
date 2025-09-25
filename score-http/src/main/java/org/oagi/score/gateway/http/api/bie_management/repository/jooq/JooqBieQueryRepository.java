@@ -40,6 +40,7 @@ import org.oagi.score.gateway.http.common.repository.jooq.JooqBaseRepository;
 import org.oagi.score.gateway.http.common.repository.jooq.RepositoryFactory;
 import org.springframework.util.StringUtils;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -779,16 +780,44 @@ public class JooqBieQueryRepository extends JooqBaseRepository implements BieQue
         BieSet bieSet = new BieSet();
         bieSet.setTopLevelAsbiep(topLevelAsbiep);
 
+        // Find all reused BIEs
+        Set<TopLevelAsbiepId> topLevelAsbiepIds = new HashSet<>();
+        topLevelAsbiepIds.add(topLevelAsbiepId);
+
+        Queue<TopLevelAsbiepId> queue = new LinkedList<>();
+        queue.offer(topLevelAsbiepId);
+
+        while (!queue.isEmpty()) {
+            topLevelAsbiepId = queue.poll();
+
+            List<TopLevelAsbiepId> reusedTopLevelAsbiepIds =
+                    dslContext().selectDistinct(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID)
+                            .from(ASBIE)
+                            .join(ASBIEP).on(ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
+                            .where(and(
+                                    ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(valueOf(topLevelAsbiepId)),
+                                    ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.notIn(valueOf(topLevelAsbiepIds)))
+                            )
+                            .fetchStreamInto(BigInteger.class).map(e -> new TopLevelAsbiepId(e))
+                            .collect(Collectors.toList());
+            if (reusedTopLevelAsbiepIds.isEmpty()) {
+                break;
+            }
+
+            topLevelAsbiepIds.addAll(reusedTopLevelAsbiepIds);
+            queue.addAll(reusedTopLevelAsbiepIds);
+        }
+
         if (topLevelAsbiep.state() != BieState.Initiating) {
             List<Condition> conditions;
 
             bieSet.setAbieList(selectAbie()
-                    .where(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(valueOf(topLevelAsbiepId)))
+                    .where(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.in(valueOf(topLevelAsbiepIds)))
                     .fetch(mapperAbie())
             );
 
             conditions = new ArrayList();
-            conditions.add(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(valueOf(topLevelAsbiepId)));
+            conditions.add(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.in(valueOf(topLevelAsbiepIds)));
             if (used) {
                 conditions.add(ASBIE.IS_USED.eq((byte) 1));
             }
@@ -798,7 +827,7 @@ public class JooqBieQueryRepository extends JooqBaseRepository implements BieQue
             );
 
             conditions = new ArrayList();
-            conditions.add(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(valueOf(topLevelAsbiepId)));
+            conditions.add(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.in(valueOf(topLevelAsbiepIds)));
             if (used) {
                 conditions.add(BBIE.IS_USED.eq((byte) 1));
             }
@@ -808,17 +837,17 @@ public class JooqBieQueryRepository extends JooqBaseRepository implements BieQue
             );
 
             bieSet.setAsbiepList(selectAsbiep()
-                    .where(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(valueOf(topLevelAsbiepId)))
+                    .where(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.in(valueOf(topLevelAsbiepIds)))
                     .fetch(mapperAsbiep())
             );
 
             bieSet.setBbiepList(selectBbiep()
-                    .where(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(valueOf(topLevelAsbiepId)))
+                    .where(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.in(valueOf(topLevelAsbiepIds)))
                     .fetch(mapperBbiep())
             );
 
             conditions = new ArrayList();
-            conditions.add(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(valueOf(topLevelAsbiepId)));
+            conditions.add(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.in(valueOf(topLevelAsbiepIds)));
             if (used) {
                 conditions.add(BBIE_SC.IS_USED.eq((byte) 1));
             }

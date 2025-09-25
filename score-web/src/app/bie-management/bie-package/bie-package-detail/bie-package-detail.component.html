@@ -92,7 +92,7 @@
             Add
           </button>
           <button mat-raised-button class="mr-2" (click)="openReplaceDialog($event, this.selection.selected[0])" color="accent"
-                  *ngIf="biePackage.state === 'WIP' && biePackage.access === 'CanEdit' && this.selection.selected.length === 1">
+                  *ngIf="biePackage.state === 'WIP' && biePackage.access === 'CanEdit' && !!biePackage.prev && this.selection.selected.length === 1">
             <mat-icon>update</mat-icon>
             Replace
           </button>

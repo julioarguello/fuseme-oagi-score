@@ -101,16 +101,10 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
                 List<String> releaseNumList = hasLength(releaseNumListStr) ? Arrays.asList(releaseNumListStr.split(",")) : Collections.emptyList();
 
                 List<ReleaseSummaryRecord> releases = new ArrayList<>();
-                if (!releaseIdList.isEmpty() && !releaseIdList.isEmpty() && releaseIdList.size() == releaseNumList.size()) {
-                    for (int i = 0, len = releaseIdList.size(); i < len; ++i) {
-                        ReleaseSummaryRecord release = new ReleaseSummaryRecord(
-                                new ReleaseId(new BigInteger(releaseIdList.get(i))),
-                                null,
-                                releaseNumList.get(i),
-                                null
-                        );
-                        releases.add(release);
-                    }
+                if (!releaseIdList.isEmpty() && releaseIdList.size() == releaseNumList.size()) {
+                    releases = repositoryFactory().releaseQueryRepository(requester()).getReleaseSummaryList(
+                            releaseIdList.stream().map(e -> ReleaseId.from(e)).collect(Collectors.toSet())
+                    );
                 }
 
                 BieState state = BieState.valueOf(record.get(BIE_PACKAGE.STATE));
@@ -168,6 +162,13 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
                     .join(creatorTable()).on(BIE_PACKAGE.CREATED_BY.eq(creatorTablePk()))
                     .join(updaterTable()).on(BIE_PACKAGE.LAST_UPDATED_BY.eq(updaterTablePk()))
                     .leftJoin(BIE_PACKAGE_TOP_LEVEL_ASBIEP).on(BIE_PACKAGE.BIE_PACKAGE_ID.eq(BIE_PACKAGE_TOP_LEVEL_ASBIEP.BIE_PACKAGE_ID))
+                    // -- only join the BIE-package -> top-level rows that are NOT superseded
+                    .andNotExists(selectOne()
+                            .from(BIE_PACKAGE_TOP_LEVEL_ASBIEP.as("bptla2"))
+                            .where(and(
+                                    BIE_PACKAGE_TOP_LEVEL_ASBIEP.as("bptla2").PREV_TOP_LEVEL_ASBIEP_ID.eq(BIE_PACKAGE_TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID),
+                                    BIE_PACKAGE_TOP_LEVEL_ASBIEP.as("bptla2").BIE_PACKAGE_ID.eq(BIE_PACKAGE_TOP_LEVEL_ASBIEP.BIE_PACKAGE_ID)
+                            )))
                     .leftJoin(TOP_LEVEL_ASBIEP).on(BIE_PACKAGE_TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
                     .leftJoin(RELEASE).on(TOP_LEVEL_ASBIEP.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                     .leftJoin(ASBIEP).on(TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
@@ -317,16 +318,10 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
                 List<String> releaseNumList = hasLength(releaseNumListStr) ? Arrays.asList(releaseNumListStr.split(",")) : Collections.emptyList();
 
                 List<ReleaseSummaryRecord> releases = new ArrayList<>();
-                if (!releaseIdList.isEmpty() && !releaseIdList.isEmpty() && releaseIdList.size() == releaseNumList.size()) {
-                    for (int i = 0, len = releaseIdList.size(); i < len; ++i) {
-                        ReleaseSummaryRecord release = new ReleaseSummaryRecord(
-                                new ReleaseId(new BigInteger(releaseIdList.get(i))),
-                                null,
-                                releaseNumList.get(i),
-                                null
-                        );
-                        releases.add(release);
-                    }
+                if (!releaseIdList.isEmpty() && releaseIdList.size() == releaseNumList.size()) {
+                    releases = repositoryFactory().releaseQueryRepository(requester()).getReleaseSummaryList(
+                            releaseIdList.stream().map(e -> ReleaseId.from(e)).collect(Collectors.toSet())
+                    );
                 }
 
                 BieState state = BieState.valueOf(record.get(BIE_PACKAGE.STATE));
@@ -390,6 +385,13 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
                     .join(creatorTable()).on(BIE_PACKAGE.CREATED_BY.eq(creatorTablePk()))
                     .join(updaterTable()).on(BIE_PACKAGE.LAST_UPDATED_BY.eq(updaterTablePk()))
                     .leftJoin(BIE_PACKAGE_TOP_LEVEL_ASBIEP).on(BIE_PACKAGE.BIE_PACKAGE_ID.eq(BIE_PACKAGE_TOP_LEVEL_ASBIEP.BIE_PACKAGE_ID))
+                    // -- only join the BIE-package -> top-level rows that are NOT superseded
+                    .andNotExists(selectOne()
+                            .from(BIE_PACKAGE_TOP_LEVEL_ASBIEP.as("bptla2"))
+                            .where(and(
+                                    BIE_PACKAGE_TOP_LEVEL_ASBIEP.as("bptla2").PREV_TOP_LEVEL_ASBIEP_ID.eq(BIE_PACKAGE_TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID),
+                                    BIE_PACKAGE_TOP_LEVEL_ASBIEP.as("bptla2").BIE_PACKAGE_ID.eq(BIE_PACKAGE_TOP_LEVEL_ASBIEP.BIE_PACKAGE_ID)
+                            )))
                     .leftJoin(TOP_LEVEL_ASBIEP).on(BIE_PACKAGE_TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
                     .leftJoin(RELEASE).on(TOP_LEVEL_ASBIEP.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                     .leftJoin(ASBIEP).on(TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
@@ -408,16 +410,10 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
                 List<String> releaseNumList = hasLength(releaseNumListStr) ? Arrays.asList(releaseNumListStr.split(",")) : Collections.emptyList();
 
                 List<ReleaseSummaryRecord> releases = new ArrayList<>();
-                if (!releaseIdList.isEmpty() && !releaseIdList.isEmpty() && releaseIdList.size() == releaseNumList.size()) {
-                    for (int i = 0, len = releaseIdList.size(); i < len; ++i) {
-                        ReleaseSummaryRecord release = new ReleaseSummaryRecord(
-                                new ReleaseId(new BigInteger(releaseIdList.get(i))),
-                                null,
-                                releaseNumList.get(i),
-                                null
-                        );
-                        releases.add(release);
-                    }
+                if (!releaseIdList.isEmpty() && releaseIdList.size() == releaseNumList.size()) {
+                    releases = repositoryFactory().releaseQueryRepository(requester()).getReleaseSummaryList(
+                            releaseIdList.stream().map(e -> ReleaseId.from(e)).collect(Collectors.toSet())
+                    );
                 }
 
                 BiePackageId prevBiePackageId = (record.get(BIE_PACKAGE.PREV_BIE_PACKAGE_ID) != null) ?
