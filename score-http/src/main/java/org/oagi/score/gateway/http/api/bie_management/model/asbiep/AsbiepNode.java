@@ -6,6 +6,7 @@ import org.oagi.score.gateway.http.api.bie_management.model.abie.AbieId;
 import org.oagi.score.gateway.http.api.cc_management.model.CcState;
 import org.oagi.score.gateway.http.api.cc_management.model.asccp.AsccpManifestId;
 
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -43,7 +44,7 @@ public class AsbiepNode {
         private String remark;
         private String bizTerm;
         private String definition;
-        private List<AsbiepSupportDocRecord> supportDocList;
+        private List<AsbiepSupportDocRecord> supportDocList = Collections.emptyList();
     }
 
     private Asbiep asbiep = new Asbiep();

@@ -1,8 +1,11 @@
 package org.oagi.score.gateway.http.api.bie_management.model.bie_package;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.Collection;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record BiePackageManifest(String name,
                                  String versionId,
                                  String versionName,

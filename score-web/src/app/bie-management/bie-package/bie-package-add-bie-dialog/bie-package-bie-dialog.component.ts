@@ -237,7 +237,7 @@ export class BiePackageBieDialogComponent implements OnInit {
 
     this.request = new BieListRequest(this.route.snapshot.queryParamMap,
       new PageRequest(['lastUpdateTimestamp'], ['desc'], 0, 10));
-    this.request.states = ['Production'];
+    this.request.states = ['WIP', 'QA', 'Production'];
     if (!!this.data?.den && !!this.data?.excludeTopLevelAsbiepIds) {
       this.request.filters.den = this.data.den;
       this.request.excludeTopLevelAsbiepIds = this.data.excludeTopLevelAsbiepIds;
