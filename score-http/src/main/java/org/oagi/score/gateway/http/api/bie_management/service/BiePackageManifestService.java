@@ -268,7 +268,7 @@ public class BiePackageManifestService {
 
         if (currentAsccp.guid().equals(prevAsccp.guid())) {
             traverse(context, current.getAbie(currentAsbiep), previous.getAbie(prevAsbiep),
-                    currentAsccp.propertyTerm());
+                    path(context, null, currentAsccp.propertyTerm()));
             return context;
         }
 
@@ -313,7 +313,14 @@ public class BiePackageManifestService {
     }
 
     private String path(BieTrackContext context, String parentPath, String term) {
-        return String.join(context.delimiter, parentPath, term.replaceAll("\\s+", ""));
+        if (hasLength(term)) {
+            term = term.replaceAll("\\s+", "");
+        }
+        if (!hasLength(parentPath)) {
+            return term;
+        }
+
+        return String.join(context.delimiter, parentPath, term);
     }
 
     private void traverse(BieTrackContext context, @Nullable Bbie currentBbie, @Nullable Bbie prevBbie, String parentPath) {
