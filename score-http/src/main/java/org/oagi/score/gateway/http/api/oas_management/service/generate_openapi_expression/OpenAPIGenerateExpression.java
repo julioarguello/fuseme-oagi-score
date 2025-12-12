@@ -841,7 +841,7 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
         int maxVal = asbie.cardinality().max();
         // Issue #562
         boolean isArray = (maxVal < 0 || maxVal > 1);
-        boolean isNillable = asbie.nillable();
+        boolean isNillable = (asbie.nillable() != null) ? asbie.nillable() : false;
 
         boolean reused = !asbie.ownerTopLevelAsbiepId().equals(asbiep.ownerTopLevelAsbiepId());
         if (reused) {
@@ -878,6 +878,11 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
             }
 
             properties = oneOf(allOf(properties), isNillable);
+        }
+
+        // Issue #1298
+        if (asbie.deprecated() != null && asbie.deprecated()) {
+            properties.put("deprecated", true);
         }
 
         if (isArray) {
@@ -1183,7 +1188,7 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
         int maxVal = bbie.cardinality().max();
         // Issue #562
         boolean isArray = (maxVal < 0 || maxVal > 1);
-        boolean isNillable = bbie.nillable();
+        boolean isNillable = (bbie.nillable() != null) ? bbie.nillable() : false;
 
         String name = convertIdentifierToId(camelCase(bccp.propertyTerm()));
 
@@ -1265,6 +1270,11 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
             }
         }
 
+        // Issue #1298
+        if (bbie.deprecated() != null && bbie.deprecated()) {
+            properties.put("deprecated", true);
+        }
+
         if (isArray) {
             String description = (String) properties.remove("description");
             Map<String, Object> items = new LinkedHashMap(properties);
@@ -1273,6 +1283,12 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                 properties.put("description", description);
             }
             properties.put("type", "array");
+
+            Boolean deprecated = (Boolean) items.remove("deprecated");
+            if (deprecated != null) {
+                properties.put("deprecated", deprecated);
+            }
+
             if (minVal > 0) {
                 properties.put("minItems", minVal);
             }
@@ -1530,6 +1546,11 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
             properties.put("$ref", ref);
         }
         properties = allOf(properties);
+
+        // Issue #1298
+        if (bbieSc.deprecated() != null && bbieSc.deprecated()) {
+            properties.put("deprecated", true);
+        }
 
         ((Map<String, Object>) parent.get("properties")).put(name, properties);
     }

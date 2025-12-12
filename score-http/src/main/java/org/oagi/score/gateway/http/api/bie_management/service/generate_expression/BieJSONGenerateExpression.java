@@ -217,7 +217,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         int maxVal = asbie.cardinality().max();
         // Issue #562
         boolean isArray = (maxVal < 0 || maxVal > 1);
-        boolean isNillable = asbie.nillable();
+        boolean isNillable = (asbie.nillable() != null) ? asbie.nillable() : false;
 
         boolean reused = !asbie.ownerTopLevelAsbiepId().equals(asbiep.ownerTopLevelAsbiepId());
         if (reused) {
@@ -653,7 +653,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         int maxVal = bbie.cardinality().max();
         // Issue #562
         boolean isArray = (maxVal < 0 || maxVal > 1);
-        boolean isNillable = bbie.nillable();
+        boolean isNillable = (bbie.nillable() != null) ? bbie.nillable() : false;
 
         String name = convertIdentifierToId(camelCase(bccp.propertyTerm()));
 

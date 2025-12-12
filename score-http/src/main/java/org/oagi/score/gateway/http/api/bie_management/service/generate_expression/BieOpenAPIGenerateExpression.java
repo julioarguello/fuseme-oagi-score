@@ -553,7 +553,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         int maxVal = asbie.cardinality().max();
         // Issue #562
         boolean isArray = (maxVal < 0 || maxVal > 1);
-        boolean isNillable = asbie.nillable();
+        boolean isNillable = (asbie.nillable() != null) ? asbie.nillable() : false;
 
         boolean reused = !asbie.ownerTopLevelAsbiepId().equals(asbiep.ownerTopLevelAsbiepId());
         if (reused) {
@@ -593,7 +593,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         }
 
         // Issue #1298
-        if (asbie.deprecated()) {
+        if (asbie.deprecated() != null && asbie.deprecated()) {
             properties.put("deprecated", true);
         }
 
@@ -916,7 +916,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         int maxVal = bbie.cardinality().max();
         // Issue #562
         boolean isArray = (maxVal < 0 || maxVal > 1);
-        boolean isNillable = bbie.nillable();
+        boolean isNillable = (bbie.nillable() != null) ? bbie.nillable() : false;
 
         String name = convertIdentifierToId(camelCase(bccp.propertyTerm()));
 
@@ -999,7 +999,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         }
 
         // Issue #1298
-        if (bbie.deprecated()) {
+        if (bbie.deprecated() != null && bbie.deprecated()) {
             properties.put("deprecated", true);
         }
 
@@ -1224,7 +1224,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         properties = allOf(properties);
 
         // Issue #1298
-        if (bbieSc.deprecated()) {
+        if (bbieSc.deprecated() != null && bbieSc.deprecated()) {
             properties.put("deprecated", true);
         }
 
