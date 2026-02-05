@@ -713,7 +713,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                 }
             }
 
-            ((List<String>) properties.get("required")).add("definition");
+            ((List<String>) properties.get("required")).add("content");
             ((Map<String, Object>) properties.get("properties"))
                     .put("content", oneOf(allOf(contentProperties), isNillable));
 
