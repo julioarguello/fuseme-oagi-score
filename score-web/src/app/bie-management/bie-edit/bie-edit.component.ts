@@ -901,6 +901,10 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
           }
         }
 
+        // Recover the state of 'Hide Cardinality' and 'Hide Unused' properties.
+        this.dataSource.hideCardinality = loadBooleanProperty(this.auth.getUserToken(), this.HIDE_CARDINALITY_PROPERTY_KEY, false);
+        this.dataSource.hideUnused = loadBooleanProperty(this.auth.getUserToken(), this.HIDE_UNUSED_PROPERTY_KEY, false);
+
         this.loading = false;
       };
 
