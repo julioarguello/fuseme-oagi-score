@@ -12,6 +12,7 @@ import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePacka
 import org.oagi.score.gateway.http.api.bie_management.model.bie_package.BiePackageId;
 import org.oagi.score.gateway.http.api.bie_management.repository.BiePackageCommandRepository;
 import org.oagi.score.gateway.http.api.library_management.model.LibraryId;
+import org.oagi.score.gateway.http.common.model.Guid;
 import org.oagi.score.gateway.http.common.model.ScoreUser;
 import org.oagi.score.gateway.http.common.repository.jooq.JooqBaseRepository;
 import org.oagi.score.gateway.http.common.repository.jooq.RepositoryFactory;
@@ -40,6 +41,7 @@ public class JooqBiePackageCommandRepository extends JooqBaseRepository implemen
 
         BiePackageRecord biePackageRecord = new BiePackageRecord();
 
+        biePackageRecord.setGuid(Guid.create().value());
         biePackageRecord.setLibraryId(valueOf(libraryId));
         biePackageRecord.setName(name);
         biePackageRecord.setVersionId(versionId);
@@ -73,6 +75,7 @@ public class JooqBiePackageCommandRepository extends JooqBaseRepository implemen
 
         BiePackageRecord biePackageRecord = new BiePackageRecord();
 
+        biePackageRecord.setGuid(Guid.create().value());
         biePackageRecord.setLibraryId(valueOf(biePackageDetails.libraryId()));
         biePackageRecord.setName(biePackageDetails.name());
         biePackageRecord.setVersionId(versionId);
@@ -168,6 +171,7 @@ public class JooqBiePackageCommandRepository extends JooqBaseRepository implemen
 
         BiePackageRecord copiedBiePackageRecord = biePackageRecord.copy();
         copiedBiePackageRecord.setBiePackageId(null);
+        copiedBiePackageRecord.setGuid(Guid.create().value());
         copiedBiePackageRecord.setState(BieState.WIP.name());
         ULong requesterUserId = valueOf(requester().userId());
         copiedBiePackageRecord.setOwnerUserId(requesterUserId);

@@ -67,7 +67,7 @@ public class AsbiepSupportDoc extends TableImpl<AsbiepSupportDocRecord> {
      * The column <code>oagi.asbiep_support_doc.asbiep_id</code>. Foreign key.
      * References the related ASBIEP record.
      */
-    public final TableField<AsbiepSupportDocRecord, ULong> ASBIEP_ID = createField(DSL.name("asbiep_id"), SQLDataType.BIGINTUNSIGNED.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINTUNSIGNED)), this, "Foreign key. References the related ASBIEP record.");
+    public final TableField<AsbiepSupportDocRecord, ULong> ASBIEP_ID = createField(DSL.name("asbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key. References the related ASBIEP record.");
 
     /**
      * The column <code>oagi.asbiep_support_doc.content</code>. The main body or

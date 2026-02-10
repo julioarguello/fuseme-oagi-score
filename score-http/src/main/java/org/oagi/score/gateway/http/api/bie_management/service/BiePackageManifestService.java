@@ -46,13 +46,15 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.gateway.http.api.bie_management.model.bie_package.BieManifest.newBieManifest;
+import static org.oagi.score.gateway.http.api.bie_management.model.bie_package.BieManifestDetail.newBieManifestDetail;
 import static org.oagi.score.gateway.http.api.bie_management.model.bie_package.BieManifestSummary.newBieManifestSummary;
 import static org.oagi.score.gateway.http.common.util.StringUtils.hasLength;
 
 @Service
 @Transactional(readOnly = true)
 public class BiePackageManifestService {
+
+    private static final String BIE_PACKAGE_MANIFEST_VERSION = "0.1";
 
     @Autowired
     private RepositoryFactory repositoryFactory;
@@ -78,7 +80,7 @@ public class BiePackageManifestService {
                 (currentPackage.prevBiePackageId() != null) ?
                         biePackageQueryRepository.getBiePackageSummary(currentPackage.prevBiePackageId()) : null;
 
-        List<BieManifestEntry> bieManifestEntryList = new ArrayList<>();
+        List<BiePackageManifestEntry> biePackageManifestEntryList = new ArrayList<>();
         List<TopLevelAsbiepSummaryRecord> currentTopLevelAsbiepList =
                 biePackageQueryRepository.getTopLevelAsbiepIdListInBiePackage(currentPackage.biePackageId())
                         .stream().map(e -> topLevelAsbiepQueryRepository.getTopLevelAsbiepSummary(e))
@@ -96,14 +98,15 @@ public class BiePackageManifestService {
                 releaseSummaryRecords.add(currentTopLevelAsbiep.release());
             }
 
-            BieManifestEntry bieManifestEntry = null;
+            BiePackageManifestEntry biePackageManifestEntry = null;
             for (TopLevelAsbiepSummaryRecord prevTopLevelAsbiep : prevTopLevelAsbiepList) {
                 BieTrackContext context = diff(requester, currentTopLevelAsbiep, prevTopLevelAsbiep, pathDelimiter);
                 if (context != null) {
-                    bieManifestEntry = new BieManifestEntry(
-                            newBieManifest(currentTopLevelAsbiep),
+                    biePackageManifestEntry = new BiePackageManifestEntry(
+                            newBieManifestDetail(currentTopLevelAsbiep),
                             prevTopLevelAsbiep.guid(),
                             prevTopLevelAsbiep.version(),
+                            null,
                             true,
                             context.added,
                             context.removed,
@@ -114,17 +117,24 @@ public class BiePackageManifestService {
                 }
             }
 
-            if (bieManifestEntry != null) {
-                if (!bieManifestEntry.addedComponentsFromPriorPackageVersion().isEmpty() ||
-                        !bieManifestEntry.removedComponentsFromPriorPackageVersion().isEmpty() ||
-                        !bieManifestEntry.changedComponentsFromPriorPackageVersion().isEmpty() ||
-                        !bieManifestEntry.deprecatedComponentsFromPriorPackageVersion().isEmpty()) {
-                    changedBiesFromPriorPackageVersion.add(newBieManifestSummary(currentTopLevelAsbiep));
+            if (biePackageManifestEntry != null) { // found a BIE replaced from the prior package version
+                BieManifestSummary bieManifestSummary = newBieManifestSummary(currentTopLevelAsbiep);
+                if (!biePackageManifestEntry.addedComponentsFromPriorPackageVersion().isEmpty() ||
+                    !biePackageManifestEntry.removedComponentsFromPriorPackageVersion().isEmpty() ||
+                    !biePackageManifestEntry.changedComponentsFromPriorPackageVersion().isEmpty() ||
+                    !biePackageManifestEntry.deprecatedComponentsFromPriorPackageVersion().isEmpty()) {
+                    changedBiesFromPriorPackageVersion.add(bieManifestSummary);
+
+                    if (currentTopLevelAsbiep.deprecated()) {
+                        deprecatedBiesFromPriorPackageVersion.add(bieManifestSummary);
+                    }
+                } else {
+                    newBiesFromPriorPackageVersion.add(bieManifestSummary);
                 }
             } else {
-                newBiesFromPriorPackageVersion.add(newBieManifestSummary(currentTopLevelAsbiep));
-                bieManifestEntry = new BieManifestEntry(
-                        newBieManifest(currentTopLevelAsbiep),
+                biePackageManifestEntry = new BiePackageManifestEntry(
+                        newBieManifestDetail(currentTopLevelAsbiep),
+                        null,
                         null,
                         null,
                         false,
@@ -135,7 +145,7 @@ public class BiePackageManifestService {
                 );
             }
 
-            bieManifestEntryList.add(bieManifestEntry);
+            biePackageManifestEntryList.add(biePackageManifestEntry);
         }
 
         for (TopLevelAsbiepSummaryRecord prevTopLevelAsbiep : prevTopLevelAsbiepList) {
@@ -173,17 +183,22 @@ public class BiePackageManifestService {
         }
 
         BiePackageManifest biePackageMetadata = new BiePackageManifest(
+                currentPackage.guid(),
+                currentPackage.versionGuid(),
                 currentPackage.name(),
                 currentPackage.versionId(),
                 currentPackage.versionName(),
+                (prevPackage != null) ? prevPackage.guid(): null,
+                (prevPackage != null) ? prevPackage.versionGuid() : null,
                 (prevPackage != null) ? prevPackage.versionId() : null,
                 newBiesFromPriorPackageVersion,
                 removedBiesFromPriorPackageVersion,
                 changedBiesFromPriorPackageVersion,
                 deprecatedBiesFromPriorPackageVersion,
                 libraryCompatibilityCollection,
-                bieManifestEntryList);
-        BiePackageManifestResponse biePackageManifest = new BiePackageManifestResponse(biePackageMetadata);
+                biePackageManifestEntryList);
+        BiePackageManifestResponse biePackageManifest =
+                new BiePackageManifestResponse(BIE_PACKAGE_MANIFEST_VERSION, biePackageMetadata);
 
         return biePackageManifest;
     }
