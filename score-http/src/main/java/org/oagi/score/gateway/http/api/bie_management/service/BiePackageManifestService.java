@@ -468,13 +468,9 @@ public class BiePackageManifestService {
         }
 
         // check 'facet'
-        if (a.getFacetMinLength() != null && !Objects.equals(a.getFacetMinLength(), b.getFacetMinLength())) {
-            changes.add("facet");
-        } else if (a.getFacetMaxLength() != null && !Objects.equals(a.getFacetMaxLength(), b.getFacetMaxLength())) {
-            changes.add("facet");
-        } else if (hasLength(a.getFacetPattern()) && !Objects.equals(a.getFacetPattern(), b.getFacetPattern())) {
-            changes.add("facet");
-        } else if (b.getFacetMinLength() != null || b.getFacetMaxLength() != null || hasLength(b.getFacetPattern())) {
+        if (!Objects.equals(a.getFacetMinLength(), b.getFacetMinLength()) ||
+            !Objects.equals(a.getFacetMaxLength(), b.getFacetMaxLength()) ||
+            !Objects.equals(a.getFacetPattern(), b.getFacetPattern())) {
             changes.add("facet");
         }
 
@@ -529,13 +525,9 @@ public class BiePackageManifestService {
         }
 
         // check 'facet'
-        if (a.getFacetMinLength() != null && !Objects.equals(a.getFacetMinLength(), b.getFacetMinLength())) {
-            changes.add("facet");
-        } else if (a.getFacetMaxLength() != null && !Objects.equals(a.getFacetMaxLength(), b.getFacetMaxLength())) {
-            changes.add("facet");
-        } else if (hasLength(a.getFacetPattern()) && !Objects.equals(a.getFacetPattern(), b.getFacetPattern())) {
-            changes.add("facet");
-        } else if (b.getFacetMinLength() != null || b.getFacetMaxLength() != null || hasLength(b.getFacetPattern())) {
+        if (!Objects.equals(a.getFacetMinLength(), b.getFacetMinLength()) ||
+            !Objects.equals(a.getFacetMaxLength(), b.getFacetMaxLength()) ||
+            !Objects.equals(a.getFacetPattern(), b.getFacetPattern())) {
             changes.add("facet");
         }
 
