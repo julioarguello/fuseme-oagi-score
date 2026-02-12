@@ -128,8 +128,6 @@ public class BiePackageManifestService {
                     if (currentTopLevelAsbiep.deprecated()) {
                         deprecatedBiesFromPriorPackageVersion.add(bieManifestSummary);
                     }
-                } else {
-                    newBiesFromPriorPackageVersion.add(bieManifestSummary);
                 }
             } else {
                 biePackageManifestEntry = new BiePackageManifestEntry(
