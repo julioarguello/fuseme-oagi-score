@@ -85,7 +85,7 @@ public class OasResponse extends TableImpl<OasResponseRecord> {
      * description of the response body. This could contain examples of use.
      * CommonMark syntax MAY be used for rich text representation.
      */
-    public final TableField<OasResponseRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A brief description of the response body. This could contain examples of use. CommonMark syntax MAY be used for rich text representation.");
+    public final TableField<OasResponseRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A brief description of the response body. This could contain examples of use. CommonMark syntax MAY be used for rich text representation.");
 
     /**
      * The column <code>oagi.oas_response.oas_message_body_id</code>.

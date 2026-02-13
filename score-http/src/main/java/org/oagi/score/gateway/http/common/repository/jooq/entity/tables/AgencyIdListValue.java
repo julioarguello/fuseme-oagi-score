@@ -91,7 +91,7 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
      * The column <code>oagi.agency_id_list_value.definition</code>. The meaning
      * of the value.
      */
-    public final TableField<AgencyIdListValueRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "The meaning of the value.");
+    public final TableField<AgencyIdListValueRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "The meaning of the value.");
 
     /**
      * The column <code>oagi.agency_id_list_value.definition_source</code>. This

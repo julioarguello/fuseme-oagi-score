@@ -96,14 +96,14 @@ public class OasOperation extends TableImpl<OasOperationRecord> {
      * The column <code>oagi.oas_operation.summary</code>. A short summary of
      * what the operation does.
      */
-    public final TableField<OasOperationRecord, String> SUMMARY = createField(DSL.name("summary"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A short summary of what the operation does.");
+    public final TableField<OasOperationRecord, String> SUMMARY = createField(DSL.name("summary"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A short summary of what the operation does.");
 
     /**
      * The column <code>oagi.oas_operation.description</code>. A verbose
      * explanation of the operation behavior. CommonMark syntax MAY be used for
      * rich text representation.
      */
-    public final TableField<OasOperationRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A verbose explanation of the operation behavior. CommonMark syntax MAY be used for rich text representation.");
+    public final TableField<OasOperationRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A verbose explanation of the operation behavior. CommonMark syntax MAY be used for rich text representation.");
 
     /**
      * The column <code>oagi.oas_operation.deprecated</code>. Declares this

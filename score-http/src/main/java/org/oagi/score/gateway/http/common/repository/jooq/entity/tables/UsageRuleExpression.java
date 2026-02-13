@@ -80,7 +80,7 @@ public class UsageRuleExpression extends TableImpl<UsageRuleExpressionRecord> {
      * column capture the constraint expressing the usage rule. In other words,
      * this is the expression.
      */
-    public final TableField<UsageRuleExpressionRecord, String> CONSTRAINT_TEXT = createField(DSL.name("constraint_text"), SQLDataType.CLOB.nullable(false), this, "This column capture the constraint expressing the usage rule. In other words, this is the expression.");
+    public final TableField<UsageRuleExpressionRecord, String> CONSTRAINT_TEXT = createField(DSL.name("constraint_text"), SQLDataType.CLOB(65535).nullable(false), this, "This column capture the constraint expressing the usage rule. In other words, this is the expression.");
 
     /**
      * The column

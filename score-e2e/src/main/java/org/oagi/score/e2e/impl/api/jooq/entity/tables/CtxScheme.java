@@ -90,7 +90,7 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
      * The column <code>oagi.ctx_scheme.description</code>. Description of the
      * context scheme.
      */
-    public final TableField<CtxSchemeRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description of the context scheme.");
+    public final TableField<CtxSchemeRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description of the context scheme.");
 
     /**
      * The column <code>oagi.ctx_scheme.scheme_agency_id</code>. Identification

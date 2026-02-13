@@ -123,7 +123,7 @@ public class Dt extends TableImpl<DtRecord> {
     /**
      * The column <code>oagi.dt.definition</code>. Description of the data type.
      */
-    public final TableField<DtRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description of the data type.");
+    public final TableField<DtRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description of the data type.");
 
     /**
      * The column <code>oagi.dt.definition_source</code>. This is typically a
@@ -144,7 +144,7 @@ public class Dt extends TableImpl<DtRecord> {
      * The column <code>oagi.dt.content_component_definition</code>. Description
      * of the content component of the data type.
      */
-    public final TableField<DtRecord, String> CONTENT_COMPONENT_DEFINITION = createField(DSL.name("content_component_definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description of the content component of the data type.");
+    public final TableField<DtRecord, String> CONTENT_COMPONENT_DEFINITION = createField(DSL.name("content_component_definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description of the content component of the data type.");
 
     /**
      * The column <code>oagi.dt.state</code>. Deleted, WIP, Draft, QA,

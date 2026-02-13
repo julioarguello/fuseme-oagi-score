@@ -123,7 +123,7 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
      * The column <code>oagi.agency_id_list.definition</code>. Description of
      * the agency identification list.
      */
-    public final TableField<AgencyIdListRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description of the agency identification list.");
+    public final TableField<AgencyIdListRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description of the agency identification list.");
 
     /**
      * The column <code>oagi.agency_id_list.definition_source</code>. This is

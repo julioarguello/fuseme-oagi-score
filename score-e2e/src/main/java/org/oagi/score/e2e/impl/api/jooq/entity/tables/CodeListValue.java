@@ -97,14 +97,14 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
      * The column <code>oagi.code_list_value.value</code>. The code list value
      * used in the instance data, e.g., EA, US-EN.
      */
-    public final TableField<CodeListValueRecord, String> VALUE = createField(DSL.name("value"), SQLDataType.CLOB.nullable(false), this, "The code list value used in the instance data, e.g., EA, US-EN.");
+    public final TableField<CodeListValueRecord, String> VALUE = createField(DSL.name("value"), SQLDataType.CLOB(255).nullable(false), this, "The code list value used in the instance data, e.g., EA, US-EN.");
 
     /**
      * The column <code>oagi.code_list_value.meaning</code>. The description or
      * explanation of the code list value, e.g., 'Each' for EA, 'English' for
      * EN.
      */
-    public final TableField<CodeListValueRecord, String> MEANING = createField(DSL.name("meaning"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "The description or explanation of the code list value, e.g., 'Each' for EA, 'English' for EN.");
+    public final TableField<CodeListValueRecord, String> MEANING = createField(DSL.name("meaning"), SQLDataType.CLOB(255).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "The description or explanation of the code list value, e.g., 'Each' for EA, 'English' for EN.");
 
     /**
      * The column <code>oagi.code_list_value.definition</code>. Long description
@@ -112,7 +112,7 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
      * for counting each unit of an item, such as, 2 shampoo bottles, 3 box of
      * cereals'.
      */
-    public final TableField<CodeListValueRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Long description or explannation of the code list value, e.g., 'EA is a discrete quantity for counting each unit of an item, such as, 2 shampoo bottles, 3 box of cereals'.");
+    public final TableField<CodeListValueRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Long description or explannation of the code list value, e.g., 'EA is a discrete quantity for counting each unit of an item, such as, 2 shampoo bottles, 3 box of cereals'.");
 
     /**
      * The column <code>oagi.code_list_value.definition_source</code>. This is

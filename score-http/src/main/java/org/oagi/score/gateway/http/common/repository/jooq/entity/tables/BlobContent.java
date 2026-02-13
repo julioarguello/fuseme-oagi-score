@@ -66,7 +66,7 @@ public class BlobContent extends TableImpl<BlobContentRecord> {
      * The column <code>oagi.blob_content.content</code>. The Blob content of
      * the schema file.
      */
-    public final TableField<BlobContentRecord, byte[]> CONTENT = createField(DSL.name("content"), SQLDataType.BLOB.nullable(false), this, "The Blob content of the schema file.");
+    public final TableField<BlobContentRecord, byte[]> CONTENT = createField(DSL.name("content"), SQLDataType.BLOB(16777215).nullable(false), this, "The Blob content of the schema file.");
 
     private BlobContent(Name alias, Table<BlobContentRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);

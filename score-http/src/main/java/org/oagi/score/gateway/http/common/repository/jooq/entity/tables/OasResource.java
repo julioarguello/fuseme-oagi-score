@@ -76,12 +76,12 @@ public class OasResource extends TableImpl<OasResourceRecord> {
      * The column <code>oagi.oas_resource.path</code>. This will hold the BIE
      * name by default.
      */
-    public final TableField<OasResourceRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB.nullable(false), this, "This will hold the BIE name by default.");
+    public final TableField<OasResourceRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB(65535).nullable(false), this, "This will hold the BIE name by default.");
 
     /**
      * The column <code>oagi.oas_resource.ref</code>.
      */
-    public final TableField<OasResourceRecord, String> REF = createField(DSL.name("ref"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
+    public final TableField<OasResourceRecord, String> REF = createField(DSL.name("ref"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
 
     /**
      * The column <code>oagi.oas_resource.created_by</code>. The user who

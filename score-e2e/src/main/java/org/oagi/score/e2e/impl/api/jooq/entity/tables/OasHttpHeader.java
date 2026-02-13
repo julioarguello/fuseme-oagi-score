@@ -85,7 +85,7 @@ public class OasHttpHeader extends TableImpl<OasHttpHeaderRecord> {
      * description of the header. This could contain examples of use. CommonMark
      * syntax MAY be used for rich text representation.
      */
-    public final TableField<OasHttpHeaderRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A brief description of the header. This could contain examples of use. CommonMark syntax MAY be used for rich text representation.");
+    public final TableField<OasHttpHeaderRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A brief description of the header. This could contain examples of use. CommonMark syntax MAY be used for rich text representation.");
 
     /**
      * The column <code>oagi.oas_http_header.agency_id_list_value_id</code>. A
@@ -98,7 +98,7 @@ public class OasHttpHeader extends TableImpl<OasHttpHeaderRecord> {
      * REQUIRED. The schema defining the type used for the header using the
      * reference string, $ref.
      */
-    public final TableField<OasHttpHeaderRecord, String> SCHEMA_TYPE_REFERENCE = createField(DSL.name("schema_type_reference"), SQLDataType.CLOB.nullable(false), this, "REQUIRED. The schema defining the type used for the header using the reference string, $ref.");
+    public final TableField<OasHttpHeaderRecord, String> SCHEMA_TYPE_REFERENCE = createField(DSL.name("schema_type_reference"), SQLDataType.CLOB(65535).nullable(false), this, "REQUIRED. The schema defining the type used for the header using the reference string, $ref.");
 
     /**
      * The column <code>oagi.oas_http_header.owner_user_id</code>. The user who

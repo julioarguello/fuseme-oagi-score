@@ -105,13 +105,13 @@ public class OasParameter extends TableImpl<OasParameterRecord> {
      * description of the parameter. This could contain examples of use.
      * CommonMark syntax MAY be used for rich text representation.
      */
-    public final TableField<OasParameterRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A brief description of the parameter. This could contain examples of use. CommonMark syntax MAY be used for rich text representation.");
+    public final TableField<OasParameterRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A brief description of the parameter. This could contain examples of use. CommonMark syntax MAY be used for rich text representation.");
 
     /**
      * The column <code>oagi.oas_parameter.schema_type_reference</code>. A
      * reference of the schema defining the type used for the parameter.
      */
-    public final TableField<OasParameterRecord, String> SCHEMA_TYPE_REFERENCE = createField(DSL.name("schema_type_reference"), SQLDataType.CLOB.nullable(false), this, "A reference of the schema defining the type used for the parameter.");
+    public final TableField<OasParameterRecord, String> SCHEMA_TYPE_REFERENCE = createField(DSL.name("schema_type_reference"), SQLDataType.CLOB(65535).nullable(false), this, "A reference of the schema defining the type used for the parameter.");
 
     /**
      * The column <code>oagi.oas_parameter.allow_reserved</code>. Determines

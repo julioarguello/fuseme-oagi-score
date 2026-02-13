@@ -82,7 +82,7 @@ public class CtxCategory extends TableImpl<CtxCategoryRecord> {
      * The column <code>oagi.ctx_category.description</code>. Explanation of
      * what the context category is.
      */
-    public final TableField<CtxCategoryRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Explanation of what the context category is.");
+    public final TableField<CtxCategoryRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Explanation of what the context category is.");
 
     /**
      * The column <code>oagi.ctx_category.created_by</code>. Foreign key to the

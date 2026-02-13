@@ -105,7 +105,7 @@ public class Acc extends TableImpl<AccRecord> {
      * description of the ACC. Since ACC is business context independent, this
      * is a business context independent description of the ACC concept.
      */
-    public final TableField<AccRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "This is a documentation or description of the ACC. Since ACC is business context independent, this is a business context independent description of the ACC concept.");
+    public final TableField<AccRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "This is a documentation or description of the ACC. Since ACC is business context independent, this is a business context independent description of the ACC concept.");
 
     /**
      * The column <code>oagi.acc.definition_source</code>. This is typically a

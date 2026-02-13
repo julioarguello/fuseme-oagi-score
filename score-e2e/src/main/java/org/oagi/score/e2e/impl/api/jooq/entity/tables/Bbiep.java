@@ -87,7 +87,7 @@ public class Bbiep extends TableImpl<BbiepRecord> {
     /**
      * The column <code>oagi.bbiep.path</code>.
      */
-    public final TableField<BbiepRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
+    public final TableField<BbiepRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
 
     /**
      * The column <code>oagi.bbiep.hash_path</code>. hash_path generated from
@@ -101,7 +101,7 @@ public class Bbiep extends TableImpl<BbiepRecord> {
      * BCCP's Definition. If NULLl, it means that the definition should be
      * inherited from the based CC.
      */
-    public final TableField<BbiepRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Definition to override the BCCP's Definition. If NULLl, it means that the definition should be inherited from the based CC.");
+    public final TableField<BbiepRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Definition to override the BCCP's Definition. If NULLl, it means that the definition should be inherited from the based CC.");
 
     /**
      * The column <code>oagi.bbiep.remark</code>. This column allows the user to
