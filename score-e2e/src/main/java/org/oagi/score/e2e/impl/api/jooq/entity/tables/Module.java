@@ -97,7 +97,7 @@ public class Module extends TableImpl<ModuleRecord> {
     /**
      * The column <code>oagi.module.path</code>. Absolute path to the module.
      */
-    public final TableField<ModuleRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB.nullable(false), this, "Absolute path to the module.");
+    public final TableField<ModuleRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB(65535).nullable(false), this, "Absolute path to the module.");
 
     /**
      * The column <code>oagi.module.name</code>. The is the filename of the

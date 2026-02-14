@@ -136,7 +136,7 @@ public class Bcc extends TableImpl<BccRecord> {
      * BDT under that BCCP, the definition in the BCC is a specific description
      * about the relationship between the ACC (as in FROM_ACC_ID) and the BCCP.
      */
-    public final TableField<BccRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "This is a documentation or description of the BCC. Since BCC is business context independent, this is a business context independent description of the BCC. Since there are definitions also in the BCCP (as referenced by TO_BCCP_ID column) and the BDT under that BCCP, the definition in the BCC is a specific description about the relationship between the ACC (as in FROM_ACC_ID) and the BCCP.");
+    public final TableField<BccRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "This is a documentation or description of the BCC. Since BCC is business context independent, this is a business context independent description of the BCC. Since there are definitions also in the BCCP (as referenced by TO_BCCP_ID column) and the BDT under that BCCP, the definition in the BCC is a specific description about the relationship between the ACC (as in FROM_ACC_ID) and the BCCP.");
 
     /**
      * The column <code>oagi.bcc.definition_source</code>. This is typically a
@@ -227,14 +227,14 @@ public class Bcc extends TableImpl<BccRecord> {
      * The column <code>oagi.bcc.default_value</code>. This set the default
      * value at the association level. 
      */
-    public final TableField<BccRecord, String> DEFAULT_VALUE = createField(DSL.name("default_value"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "This set the default value at the association level. ");
+    public final TableField<BccRecord, String> DEFAULT_VALUE = createField(DSL.name("default_value"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "This set the default value at the association level. ");
 
     /**
      * The column <code>oagi.bcc.fixed_value</code>. This column captures the
      * fixed value constraint. Default and fixed value constraints cannot be
      * used at the same time.
      */
-    public final TableField<BccRecord, String> FIXED_VALUE = createField(DSL.name("fixed_value"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.");
+    public final TableField<BccRecord, String> FIXED_VALUE = createField(DSL.name("fixed_value"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.");
 
     /**
      * The column <code>oagi.bcc.prev_bcc_id</code>. A self-foreign key to

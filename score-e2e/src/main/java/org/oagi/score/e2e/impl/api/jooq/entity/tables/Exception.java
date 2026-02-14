@@ -75,13 +75,13 @@ public class Exception extends TableImpl<ExceptionRecord> {
     /**
      * The column <code>oagi.exception.message</code>. The exception message.
      */
-    public final TableField<ExceptionRecord, String> MESSAGE = createField(DSL.name("message"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "The exception message.");
+    public final TableField<ExceptionRecord, String> MESSAGE = createField(DSL.name("message"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "The exception message.");
 
     /**
      * The column <code>oagi.exception.stacktrace</code>. The serialized
      * stacktrace object.
      */
-    public final TableField<ExceptionRecord, byte[]> STACKTRACE = createField(DSL.name("stacktrace"), SQLDataType.BLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BLOB)), this, "The serialized stacktrace object.");
+    public final TableField<ExceptionRecord, byte[]> STACKTRACE = createField(DSL.name("stacktrace"), SQLDataType.BLOB(16777215).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BLOB)), this, "The serialized stacktrace object.");
 
     /**
      * The column <code>oagi.exception.created_by</code>. Foreign key to the

@@ -73,6 +73,7 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
         SelectOnConditionStep<? extends org.jooq.Record> select() {
             return dslContext().selectDistinct(concat(fields(
                             BIE_PACKAGE.BIE_PACKAGE_ID,
+                            BIE_PACKAGE.GUID,
                             BIE_PACKAGE.LIBRARY_ID,
                             BIE_PACKAGE.NAME,
                             BIE_PACKAGE.VERSION_ID,
@@ -112,6 +113,7 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
 
                 return new BiePackageSummaryRecord(
                         new BiePackageId(record.get(BIE_PACKAGE.BIE_PACKAGE_ID).toBigInteger()),
+                        new Guid(record.get(BIE_PACKAGE.GUID)),
                         new LibraryId(record.get(BIE_PACKAGE.LIBRARY_ID).toBigInteger()),
                         record.get(BIE_PACKAGE.NAME),
                         record.get(BIE_PACKAGE.VERSION_ID),
@@ -145,6 +147,7 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
         SelectOnConditionStep<? extends org.jooq.Record> select() {
             return dslContext().selectDistinct(concat(fields(
                             BIE_PACKAGE.BIE_PACKAGE_ID,
+                            BIE_PACKAGE.GUID,
                             BIE_PACKAGE.NAME,
                             BIE_PACKAGE.LIBRARY_ID,
                             BIE_PACKAGE.VERSION_ID,
@@ -329,6 +332,7 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
 
                 return new BiePackageListEntryRecord(
                         new BiePackageId(record.get(BIE_PACKAGE.BIE_PACKAGE_ID).toBigInteger()),
+                        new Guid(record.get(BIE_PACKAGE.GUID)),
                         new LibraryId(record.get(BIE_PACKAGE.LIBRARY_ID).toBigInteger()),
                         record.get(BIE_PACKAGE.NAME),
                         record.get(BIE_PACKAGE.VERSION_ID),
@@ -366,6 +370,7 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
         SelectOnConditionStep<? extends org.jooq.Record> select() {
             return dslContext().selectDistinct(concat(fields(
                             BIE_PACKAGE.BIE_PACKAGE_ID,
+                            BIE_PACKAGE.GUID,
                             BIE_PACKAGE.LIBRARY_ID,
                             BIE_PACKAGE.NAME,
                             BIE_PACKAGE.VERSION_ID,
@@ -426,6 +431,7 @@ public class JooqBiePackageQueryRepository extends JooqBaseRepository implements
 
                 return new BiePackageDetailsRecord(
                         new BiePackageId(record.get(BIE_PACKAGE.BIE_PACKAGE_ID).toBigInteger()),
+                        new Guid(record.get(BIE_PACKAGE.GUID)),
                         new LibraryId(record.get(BIE_PACKAGE.LIBRARY_ID).toBigInteger()),
                         record.get(BIE_PACKAGE.NAME),
                         record.get(BIE_PACKAGE.VERSION_ID),

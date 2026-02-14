@@ -8,6 +8,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 -- Issue #1678
 ALTER TABLE `bie_package`
+    ADD COLUMN `guid` varchar(32) NOT NULL COMMENT 'Unique identifier of this BIE package.' AFTER `bie_package_id`,
     ADD COLUMN `prev_bie_package_id` bigint(20) unsigned COMMENT 'A foreign key referring to the previous version of this BIE package, if any. Used to track package version history.' AFTER `state`,
     ADD CONSTRAINT `bie_package_prev_bie_package_id_fk` FOREIGN KEY (`prev_bie_package_id`) REFERENCES `bie_package` (`bie_package_id`);
 

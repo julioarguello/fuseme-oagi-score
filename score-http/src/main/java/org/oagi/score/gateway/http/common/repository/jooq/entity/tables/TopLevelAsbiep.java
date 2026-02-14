@@ -156,13 +156,13 @@ public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
      * The column <code>oagi.top_level_asbiep.deprecated_reason</code>. The
      * reason for the deprecation of the TOP_LEVEL_ASBIEP.
      */
-    public final TableField<TopLevelAsbiepRecord, String> DEPRECATED_REASON = createField(DSL.name("deprecated_reason"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "The reason for the deprecation of the TOP_LEVEL_ASBIEP.");
+    public final TableField<TopLevelAsbiepRecord, String> DEPRECATED_REASON = createField(DSL.name("deprecated_reason"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "The reason for the deprecation of the TOP_LEVEL_ASBIEP.");
 
     /**
      * The column <code>oagi.top_level_asbiep.deprecated_remark</code>. The
      * remark for the deprecation of the TOP_LEVEL_ASBIEP.
      */
-    public final TableField<TopLevelAsbiepRecord, String> DEPRECATED_REMARK = createField(DSL.name("deprecated_remark"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "The remark for the deprecation of the TOP_LEVEL_ASBIEP.");
+    public final TableField<TopLevelAsbiepRecord, String> DEPRECATED_REMARK = createField(DSL.name("deprecated_remark"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "The remark for the deprecation of the TOP_LEVEL_ASBIEP.");
 
     /**
      * The column <code>oagi.top_level_asbiep.source_top_level_asbiep_id</code>.

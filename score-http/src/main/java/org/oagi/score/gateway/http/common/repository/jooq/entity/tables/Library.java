@@ -88,13 +88,13 @@ public class Library extends TableImpl<LibraryRecord> {
      * The column <code>oagi.library.description</code>. A brief summary or
      * overview of the library's purpose and functionality.
      */
-    public final TableField<LibraryRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A brief summary or overview of the library's purpose and functionality.");
+    public final TableField<LibraryRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A brief summary or overview of the library's purpose and functionality.");
 
     /**
      * The column <code>oagi.library.link</code>. A URL directing to the
      * library's homepage, documentation, or repository for further details.
      */
-    public final TableField<LibraryRecord, String> LINK = createField(DSL.name("link"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A URL directing to the library's homepage, documentation, or repository for further details.");
+    public final TableField<LibraryRecord, String> LINK = createField(DSL.name("link"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A URL directing to the library's homepage, documentation, or repository for further details.");
 
     /**
      * The column <code>oagi.library.domain</code>. Specifies the area of focus

@@ -96,7 +96,7 @@ public class Abie extends TableImpl<AbieRecord> {
     /**
      * The column <code>oagi.abie.path</code>.
      */
-    public final TableField<AbieRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
+    public final TableField<AbieRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
 
     /**
      * The column <code>oagi.abie.hash_path</code>. hash_path generated from the
@@ -117,7 +117,7 @@ public class Abie extends TableImpl<AbieRecord> {
      * ACC's definition. If NULL, it means that the definition should be
      * inherited from the based CC.
      */
-    public final TableField<AbieRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Definition to override the ACC's definition. If NULL, it means that the definition should be inherited from the based CC.");
+    public final TableField<AbieRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Definition to override the ACC's definition. If NULL, it means that the definition should be inherited from the based CC.");
 
     /**
      * The column <code>oagi.abie.created_by</code>. A foreign key referring to

@@ -89,7 +89,7 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
     /**
      * The column <code>oagi.asbiep.path</code>.
      */
-    public final TableField<AsbiepRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
+    public final TableField<AsbiepRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
 
     /**
      * The column <code>oagi.asbiep.hash_path</code>. hash_path generated from
@@ -112,7 +112,7 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
      * derived from the based ASCCP on the UI, expression generation, and any
      * API.
      */
-    public final TableField<AsbiepRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A definition to override the ASCCP's definition. If NULL, it means that the definition should be derived from the based ASCCP on the UI, expression generation, and any API.");
+    public final TableField<AsbiepRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A definition to override the ASCCP's definition. If NULL, it means that the definition should be derived from the based ASCCP on the UI, expression generation, and any API.");
 
     /**
      * The column <code>oagi.asbiep.remark</code>. This column allows the user

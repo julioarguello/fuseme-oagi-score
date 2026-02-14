@@ -106,7 +106,7 @@ public class CodeList extends TableImpl<CodeListRecord> {
      * The column <code>oagi.code_list.definition</code>. Description of the
      * code list.
      */
-    public final TableField<CodeListRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description of the code list.");
+    public final TableField<CodeListRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description of the code list.");
 
     /**
      * The column <code>oagi.code_list.remark</code>. Usage information about

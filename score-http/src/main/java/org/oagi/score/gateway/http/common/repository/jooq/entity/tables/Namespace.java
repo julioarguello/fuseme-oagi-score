@@ -98,7 +98,7 @@ public class Namespace extends TableImpl<NamespaceRecord> {
      * The column <code>oagi.namespace.description</code>. Description or
      * explanation about the namespace or use of the namespace.
      */
-    public final TableField<NamespaceRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description or explanation about the namespace or use of the namespace.");
+    public final TableField<NamespaceRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description or explanation about the namespace or use of the namespace.");
 
     /**
      * The column <code>oagi.namespace.is_std_nmsp</code>. This indicates

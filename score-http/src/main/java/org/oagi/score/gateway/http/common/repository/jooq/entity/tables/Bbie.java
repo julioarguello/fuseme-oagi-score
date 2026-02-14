@@ -99,7 +99,7 @@ public class Bbie extends TableImpl<BbieRecord> {
     /**
      * The column <code>oagi.bbie.path</code>.
      */
-    public final TableField<BbieRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
+    public final TableField<BbieRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
 
     /**
      * The column <code>oagi.bbie.hash_path</code>. hash_path generated from the
@@ -179,14 +179,14 @@ public class Bbie extends TableImpl<BbieRecord> {
      * The column <code>oagi.bbie.facet_pattern</code>. Defines a constraint on
      * the lexical space of a datatype to literals in a specific pattern.
      */
-    public final TableField<BbieRecord, String> FACET_PATTERN = createField(DSL.name("facet_pattern"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Defines a constraint on the lexical space of a datatype to literals in a specific pattern.");
+    public final TableField<BbieRecord, String> FACET_PATTERN = createField(DSL.name("facet_pattern"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Defines a constraint on the lexical space of a datatype to literals in a specific pattern.");
 
     /**
      * The column <code>oagi.bbie.default_value</code>. This column specifies
      * the default value constraint. Default and fixed value constraints cannot
      * be used at the same time.
      */
-    public final TableField<BbieRecord, String> DEFAULT_VALUE = createField(DSL.name("default_value"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.");
+    public final TableField<BbieRecord, String> DEFAULT_VALUE = createField(DSL.name("default_value"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.");
 
     /**
      * The column <code>oagi.bbie.is_nillable</code>. Indicate whether the field
@@ -200,7 +200,7 @@ public class Bbie extends TableImpl<BbieRecord> {
      * fixed value constraint. Default and fixed value constraints cannot be
      * used at the same time.
      */
-    public final TableField<BbieRecord, String> FIXED_VALUE = createField(DSL.name("fixed_value"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.");
+    public final TableField<BbieRecord, String> FIXED_VALUE = createField(DSL.name("fixed_value"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.");
 
     /**
      * The column <code>oagi.bbie.is_null</code>. This column indicates whether
@@ -215,12 +215,12 @@ public class Bbie extends TableImpl<BbieRecord> {
      * BCC definition. If NULLl, it means that the definition should be
      * inherited from the based BCC.
      */
-    public final TableField<BbieRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description to override the BCC definition. If NULLl, it means that the definition should be inherited from the based BCC.");
+    public final TableField<BbieRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description to override the BCC definition. If NULLl, it means that the definition should be inherited from the based BCC.");
 
     /**
      * The column <code>oagi.bbie.example</code>.
      */
-    public final TableField<BbieRecord, String> EXAMPLE = createField(DSL.name("example"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
+    public final TableField<BbieRecord, String> EXAMPLE = createField(DSL.name("example"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
 
     /**
      * The column <code>oagi.bbie.remark</code>. This column allows the user to

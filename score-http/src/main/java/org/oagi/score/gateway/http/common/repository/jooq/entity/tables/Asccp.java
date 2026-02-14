@@ -94,7 +94,7 @@ public class Asccp extends TableImpl<AsccpRecord> {
     /**
      * The column <code>oagi.asccp.definition</code>. Description of the ASCCP.
      */
-    public final TableField<AsccpRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description of the ASCCP.");
+    public final TableField<AsccpRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Description of the ASCCP.");
 
     /**
      * The column <code>oagi.asccp.definition_source</code>. This is typically a

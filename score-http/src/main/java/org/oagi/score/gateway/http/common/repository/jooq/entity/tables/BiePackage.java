@@ -68,6 +68,12 @@ public class BiePackage extends TableImpl<BiePackageRecord> {
     public final TableField<BiePackageRecord, ULong> BIE_PACKAGE_ID = createField(DSL.name("bie_package_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "The primary key of the BIE package record.");
 
     /**
+     * The column <code>oagi.bie_package.guid</code>. Unique identifier of this
+     * BIE package.
+     */
+    public final TableField<BiePackageRecord, String> GUID = createField(DSL.name("guid"), SQLDataType.VARCHAR(32).nullable(false), this, "Unique identifier of this BIE package.");
+
+    /**
      * The column <code>oagi.bie_package.library_id</code>. A foreign key
      * pointed to a library of the current record.
      */

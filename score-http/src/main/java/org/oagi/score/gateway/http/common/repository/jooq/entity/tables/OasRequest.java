@@ -79,7 +79,7 @@ public class OasRequest extends TableImpl<OasRequestRecord> {
      * of the request body. This could contain examples of use. CommonMark
      * syntax MAY be used for rich text representation.
      */
-    public final TableField<OasRequestRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A brief description of the request body. This could contain examples of use. CommonMark syntax MAY be used for rich text representation.");
+    public final TableField<OasRequestRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A brief description of the request body. This could contain examples of use. CommonMark syntax MAY be used for rich text representation.");
 
     /**
      * The column <code>oagi.oas_request.required</code>. Determines if the

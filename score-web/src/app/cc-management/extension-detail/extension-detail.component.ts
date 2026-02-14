@@ -374,6 +374,9 @@ export class ExtensionDetailComponent implements OnInit {
         }
       }
 
+      // Recover the state of 'Hide Cardinality' property.
+      this.dataSource.hideCardinality = loadBooleanProperty(this.auth.getUserToken(), this.HIDE_CARDINALITY_PROPERTY_KEY, false);
+
       if (snackMsg) {
         this.snackBar.open(snackMsg, '', {duration: 3000});
       }
@@ -1408,7 +1411,13 @@ export class ExtensionDetailComponent implements OnInit {
     if (!node) {
       node = this.selectedNode;
     }
-    this.commentControl.toggleCommentSlide(type, node.detail);
+    if (!node.detail) {
+      this.dataSource.loadDetail(node, (detail: CcNodeInfo) => {
+        this.commentControl.toggleCommentSlide(type, detail);
+      });
+    } else {
+      this.commentControl.toggleCommentSlide(type, node.detail);
+    }
   }
 
   canDrop() {

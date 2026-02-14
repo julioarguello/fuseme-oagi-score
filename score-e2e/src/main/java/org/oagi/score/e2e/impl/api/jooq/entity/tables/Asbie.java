@@ -90,7 +90,7 @@ public class Asbie extends TableImpl<AsbieRecord> {
     /**
      * The column <code>oagi.asbie.path</code>.
      */
-    public final TableField<AsbieRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
+    public final TableField<AsbieRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
 
     /**
      * The column <code>oagi.asbie.hash_path</code>. hash_path generated from
@@ -122,7 +122,7 @@ public class Asbie extends TableImpl<AsbieRecord> {
      * ASCC definition. If NULL, it means that the definition should be derived
      * from the based CC on the UI, expression generation, and any API.
      */
-    public final TableField<AsbieRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Definition to override the ASCC definition. If NULL, it means that the definition should be derived from the based CC on the UI, expression generation, and any API.");
+    public final TableField<AsbieRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "Definition to override the ASCC definition. If NULL, it means that the definition should be derived from the based CC on the UI, expression generation, and any API.");
 
     /**
      * The column <code>oagi.asbie.cardinality_min</code>. Minimum occurence

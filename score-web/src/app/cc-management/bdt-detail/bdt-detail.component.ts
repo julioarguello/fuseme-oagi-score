@@ -417,6 +417,10 @@ export class BdtDetailComponent implements OnInit, DtPrimitiveAware {
         }
       }
 
+      // Recover the state of 'Hide Cardinality' and 'Hide Prohibited' property.
+      this.dataSource.hideCardinality = loadBooleanProperty(this.auth.getUserToken(), this.HIDE_CARDINALITY_PROPERTY_KEY, false);
+      this.dataSource.hideProhibited = loadBooleanProperty(this.auth.getUserToken(), this.HIDE_PROHIBITED_PROPERTY_KEY, false);
+
       if (snackMsg) {
         this.snackBar.open(snackMsg, '', {duration: 3000});
       }
@@ -1030,7 +1034,13 @@ export class BdtDetailComponent implements OnInit, DtPrimitiveAware {
     if (!node) {
       node = this.selectedNode;
     }
-    this.commentControl.toggleCommentSlide(type, node.detail);
+    if (!node.detail) {
+      this.dataSource.loadDetail(node, (detail: CcNodeInfo) => {
+        this.commentControl.toggleCommentSlide(type, detail);
+      });
+    } else {
+      this.commentControl.toggleCommentSlide(type, node.detail);
+    }
   }
 
   scrollToNode(node: CcFlatNode, delay?: number) {

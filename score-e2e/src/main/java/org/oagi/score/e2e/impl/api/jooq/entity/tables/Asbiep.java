@@ -38,6 +38,7 @@ import org.oagi.score.e2e.impl.api.jooq.entity.Oagi;
 import org.oagi.score.e2e.impl.api.jooq.entity.tables.Abie.AbiePath;
 import org.oagi.score.e2e.impl.api.jooq.entity.tables.AppUser.AppUserPath;
 import org.oagi.score.e2e.impl.api.jooq.entity.tables.Asbie.AsbiePath;
+import org.oagi.score.e2e.impl.api.jooq.entity.tables.AsbiepSupportDoc.AsbiepSupportDocPath;
 import org.oagi.score.e2e.impl.api.jooq.entity.tables.AsccpManifest.AsccpManifestPath;
 import org.oagi.score.e2e.impl.api.jooq.entity.tables.BieUsageRule.BieUsageRulePath;
 import org.oagi.score.e2e.impl.api.jooq.entity.tables.TopLevelAsbiep.TopLevelAsbiepPath;
@@ -88,7 +89,7 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
     /**
      * The column <code>oagi.asbiep.path</code>.
      */
-    public final TableField<AsbiepRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
+    public final TableField<AsbiepRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "");
 
     /**
      * The column <code>oagi.asbiep.hash_path</code>. hash_path generated from
@@ -111,7 +112,7 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
      * derived from the based ASCCP on the UI, expression generation, and any
      * API.
      */
-    public final TableField<AsbiepRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A definition to override the ASCCP's definition. If NULL, it means that the definition should be derived from the based ASCCP on the UI, expression generation, and any API.");
+    public final TableField<AsbiepRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A definition to override the ASCCP's definition. If NULL, it means that the definition should be derived from the based ASCCP on the UI, expression generation, and any API.");
 
     /**
      * The column <code>oagi.asbiep.remark</code>. This column allows the user
@@ -333,6 +334,19 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
             _asbie = new AsbiePath(this, null, Keys.ASBIE_TO_ASBIEP_ID_FK.getInverseKey());
 
         return _asbie;
+    }
+
+    private transient AsbiepSupportDocPath _asbiepSupportDoc;
+
+    /**
+     * Get the implicit to-many join path to the
+     * <code>oagi.asbiep_support_doc</code> table
+     */
+    public AsbiepSupportDocPath asbiepSupportDoc() {
+        if (_asbiepSupportDoc == null)
+            _asbiepSupportDoc = new AsbiepSupportDocPath(this, null, Keys.ASBIEP_SUPPORT_DOC_ASBIEP_ID_FK.getInverseKey());
+
+        return _asbiepSupportDoc;
     }
 
     private transient BieUsageRulePath _bieUsageRule;

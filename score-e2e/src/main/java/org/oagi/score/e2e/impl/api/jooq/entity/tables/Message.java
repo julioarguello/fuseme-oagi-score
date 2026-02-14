@@ -78,12 +78,12 @@ public class Message extends TableImpl<MessageRecord> {
     /**
      * The column <code>oagi.message.subject</code>. A subject of the message
      */
-    public final TableField<MessageRecord, String> SUBJECT = createField(DSL.name("subject"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A subject of the message");
+    public final TableField<MessageRecord, String> SUBJECT = createField(DSL.name("subject"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A subject of the message");
 
     /**
      * The column <code>oagi.message.body</code>. A body of the message.
      */
-    public final TableField<MessageRecord, String> BODY = createField(DSL.name("body"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A body of the message.");
+    public final TableField<MessageRecord, String> BODY = createField(DSL.name("body"), SQLDataType.CLOB(16777215).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A body of the message.");
 
     /**
      * The column <code>oagi.message.body_content_type</code>. A content type of

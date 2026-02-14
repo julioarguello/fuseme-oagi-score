@@ -751,8 +751,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
             element.setAttribute("maxOccurs", "unbounded");
         else
             element.setAttribute("maxOccurs", String.valueOf(asbie.cardinality().max()));
-        if (asbie.nillable())
-            element.setAttribute("nillable", String.valueOf(asbie.nillable()));
+        if (asbie.nillable() != null && asbie.nillable())
+            element.setAttribute("nillable", "true");
 
         if (option.isBieGuid()) {
             element.setAttribute("id", ID_ATTRIBUTE_PREFIX + asbie.getGuid());
@@ -868,8 +868,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
             element.setAttribute("maxOccurs", "unbounded");
         else
             element.setAttribute("maxOccurs", String.valueOf(asbie.cardinality().max()));
-        if (asbie.nillable())
-            element.setAttribute("nillable", String.valueOf(asbie.nillable()));
+        if (asbie.nillable() != null && asbie.nillable())
+            element.setAttribute("nillable", "true");
 
         while (!parent.getName().equals("sequence") && !parent.getName().equals("choice")) {
             parent = parent.getParentElement();
@@ -901,7 +901,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
             eNode.setAttribute("id", ID_ATTRIBUTE_PREFIX + bbie.getGuid());
         }
 
-        if (bbie.nillable()) {
+        if (bbie.nillable() != null && bbie.nillable()) {
             eNode.setAttribute("nillable", "true");
         }
         if (bbie.valueConstraint() != null) {
@@ -917,8 +917,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
             eNode.setAttribute("maxOccurs", "unbounded");
         else
             eNode.setAttribute("maxOccurs", String.valueOf(bbie.cardinality().max()));
-        if (bbie.nillable())
-            eNode.setAttribute("nillable", String.valueOf(bbie.nillable()));
+        if (bbie.nillable() != null && bbie.nillable())
+            eNode.setAttribute("nillable", "true");
 
         setDocumentation(eNode, bbie);
 

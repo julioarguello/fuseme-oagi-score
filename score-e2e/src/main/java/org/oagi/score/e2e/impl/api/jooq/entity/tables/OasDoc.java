@@ -87,13 +87,13 @@ public class OasDoc extends TableImpl<OasDocRecord> {
     /**
      * The column <code>oagi.oas_doc.title</code>. The title of the API.
      */
-    public final TableField<OasDocRecord, String> TITLE = createField(DSL.name("title"), SQLDataType.CLOB.nullable(false), this, "The title of the API.");
+    public final TableField<OasDocRecord, String> TITLE = createField(DSL.name("title"), SQLDataType.CLOB(65535).nullable(false), this, "The title of the API.");
 
     /**
      * The column <code>oagi.oas_doc.description</code>. A short description of
      * the API. CommonMark syntax MAY be used for rich text representation.
      */
-    public final TableField<OasDocRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A short description of the API. CommonMark syntax MAY be used for rich text representation.");
+    public final TableField<OasDocRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "A short description of the API. CommonMark syntax MAY be used for rich text representation.");
 
     /**
      * The column <code>oagi.oas_doc.terms_of_service</code>. A URL to the Terms
@@ -112,7 +112,7 @@ public class OasDoc extends TableImpl<OasDocRecord> {
      * The column <code>oagi.oas_doc.contact_name</code>. The identifying name
      * of the contact person/organization.
      */
-    public final TableField<OasDocRecord, String> CONTACT_NAME = createField(DSL.name("contact_name"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "The identifying name of the contact person/organization.");
+    public final TableField<OasDocRecord, String> CONTACT_NAME = createField(DSL.name("contact_name"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "The identifying name of the contact person/organization.");
 
     /**
      * The column <code>oagi.oas_doc.contact_url</code>. The URL pointing to the
@@ -125,7 +125,7 @@ public class OasDoc extends TableImpl<OasDocRecord> {
      * the contact person/organization. MUST be in the format of an email
      * address.
      */
-    public final TableField<OasDocRecord, String> CONTACT_EMAIL = createField(DSL.name("contact_email"), SQLDataType.CLOB.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "The email address of the contact person/organization. MUST be in the format of an email address.");
+    public final TableField<OasDocRecord, String> CONTACT_EMAIL = createField(DSL.name("contact_email"), SQLDataType.CLOB(65535).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.CLOB)), this, "The email address of the contact person/organization. MUST be in the format of an email address.");
 
     /**
      * The column <code>oagi.oas_doc.license_name</code>. REQUIRED if the
