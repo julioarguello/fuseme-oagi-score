@@ -12,3 +12,4 @@ docs
 misc
 ql-test
 *.sql
+.agent
