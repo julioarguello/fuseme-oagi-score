@@ -1,0 +1,25 @@
+services:
+  db:
+    image: mariadb:11.0.6
+    ports:
+      - "13306:3306"
+    environment:
+      MYSQL_DATABASE: oagi
+      MYSQL_USER: oagi
+      MYSQL_PASSWORD: oagi
+      MYSQL_ROOT_PASSWORD: oagi
+    volumes:
+      - score-db-volume:/var/lib/mysql
+      - ./score-repo/scripts/score-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    command: ["mariadbd", "--plugin-load-add=type_mysql_json"]
+
+  redis:
+    image: redis:6
+    ports:
+      - "16379:6379"
+    volumes:
+      - redis-volume:/data
+
+volumes:
+  score-db-volume:
+  redis-volume:
