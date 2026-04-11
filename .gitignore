@@ -13,3 +13,6 @@ misc
 ql-test
 *.sql
 .agent
+
+# Python virtual environment
+.venv/
